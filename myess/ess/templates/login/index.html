@@ -1,5 +1,12 @@
 {% extends 'login/base.html' %}
 {% block title %}主页{% endblock %}
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <!-- <li class="active"><a href="/tasks/=">任务大厅</a></li> -->
+        <li class="active"><a href="#">任务大厅</a></li>
+        <li class="active"><a href="#">效率查看</a></li>
+    </ul>
+{% endblock %}
 {% block content %}
     {% if request.session.is_login %}
     <h1>你好,{{ request.session.user_name }}！欢迎回来！</h1>
