@@ -37,21 +37,20 @@ def login(request):
                 user = models.User.objects.get(uname=username)
                 if user.pword == hash_code(password):
                     request.session['is_login'] = True
-                    request.session['user_power'] = user.power
+                    request.session['user_pword'] = user.pword
                     request.session['user_name'] = user.uname
                     return redirect('/index')
                 else:
                     message = "密码不正确！"
             except:
                 message = "用户不存在"
-        return render(request, 'login/login.html',{"message":message})
+        return render(request, 'login/login.html', locals())
     login_form = UserForm()
     return render(request, 'login/login.html',locals())
 
 def register(request):
     if request.session.get('is_login', None):
-        # 登录状态不允许注册。你可以修改这条原则！
-        return redirect("/index")
+        return redirect("/login")
     if request.method == "POST":
         register_form = RegisterForm(request.POST)
         message = "请检查填写的内容！"
@@ -68,11 +67,7 @@ def register(request):
                     message = '用户已经存在，请重新选择用户名！'
                     return render(request, 'login/register.html', locals())
 
-                # 当一切都OK的情况下，创建新用户
-
                 new_user = models.User(uname=username,pword=hash_code(password1))
-                # new_user.uname = username
-                # new_user.pword = hash_code(password1)
                 new_user.save()
                 return redirect('/login')  # 自动跳转到登录页面
     register_form = RegisterForm()
