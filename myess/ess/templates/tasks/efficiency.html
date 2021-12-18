@@ -1,0 +1,29 @@
+{% extends 'login/base.html' %}
+{% block title %}效率查看{% endblock %}
+
+{% block content %}
+
+<form class="form-efficiency" action="" method="post">
+    <table class="table">
+        <tr>
+            <th>本周开始时间</th>
+            <th>本周结束时间</th>
+            <th>上周开始时间</th>
+            <th>上周结束时间</th>
+        </tr>
+        <tr>
+            <td><input type="date" name="now-begin-time" id="now-begin-time" class="form-control"></td>
+            <td><input type="date" name="now-over-time" id="now-over-time" class="form-control"></td>
+            <td><input type="date" name="last-begin-time" id="last-begin-time" class="form-control"></td>
+            <td><input type="date" name="last-over-time" id="last-over-time" class="form-control"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="reset" class="btn btn-default pull-left" value="重置"></td>
+            <td><input type="submit" class="btn btn-primary pull-right" value="提交"></td>
+            <td></td>
+        </tr>
+    </table>
+</form>
+<hr>
+{% endblock %}

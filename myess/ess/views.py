@@ -24,7 +24,7 @@ def hash_code(s):# 加点盐
     h.update(s.encode())  # update方法只接收bytes类型
     return h.hexdigest()
 
-
+# index
 def index(request):
     stu = models.Task.objects.all()
     page = Paginator(stu,20)
@@ -42,6 +42,7 @@ def index(request):
         stus = page.page(1)
     return render(request,'login/index.html',{'stus':stus,'page':page})
 
+# login
 def login(request):
     if request.method == "POST":
         login_form = UserForm(request.POST)
@@ -64,6 +65,7 @@ def login(request):
     login_form = UserForm()
     return render(request, 'login/login.html',locals())
 
+# user register
 def register(request):
     if request.session.get('is_login', None):
         return redirect("/login")
@@ -89,6 +91,7 @@ def register(request):
     register_form = RegisterForm()
     return render(request, 'login/register.html', locals())
 
+# insert data
 def insert(request):
     if request.method == "POST":
         uname = request.POST.get('uname')
@@ -110,6 +113,10 @@ def insert(request):
             uname,pname,waibao,task_id,dtime,kinds,pnums,knums,telse,ptimes))
         return redirect('/index')
     return render(request, 'tasks/insert.html')
+
+def efficiency(request):
+
+    return render(request,'tasks/efficiency.html')
 
 def logout(request):
     if not request.session.get('is_login',None):
