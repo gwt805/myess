@@ -1,8 +1,11 @@
+from django.forms.fields import ChoiceField
 from django.shortcuts import render
+from django.utils.regex_helper import Choice
 from ess import models
 from django.shortcuts import render,redirect
 from django import forms
 from captcha.fields import CaptchaField
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
 
 # Create your views here.
@@ -23,8 +26,21 @@ def hash_code(s):# 加点盐
 
 
 def index(request):
-    pass
-    return render(request,'login/index.html')
+    stu = models.Task.objects.all()
+    page = Paginator(stu,20)
+    #获取当前的页码数，默认为1
+    page_id = request.GET.get("page_id")
+    # posts = paginator.page(number=page)
+    if page_id:
+        try:
+            stus = page.page(page_id)
+        except PageNotAnInteger:
+            stus = page.page(1)
+        except EmptyPage:
+            stus = page.page(1)
+    else:
+        stus = page.page(1)
+    return render(request,'login/index.html',{'stus':stus,'page':page})
 
 def login(request):
     if request.method == "POST":
@@ -72,6 +88,28 @@ def register(request):
                 return redirect('/login')  # 自动跳转到登录页面
     register_form = RegisterForm()
     return render(request, 'login/register.html', locals())
+
+def insert(request):
+    if request.method == "POST":
+        uname = request.POST.get('uname')
+        pname = request.POST.get('pname')
+        waibao = request.POST.get('waibao')
+        task_id  = request.POST.get('task_id')
+        dtime = request.POST.get('dtime')
+        kinds = request.POST.get('kinds')
+        pnums = request.POST.get('pnums')
+        knums = request.POST.get('knums')
+        telse = request.POST.get('telse')
+        ptimes = request.POST.get('ptimes')
+        try:
+            new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=task_id,dtime=dtime,kinds=kinds,pnums=int(knums),knums=int(knums),telse=telse,ptimes=float(ptimes))
+            new_tasks.save()
+        except:
+            return render(request,'tasks/insert.html',{'message':'请检查内容！'})
+        print('用户名:{},项目名字:{},是否外包:{},任务ID:{},日期:{},任务类型:{}，图片数量:{},框数:{},其他事项:{},工时:{}'.format(
+            uname,pname,waibao,task_id,dtime,kinds,pnums,knums,telse,ptimes))
+        return redirect('/index')
+    return render(request, 'tasks/insert.html')
 
 def logout(request):
     if not request.session.get('is_login',None):

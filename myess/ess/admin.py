@@ -3,4 +3,8 @@ from ess import models
 
 # Register your models here.
 admin.site.register(models.User)
-admin.site.register(models.Task)
+# admin.site.register(models.Task)
+
+@admin.register(models.Task)
+class ControlTASK(admin.ModelAdmin):
+    ordering = ('-dtime',)

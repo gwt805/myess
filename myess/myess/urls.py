@@ -25,4 +25,5 @@ urlpatterns = [
     path('index/',views.index),
     path('register/',views.register),
     path('logout/',views.logout),
+    path('insert/',views.insert),
 ]
