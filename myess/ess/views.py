@@ -7,7 +7,7 @@ from django import forms
 from captcha.fields import CaptchaField
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
-
+from .mes import nw,lw
 # Create your views here.
 class UserForm(forms.Form):
     username = forms.CharField(label="用户名", max_length=20,widget=forms.TextInput(attrs={'class':'form-control'}))
@@ -26,7 +26,7 @@ def hash_code(s):# 加点盐
 
 # index
 def index(request):
-    stu = models.Task.objects.all()
+    stu = models.Task.objects.all().order_by('-dtime')
     page = Paginator(stu,20)
     #获取当前的页码数，默认为1
     page_id = request.GET.get("page_id")
@@ -115,7 +115,18 @@ def insert(request):
     return render(request, 'tasks/insert.html')
 
 def efficiency(request):
-
+    if request.method == "POST":
+        now_begin_time = request.POST.get('now-begin-time')
+        now_over_time = request.POST.get('now-over-time')
+        last_begin_time = request.POST.get('last-begin-time')
+        last_over_time = request.POST.get('last-over-time')
+        print('now_begin_time:{},now_over_time:{},last_begin_time:{},last_over_time:{}'.format(now_begin_time,now_over_time,last_begin_time,last_over_time))
+        try:
+           tks_nw = nw(now_begin_time,now_over_time)
+           tks_lw = lw(last_begin_time,last_over_time)
+           return render(request,'tasks/efficiency.html',{"tsk":tks_nw,"task_low":tks_lw})
+        except:
+            pass
     return render(request,'tasks/efficiency.html')
 
 def logout(request):

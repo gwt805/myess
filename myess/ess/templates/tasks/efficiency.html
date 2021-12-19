@@ -4,6 +4,7 @@
 {% block content %}
 
 <form class="form-efficiency" action="" method="post">
+    {% csrf_token %} 
     <table class="table">
         <tr>
             <th>本周开始时间</th>
@@ -24,6 +25,47 @@
             <td></td>
         </tr>
     </table>
+    <table class="table">
+        <tr>
+            <th colspan="6">团队效率</th>
+        </tr>
+        <tr>
+            <th>类型</th>
+            <th>项目名字</th>
+            <th>图片数量</th>
+            <th>框数</th>
+            <th>其他事项</th>
+            <th>效率</th>
+        </tr>
+        
+            {% for i in tsk %}
+                <tr>
+                    {% if i.0 == '审核' %}
+                        <td>{{ i.0 }}</td>
+                        <td>{{ i.1 }}</td>
+                        <td>{{ i.2 }}</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ i.3 }}张/h</td>
+                    {% endif %}
+                    {% if i.0 == '标注' %}
+                        <td>{{ i.0 }}</td>
+                        <td>{{ i.1 }}</td>
+                        <td>{{ i.2 }}</td>
+                        <td>{{ i.3 }}</td>
+                        <td></td>
+                        <td>{{ i.4 }}框/h</td>
+                    {% endif %}
+                    {% if i.0 == '其他' %}
+                        <td>{{ i.0 }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ i.1 }}</td>
+                        <td>{{ i.2 }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+    </table>
 </form>
-<hr>
 {% endblock %}
