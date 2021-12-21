@@ -2,7 +2,7 @@
 {% block title %}效率查看{% endblock %}
 {% block css %}
     <style>
-        th {text-align: center;}
+        th,td {text-align: center;}
     </style>
 {% endblock %}
 {% block content %}
@@ -17,10 +17,10 @@
             <th>上周结束时间</th>
         </tr>
         <tr>
-            <td><input type="date" name="now-begin-time" id="now-begin-time" class="form-control"></td>
-            <td><input type="date" name="now-over-time" id="now-over-time" class="form-control"></td>
-            <td><input type="date" name="last-begin-time" id="last-begin-time" class="form-control"></td>
-            <td><input type="date" name="last-over-time" id="last-over-time" class="form-control"></td>
+            <td><input type="date" name="now-begin-time" id="now-begin-time" class="form-control" value="{{ now_begin_time }}"></td>
+            <td><input type="date" name="now-over-time" id="now-over-time" class="form-control" value="{{ now_over_time }}"></td>
+            <td><input type="date" name="last-begin-time" id="last-begin-time" class="form-control" value="{{ last_begin_time }}"></td>
+            <td><input type="date" name="last-over-time" id="last-over-time" class="form-control" value="{{ last_over_time }}"></td>
         </tr>
         <tr>
             <td></td>
@@ -31,7 +31,7 @@
     </table>
     <table class="table">
         <tr>
-            <th colspan="6">团队效率</th>
+            <th colspan="7">团队效率</th>
         </tr>
         <tr>
             <th>类型</th>
@@ -39,10 +39,12 @@
             <th>图片数量</th>
             <th>框数</th>
             <th>其他事项</th>
-            <th>效率</th>
+            <th>本周效率</th>
+            <th>上周效率</th>
         </tr>
         
-            {% for i in tks_nw %}
+            {% for i in tks_nw %} <!-- 本周工作量 -->
+                
                 <tr>
                     {% if i.0 == '审核' %}
                         <td>{{ i.0 }}</td>
@@ -51,6 +53,11 @@
                         <td></td>
                         <td></td>
                         <td>{{ i.3 }}张/h</td>
+                        {% for j in task_lw %} <!-- 上周工作量 -->
+                            {% if j.0 == '审核' and j.1 == i.1 %}
+                                <td>{{ j.3 }}张/h</td>
+                            {% endif %}
+                        {% endfor %}
                     {% endif %}
                     {% if i.0 == '标注' %}
                         <td>{{ i.0 }}</td>
@@ -59,6 +66,11 @@
                         <td>{{ i.3 }}</td>
                         <td></td>
                         <td>{{ i.4 }}框/h</td>
+                        {% for j in task_lw %} <!-- 上周工作量 -->
+                            {% if j.0 == '标注' and j.1 == i.1 %}
+                                <td>{{ j.4 }}框/h</td>
+                            {% endif %}
+                        {% endfor %}
                     {% endif %}
                     {% if i.0 == '其他' %}
                         <td>{{ i.0 }}</td>
@@ -66,7 +78,8 @@
                         <td></td>
                         <td></td>
                         <td>{{ i.1 }}</td>
-                        <td>{{ i.2 }}</td>
+                        <td>{{ i.2 }} h</td>
+                        <td></td>
                     {% endif %}
                 </tr>
             {% endfor %}
