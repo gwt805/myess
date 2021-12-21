@@ -124,7 +124,7 @@ def efficiency(request):
         try:
            tks_nw = nw(now_begin_time,now_over_time)
            tks_lw = lw(last_begin_time,last_over_time)
-           return render(request,'tasks/efficiency.html',{"tsk":tks_nw,"task_low":tks_lw})
+           return render(request,'tasks/efficiency.html',{"tks_nw":tks_nw,"task_low":tks_lw})
         except:
             pass
     return render(request,'tasks/efficiency.html')

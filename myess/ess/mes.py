@@ -49,9 +49,9 @@ def tims(begin_time,over_time):
     return tps
 
 def nw(now_begin_time,now_over_time):
-    tims(now_begin_time,now_over_time)
+    return tims(now_begin_time,now_over_time)
 def lw(last_begin_time,last_over_time):
-    tims(last_begin_time,last_over_time)
+    return tims(last_begin_time,last_over_time)
 '''
 整体效率
 1. 找出指定时间范围内的任务类型 √
