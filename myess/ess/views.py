@@ -1,4 +1,5 @@
 from django.forms.fields import ChoiceField
+from django.http import request
 from django.shortcuts import render
 from django.utils.regex_helper import Choice
 from ess import models
@@ -7,7 +8,7 @@ from django import forms
 from captcha.fields import CaptchaField
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
-from .mes import nw,lw
+from .mes import nw,lw, performanceq, plw, pnw
 # Create your views here.
 class UserForm(forms.Form):
     username = forms.CharField(label="用户名", max_length=20,widget=forms.TextInput(attrs={'class':'form-control'}))
@@ -120,15 +121,34 @@ def efficiency(request):
         now_over_time = request.POST.get('now-over-time')
         last_begin_time = request.POST.get('last-begin-time')
         last_over_time = request.POST.get('last-over-time')
+        
         print('now_begin_time:{},now_over_time:{},last_begin_time:{},last_over_time:{}'.format(now_begin_time,now_over_time,last_begin_time,last_over_time))
         try:
            tks_nw = nw(now_begin_time,now_over_time)
            tks_lw = lw(last_begin_time,last_over_time)
+           pks_nw = pnw(now_begin_time,now_over_time)
+           pks_lw = plw(last_begin_time,last_over_time)
            return render(request,'tasks/efficiency.html',{'now_begin_time':now_begin_time,'now_over_time':now_over_time,
-                                                            'last_begin_time':last_begin_time,'last_over_time':last_over_time,"tks_nw":tks_nw,"task_lw":tks_lw})
+                                                            'last_begin_time':last_begin_time,'last_over_time':last_over_time,
+                                                                "tks_nw":tks_nw,"task_lw":tks_lw,
+                                                                    'pks_nw':pks_nw,'pks_lw':pks_lw})
         except:
             pass
     return render(request,'tasks/efficiency.html')
+
+# 绩效
+def performance(request):
+    if request.method == "POST":
+        now_begin_time = request.POST.get('now-begin-time')
+        now_over_time = request.POST.get('now-over-time')
+        uname = request.POST.get('uname')
+        print('now_begin_time:{},now_over_time:{},uname:{}'.format(now_begin_time,now_over_time,uname))
+        try:
+           tks_nw = performanceq(now_begin_time,now_over_time,uname)
+           return render(request,'tasks/performance.html',{'now_begin_time':now_begin_time,'now_over_time':now_over_time,'uname':uname,'tks_nw':tks_nw})
+        except:
+            pass
+    return render(request,'tasks/performance.html')
 
 def logout(request):
     if not request.session.get('is_login',None):

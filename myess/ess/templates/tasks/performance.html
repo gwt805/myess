@@ -1,0 +1,70 @@
+{% extends 'login/base.html' %}
+{% block title %}效率查看{% endblock %}
+{% block css %}
+    <style>
+        th,td {text-align: center;}
+    </style>
+{% endblock %}
+{% block content %}
+
+<form class="form-efficiency" action="" method="post">
+    {% csrf_token %} 
+    <table class="table">
+        <tr>
+            <th>绩效开始时间</th>
+            <th>绩效结束时间</th>
+            <th>名字</th>
+        </tr>
+        <tr>
+            <td><input type="date" name="now-begin-time" id="now-begin-time" class="form-control" value="{{ now_begin_time }}"></td>
+            <td><input type="date" name="now-over-time" id="now-over-time" class="form-control" value="{{ now_over_time }}"></td>
+            <td><input type="input" name="uname" id="now-over-time" class="form-control" value="{{ uname }}"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="reset" class="btn btn-default pull-left" value="重置"></td>
+            <td><input type="submit" class="btn btn-primary pull-right" value="提交"></td>
+            <td></td>
+        </tr>
+    </table>
+</form>
+    <table class="table">
+        <tr>
+            <th colspan="5">绩效展示</th>
+        </tr>
+        <tr>
+            <th>类型</th>
+            <th>项目名字</th>
+            <th>图片数量</th>
+            <th>框数</th>
+            <th>其他事项</th>
+        </tr>
+        
+            {% for i in tks_nw %} <!-- 本周工作量 -->
+                
+                <tr>
+                    {% if i.0 == '审核' %}
+                        <td>{{ i.0 }}</td>
+                        <td>{{ i.1 }}</td>
+                        <td>{{ i.2 }}</td>
+                        <td></td>
+                        <td></td>
+                    {% endif %}
+                    {% if i.0 == '标注' %}
+                        <td>{{ i.0 }}</td>
+                        <td>{{ i.1 }}</td>
+                        <td>{{ i.2 }}</td>
+                        <td>{{ i.3 }}</td>
+                        <td></td>
+                    {% endif %}
+                    {% if i.0 == '其他' %}
+                        <td>{{ i.0 }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ i.1 }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+    </table>
+{% endblock %}

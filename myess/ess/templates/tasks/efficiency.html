@@ -84,5 +84,62 @@
                 </tr>
             {% endfor %}
     </table>
+    <h1 style="text-align: center;">个人效率</h1>
+    {% for pnw in pks_nw %}
+    <table class="table">
+        <tr>
+            <th>名字</th>
+            <th>类型</th>
+            <th>项目名字</th>
+            <th>图片数量</th>
+            <th>框数</th>
+            <th>其他事项</th>
+            <th>本周效率</th>
+            <th>上周效率</th>
+        </tr>
+        {% for gp in pnw %}
+        <tr>
+            {% if gp.1 == '审核' %}
+                <td>{{ gp.0 }}</td>
+                <td>{{ gp.1 }}</td>
+                <td>{{ gp.2 }}</td>
+                <td>{{ gp.3 }}</td>
+                <td></td>
+                <td></td>
+                <td>{{ gp.4 }}张/h</td>
+                {% for j in pks_lw %} <!-- 上周工作量 -->
+                    {% if j.1 == '审核' and j.2 == gp.2 %}
+                        <td>{{ j.4 }}张/h</td>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% if gp.1 == '标注' %}
+                <td>{{ gp.0 }}</td>
+                <td>{{ gp.1 }}</td>
+                <td>{{ gp.2 }}</td>
+                <td>{{ gp.3 }}</td>
+                <td>{{ gp.4 }}</td>
+                <td></td>
+                <td>{{ gp.5 }}框/h</td>
+                {% for j in pks_lw %} <!-- 上周工作量 -->
+                    {% if j.1 == '标注' and j.2 == gp.2 %}
+                        <td>{{ j.5 }}框/h</td>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% if gp.1 == '其他' %}
+                <td>{{ gp.0 }}</td>
+                <td>{{ gp.1 }}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{{ gp.2 }}</td>
+                <td>{{ gp.3 }} h</td>
+                <td></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    {% endfor %}
 </form>
 {% endblock %}

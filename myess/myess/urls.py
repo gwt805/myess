@@ -27,4 +27,5 @@ urlpatterns = [
     path('logout/',views.logout),
     path('insert/',views.insert),
     path('efficiency/',views.efficiency),
+    path('performance/',views.performance),
 ]
