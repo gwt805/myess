@@ -5,9 +5,8 @@ import math
 
 def tims(begin_time,over_time):
     tdat = models.Task.objects.filter(dtime__range=[begin_time,over_time])
-    ########### 获取指定时间段内的用户名
-    names = [] # [guoweitao,hanbo,zhangyongjiao,gaobo]
-    k_p = [] # [('审核', 'S线数据'), ('其他', None), ('标注', '杂物'), ('标注', 'S线数据'), ('审核', '脏污'), ('审核', '杂物')]
+    names = [] # [name1,name2,name3]
+    k_p = [] # [(kinds1, pname1), (kinds2, pname2)]
     for i in tdat:
         if (i.kinds,i.pname) not in k_p:
             k_p.append((i.kinds,i.pname))
@@ -52,17 +51,14 @@ def tims(begin_time,over_time):
 #个人效率
 def pppee(begin_time,over_time):
     tdat = models.Task.objects.filter(dtime__range=[begin_time,over_time])
-    ########### 获取指定时间段内的用户名
-    names = [] # [guoweitao,hanbo,zhangyongjiao,gaobo]
-    # [('审核', 'S线数据'), ('其他', None), ('标注', '杂物'), ('标注', 'S线数据'), ('审核', '脏污'), ('审核', '杂物')]
+    names = [] # [name1,name2,name3]
     for i in tdat:
         if i.uname not in names:
             names.append(i.uname)
-    # ppee(names,k_p,tdat)
-    ggg = []
+    ggg = [] # 三维矩阵
     for g in names:
-        tps = [] # 团队整体效率
-        k_p = []
+        tps = [] # 没人一组整体效率
+        k_p = [] # [(kinds1, pname1), (kinds2, pname2)]
         for kk in models.Task.objects.filter(dtime__range=[begin_time,over_time],uname=g):
             if (kk.kinds,kk.pname) not in k_p:
                 k_p.append((kk.kinds,kk.pname))
@@ -80,10 +76,7 @@ def pppee(begin_time,over_time):
                 pp.append(i[0])
                 pp.append(i[1])
                 pp.append(pnum)
-                if ptm == 0:
-                    pp.append('')
-                else:
-                    pp.append(math.floor(pnum/ptm))
+                pp.append(math.floor(pnum/ptm))
                 tps.append(pp)
             elif i[0] == '标注':
                 for j in gg:
@@ -95,11 +88,7 @@ def pppee(begin_time,over_time):
                 pp.append(i[1])
                 pp.append(pnum)
                 pp.append(knum)
-                # print('标注ptm',ptm)
-                if ptm == 0:
-                    pp.append('')
-                else:
-                    pp.append(math.floor(pnum/ptm))
+                pp.append(math.floor(pnum/ptm))
                 tps.append(pp)
             elif i[0] == '其他':
                 gg = tdat.filter(kinds=i[0],uname=g)
@@ -110,8 +99,6 @@ def pppee(begin_time,over_time):
                     pp.append(j.ptimes)
                     tps.append(pp)
         ggg.append(tps)
-    for gwt in ggg:
-        print(gwt)
     return ggg
 # 团队效率
 def nw(now_begin_time,now_over_time):
@@ -122,14 +109,11 @@ def lw(last_begin_time,last_over_time):
 def pnw(now_begin_time,now_over_time):
     return pppee(now_begin_time,now_over_time)
 def plw(last_begin_time,last_over_time):
-    print('进来了')
-    print(pppee(last_begin_time,last_over_time))
     return pppee(last_begin_time,last_over_time)
 
 # 绩效
 def performanceq(begin_time,over_time,name):
     tdat = models.Task.objects.filter(dtime__range=[begin_time,over_time],uname=name)
-    ########### 获取指定时间段内的用户名
     k_p = [] # [('审核', 'S线数据'), ('其他', None), ('标注', '杂物'), ('标注', 'S线数据'), ('审核', '脏污'), ('审核', '杂物')]
     for i in tdat:
         if (i.kinds,i.pname) not in k_p:
@@ -166,12 +150,3 @@ def performanceq(begin_time,over_time,name):
                 pp.append(j.telse)
                 tps.append(pp)
     return tps
-'''
-整体效率
-1. 找出指定时间范围内的任务类型 √
-2. 在 1 的基础上找出 项目类型 √
-3. 在 2 的基础上找出每个项目类型下的每个任务类型的平均效率
-
-个人效率
-在整体效率的基础上加上 每个人的名字就可以得出
-'''

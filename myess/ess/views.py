@@ -128,7 +128,6 @@ def efficiency(request):
            tks_lw = lw(last_begin_time,last_over_time)
            pks_nw = pnw(now_begin_time,now_over_time)
            pks_lw = plw(last_begin_time,last_over_time)
-           print('到站了',pks_lw)
            return render(request,'tasks/efficiency.html',{'now_begin_time':now_begin_time,'now_over_time':now_over_time,
                                                             'last_begin_time':last_begin_time,'last_over_time':last_over_time,
                                                                 "tks_nw":tks_nw,"tks_lw":tks_lw,
