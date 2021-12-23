@@ -2,7 +2,7 @@
 {% block title %}效率查看{% endblock %}
 {% block css %}
     <style>
-        th,td {text-align: center;}
+        h1,th,td {text-align: center;}
     </style>
 {% endblock %}
 {% block content %}
@@ -29,10 +29,9 @@
             <td></td>
         </tr>
     </table>
-    <table class="table">
-        <tr>
-            <th colspan="7">团队效率</th>
-        </tr>
+</form>
+    <h1>团队效率</h1>
+    <table class="table">      
         <tr>
             <th>类型</th>
             <th>项目名字</th>
@@ -42,9 +41,7 @@
             <th>本周效率</th>
             <th>上周效率</th>
         </tr>
-        
             {% for i in tks_nw %} <!-- 本周工作量 -->
-                
                 <tr>
                     {% if i.0 == '审核' %}
                         <td>{{ i.0 }}</td>
@@ -53,7 +50,7 @@
                         <td></td>
                         <td></td>
                         <td>{{ i.3 }}张/h</td>
-                        {% for j in task_lw %} <!-- 上周工作量 -->
+                        {% for j in tks_lw %} <!-- 上周工作量 -->
                             {% if j.0 == '审核' and j.1 == i.1 %}
                                 <td>{{ j.3 }}张/h</td>
                             {% endif %}
@@ -66,7 +63,7 @@
                         <td>{{ i.3 }}</td>
                         <td></td>
                         <td>{{ i.4 }}框/h</td>
-                        {% for j in task_lw %} <!-- 上周工作量 -->
+                        {% for j in tks_lw %} <!-- 上周工作量 -->
                             {% if j.0 == '标注' and j.1 == i.1 %}
                                 <td>{{ j.4 }}框/h</td>
                             {% endif %}
@@ -84,7 +81,7 @@
                 </tr>
             {% endfor %}
     </table>
-    <h1 style="text-align: center;">个人效率</h1>
+    <h1>个人效率</h1>
     {% for pnw in pks_nw %}
     <table class="table">
         <tr>
@@ -99,7 +96,7 @@
         </tr>
         {% for gp in pnw %}
         <tr>
-            {% if gp.1 == '审核' %}
+            {% if gp.1 == '审核' %}<!--['guoweitao', '审核', 'S线数据', 1076, 2152]-->
                 <td>{{ gp.0 }}</td>
                 <td>{{ gp.1 }}</td>
                 <td>{{ gp.2 }}</td>
@@ -107,13 +104,15 @@
                 <td></td>
                 <td></td>
                 <td>{{ gp.4 }}张/h</td>
-                {% for j in pks_lw %} <!-- 上周工作量 -->
-                    {% if j.1 == '审核' and j.2 == gp.2 %}
-                        <td>{{ j.4 }}张/h</td>
-                    {% endif %}
+                {% for j1 in pks_lw %} <!-- 上周工作量 -->
+                    {% for j2 in j1 %}
+                        {% if j2.1 == '审核' and j2.2 == gp.2 %}
+                            <td>{{ j2.4 }}张/h</td>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
             {% endif %}
-            {% if gp.1 == '标注' %}
+            {% if gp.1 == '标注' %}<!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
                 <td>{{ gp.0 }}</td>
                 <td>{{ gp.1 }}</td>
                 <td>{{ gp.2 }}</td>
@@ -121,10 +120,12 @@
                 <td>{{ gp.4 }}</td>
                 <td></td>
                 <td>{{ gp.5 }}框/h</td>
-                {% for j in pks_lw %} <!-- 上周工作量 -->
-                    {% if j.1 == '标注' and j.2 == gp.2 %}
-                        <td>{{ j.5 }}框/h</td>
-                    {% endif %}
+                {% for j3 in pks_lw %} <!-- 上周工作量 -->
+                    {% for j4 in j3 %}
+                        {% if j4.1 == '标注' and j4.2 == gp.2 %}
+                            <td>{{ j4.5 }}框/h</td>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
             {% endif %}
             {% if gp.1 == '其他' %}
@@ -141,5 +142,4 @@
         {% endfor %}
     </table>
     {% endfor %}
-</form>
 {% endblock %}
