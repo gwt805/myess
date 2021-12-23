@@ -106,7 +106,7 @@ def insert(request):
         telse = request.POST.get('telse')
         ptimes = request.POST.get('ptimes')
         try:
-            new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=task_id,dtime=dtime,kinds=kinds,pnums=int(knums),knums=int(knums),telse=telse,ptimes=float(ptimes))
+            new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=task_id,dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),telse=telse,ptimes=float(ptimes))
             new_tasks.save()
         except:
             return render(request,'tasks/insert.html',{'message':'请检查内容！'})
