@@ -1,18 +1,9 @@
 {% extends 'login/base.html' %}
-{% block navbar %}
-    <ul class="nav navbar-nav">
-        <li class="active"><a href="/index/">主页</a></li>
-    </ul>
-{% endblock %}
-{% block css %}
-    <style>
-        h1 {text-align: center;}
-    </style>
-{% endblock %}
 {% block title %}添加数据{% endblock %}
+
 {% block content %}
             <!-- <h1>你好,{{ request.session.user_name }}一个任务一添加</h1> -->
-    <h1>一个任务一条记录</h1>
+    <h3>一个任务一条记录</h3>
     <form class='form-register' action="" method="post">
     {% if message %}
     <div class="alert alert-warning">{{ message }}</div>

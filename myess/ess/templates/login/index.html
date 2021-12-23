@@ -1,74 +1,73 @@
 {% extends 'login/base.html' %}
 {% block title %}主页{% endblock %}
 {% block navbar %}
-{% if request.session.is_login %}
-    <ul class="nav navbar-nav">
-        <!-- <li class="active"><a href="/tasks/=">任务大厅</a></li> -->
-        <li class="active"><a href="/index">任务大厅</a></li>
-        <li class="active"><a href="/insert">添加数据</a></li>
-        <li class="active"><a href="/efficiency">效率查看</a></li>
-        <li class="active"><a href="/performance">绩效</a></li>
-    </ul>
-{% endif %}
-
+    {% if request.session.is_login %}
+        <ul class="nav navbar-nav">
+            <!-- <li class="active"><a href="/tasks/=">任务大厅</a></li> -->
+            <li class="active"><a href="/index">任务大厅</a></li>
+            <li class="active"><a href="/insert">添加数据</a></li>
+            <li class="active"><a href="/efficiency">效率查看</a></li>
+            <li class="active"><a href="/performance">绩效</a></li>
+        </ul>
+    {% endif %}
 {% endblock %}
+
 {% block content %}
     {% if request.session.is_login %}
-    <!-- <h1>你好,{{ request.session.user_name }}！欢迎回来！</h1> -->
-    <table class="table">
-        <tr>
-            <th>用户名</th>
-            <th>项目名字</th>
-            <th>是否外包</th>
-            <th>任务ID</th>
-            <th>日期</th>
-            <th>任务类型</th>
-            <th>图片数量</th>
-            <th>框数</th>
-            <th>其他事项</th>
-            <th>工时</th>
-        </th>
-        {% for tasks in stus %}
-        <tr>
-            <td>{{ tasks.uname }}</td>
-            <td>{{ tasks.pname }}</td>
-            <td>{{ tasks.waibao }}</td>
-            {% if tasks.waibao == '否' %}
-            <td>#{{ tasks.task_id }}</td>
-            {% else %}
-            <td>{{ tasks.task_id }}</td>
-            {% endif %}
-            <td>{{ tasks.dtime }}</td>
-            <td>{{ tasks.kinds }}</td>
-            <td>{{ tasks.pnums }}</td>
-            <td>{{ tasks.knums }}</td>
-            <td>{{ tasks.telse }}</td>
-            <td>{{ tasks.ptimes }}</th>
-        </tr>
-        {% endfor %}
-    </table>
-        <div class="container">
-            {% if stus.has_previous %}
-                <a href="/index?page_id={{stus.previous_page_number}}">
-                    <button><<</button>
-                </a>
-            {% endif %}
-            
-            
-            {% for i in page.page_range %}
-                <a href="/index?page_id={{i}}">
-                    <button>{{ i }}</button>
-                </a>
+        <table class="table">
+            <tr>
+                <th>用户名</th>
+                <th>项目名字</th>
+                <th>是否外包</th>
+                <th>任务ID</th>
+                <th>日期</th>
+                <th>任务类型</th>
+                <th>图片数量</th>
+                <th>框数</th>
+                <th>其他事项</th>
+                <th>工时</th>
+            </th>
+            {% for tasks in stus %}
+            <tr>
+                <td>{{ tasks.uname }}</td>
+                <td>{{ tasks.pname }}</td>
+                <td>{{ tasks.waibao }}</td>
+                {% if tasks.waibao == '否' %}
+                <td>#{{ tasks.task_id }}</td>
+                {% else %}
+                <td>{{ tasks.task_id }}</td>
+                {% endif %}
+                <td>{{ tasks.dtime }}</td>
+                <td>{{ tasks.kinds }}</td>
+                <td>{{ tasks.pnums }}</td>
+                <td>{{ tasks.knums }}</td>
+                <td>{{ tasks.telse }}</td>
+                <td>{{ tasks.ptimes }}</th>
+            </tr>
             {% endfor %}
-            
-            
-            {% if stus.has_next %}
-                <a href="/index?page_id={{stus.next_page_number}}">
-                    <button> &nbsp;>>&nbsp; </button>
-                </a>
-            {% endif %}
-            </div>
+        </table>
+            <div class="container">
+                {% if stus.has_previous %}
+                    <a href="/index?page_id={{stus.previous_page_number}}">
+                        <button><<</button>
+                    </a>
+                {% endif %}
+                
+                
+                {% for i in page.page_range %}
+                    <a href="/index?page_id={{i}}">
+                        <button>{{ i }}</button>
+                    </a>
+                {% endfor %}
+                
+                
+                {% if stus.has_next %}
+                    <a href="/index?page_id={{stus.next_page_number}}">
+                        <button> &nbsp;>>&nbsp; </button>
+                    </a>
+                {% endif %}
+                </div>
     {% else %}
-    <h1>你尚未登录，只能访问公开内容！</h1>
+        <h3>你尚未登录,请先登录！</h3>
     {% endif %}
 {% endblock %}
