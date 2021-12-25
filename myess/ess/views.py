@@ -1,7 +1,4 @@
-from django.forms.fields import ChoiceField
-from django.http import request
 from django.shortcuts import render
-from django.utils.regex_helper import Choice
 from ess import models
 from django.shortcuts import render,redirect
 from django import forms
@@ -10,6 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
 from .mes import nw,lw, performanceq, plw, pnw
 # Create your views here.
+
 class UserForm(forms.Form):
     username = forms.CharField(label="用户名", max_length=20,widget=forms.TextInput(attrs={'class':'form-control'}))
     password = forms.CharField(label="密码", max_length=20, widget=forms.PasswordInput(attrs={'class':'form-control'}))
@@ -20,18 +18,18 @@ class RegisterForm(forms.Form):
     password2 = forms.CharField(label="确认密码", max_length=20, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     captcha = CaptchaField(label='验证码')
 
+# 密码加密
 def hash_code(s):# 加点盐
     h = hashlib.sha256()
     h.update(s.encode())  # update方法只接收bytes类型
     return h.hexdigest()
 
-# index
+# 首页
 def index(request):
     stu = models.Task.objects.all().order_by('-dtime')
     page = Paginator(stu,20)
     #获取当前的页码数，默认为1
     page_id = request.GET.get("page_id")
-    # posts = paginator.page(number=page)
     if page_id:
         try:
             stus = page.page(page_id)
@@ -43,7 +41,7 @@ def index(request):
         stus = page.page(1)
     return render(request,'login/index.html',{'stus':stus,'page':page})
 
-# login
+# 登录
 def login(request):
     if request.method == "POST":
         login_form = UserForm(request.POST)
@@ -66,7 +64,7 @@ def login(request):
     login_form = UserForm()
     return render(request, 'login/login.html',locals())
 
-# user register
+# 注册
 def register(request):
     if request.session.get('is_login', None):
         return redirect("/login")
@@ -92,7 +90,7 @@ def register(request):
     register_form = RegisterForm()
     return render(request, 'login/register.html', locals())
 
-# insert data
+# 添加数据
 def insert(request):
     if request.method == "POST":
         uname = request.POST.get('uname').strip()
@@ -103,10 +101,7 @@ def insert(request):
         kinds = request.POST.get('kinds').strip()
         pnums = request.POST.get('pnums').strip()
         knums = request.POST.get('knums').strip()
-        telse = request.POST.get('telse').strip()
         ptimes = request.POST.get('ptimes').strip()
-        print('用户名:{},项目名字:{},是否外包:{},任务ID:{},日期:{},任务类型:{}，图片数量:{},框数:{},其他事项:{},工时:{}'.format(
-            uname,pname,waibao,task_id,dtime,kinds,pnums,knums,telse,ptimes))
         try:
             if kinds == '标注':
                 new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),ptimes=float(ptimes))
@@ -115,10 +110,7 @@ def insert(request):
                 new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),ptimes=float(ptimes))
                 new_tasks.save()
             elif kinds == '筛选':
-                new_tasks = models.Task(uname=uname,pname=pname,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),ptimes=float(ptimes))
-                new_tasks.save()
-            elif kinds == '其他':
-                new_tasks = models.Task(uname=uname,pname=pname,dtime=dtime,kinds=kinds,pnums=int(pnums),telse=telse,ptimes=float(ptimes))
+                new_tasks = models.Task(uname=uname,pname=pname,dtime=dtime,kinds=kinds,pnums=int(pnums),ptimes=float(ptimes))
                 new_tasks.save()
             else:
                 pass
@@ -128,17 +120,16 @@ def insert(request):
         return redirect('/index')
     return render(request, 'tasks/insert.html')
 
+# 效率
 def efficiency(request):
     if request.method == "POST":
         now_begin_time = request.POST.get('now-begin-time').strip()
         now_over_time = request.POST.get('now-over-time').strip()
         last_begin_time = request.POST.get('last-begin-time').strip()
         last_over_time = request.POST.get('last-over-time').strip()
-        
-        print('now_begin_time:{},now_over_time:{},last_begin_time:{},last_over_time:{}'.format(now_begin_time,now_over_time,last_begin_time,last_over_time))
         try:
            tks_nw = nw(now_begin_time,now_over_time)
-           tks_lw = lw(last_begin_time,last_over_time)
+           tks_lw= lw(last_begin_time,last_over_time)
            pks_nw = pnw(now_begin_time,now_over_time)
            pks_lw = plw(last_begin_time,last_over_time)
            return render(request,'tasks/efficiency.html',{'now_begin_time':now_begin_time,'now_over_time':now_over_time,
@@ -155,14 +146,15 @@ def performance(request):
         now_begin_time = request.POST.get('now-begin-time').strip()
         now_over_time = request.POST.get('now-over-time').strip()
         uname = request.POST.get('uname')
-        print('now_begin_time:{},now_over_time:{},uname:{}'.format(now_begin_time,now_over_time,uname))
+        # print('now_begin_time:{},now_over_time:{},uname:{}'.format(now_begin_time,now_over_time,uname))
         try:
            tks_nw = performanceq(now_begin_time,now_over_time,uname)
+        #    print(tks_nw)
            return render(request,'tasks/performance.html',{'now_begin_time':now_begin_time,'now_over_time':now_over_time,'uname':uname,'tks_nw':tks_nw})
         except:
             pass
     return render(request,'tasks/performance.html')
-
+# 注销
 def logout(request):
     if not request.session.get('is_login',None):
         return redirect('/index')

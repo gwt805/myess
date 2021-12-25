@@ -24,7 +24,6 @@
                 <th>任务类型</th>
                 <th>图片数量</th>
                 <th>框数</th>
-                <th>其他事项</th>
                 <th>工时</th>
             </th>
             {% for tasks in stus %}
@@ -41,8 +40,7 @@
                 <td>{{ tasks.kinds }}</td>
                 <td>{{ tasks.pnums }}</td>
                 <td>{{ tasks.knums }}</td>
-                <td>{{ tasks.telse }}</td>
-                <td>{{ tasks.ptimes }}</th>
+                <td>{{ tasks.ptimes }}</td>
             </tr>
             {% endfor %}
         </table>
@@ -53,13 +51,11 @@
                     </a>
                 {% endif %}
                 
-                
                 {% for i in page.page_range %}
                     <a href="/index?page_id={{i}}">
                         <button>{{ i }}</button>
                     </a>
                 {% endfor %}
-                
                 
                 {% if stus.has_next %}
                     <a href="/index?page_id={{stus.next_page_number}}">

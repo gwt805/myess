@@ -13,7 +13,6 @@ class Task(models.Model):
     gender = (
         ('标注','标注'),
         ('审核','审核'),
-        ('其他','其他'),
         ('筛选','筛选')
         )
     p_gender = (
@@ -38,8 +37,7 @@ class Task(models.Model):
     kinds = models.CharField(max_length=20,choices=gender,verbose_name='任务类型')# 任务类型：标注，审核，其他
     pnums = models.IntegerField(null=True,verbose_name='图片数量',blank=True) # 图片数量
     knums = models.IntegerField(null=True,verbose_name='框数',blank=True) # 标注框数量
-    telse = models.CharField(max_length=999,null=True,verbose_name='其他事情',blank=True)
     ptimes = models.FloatField(verbose_name='工时') # 工时
 
     def __str__(self):
-        return f'{self.uname} | {self.pname} | {self.waibao} | {self.task_id} | {self.dtime} | {self.kinds} | {self.pnums} | {self.knums} | {self.telse} | {self.ptimes}'
+        return f'{self.uname} | {self.pname} | {self.waibao} | {self.task_id} | {self.dtime} | {self.kinds} | {self.pnums} | {self.knums} | {self.ptimes}'

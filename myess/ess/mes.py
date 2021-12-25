@@ -5,13 +5,10 @@ import math
 
 def tims(begin_time,over_time):
     tdat = models.Task.objects.filter(dtime__range=[begin_time,over_time])
-    names = [] # [name1,name2,name3]
     k_p = [] # [(kinds1, pname1), (kinds2, pname2)]
     for i in tdat:
         if (i.kinds,i.pname) not in k_p:
             k_p.append((i.kinds,i.pname))
-        if i.uname not in names:
-            names.append(i.uname)
     tps = [] # 团队整体效率
     for i in k_p:
         pnum = 0
@@ -48,13 +45,6 @@ def tims(begin_time,over_time):
             pp.append(knum)
             pp.append(math.floor(pnum/ptm))
             tps.append(pp)
-        elif i[0] == '其他':
-            gg = tdat.filter(kinds=i[0])
-            for j in gg:
-                pp.append(i[0])
-                pp.append(j.telse)
-                pp.append(j.ptimes)
-                tps.append(pp)
     return tps
 
 #个人效率
@@ -109,14 +99,6 @@ def pppee(begin_time,over_time):
                 pp.append(knum)
                 pp.append(math.floor(pnum/ptm))
                 tps.append(pp)
-            elif i[0] == '其他':
-                gg = tdat.filter(kinds=i[0],uname=g)
-                for j in gg:
-                    pp.append(g)
-                    pp.append(i[0])
-                    pp.append(j.telse)
-                    pp.append(j.ptimes)
-                    tps.append(pp)
         ggg.append(tps)
     return ggg
 # 团队效率
@@ -170,10 +152,4 @@ def performanceq(begin_time,over_time,name):
             pp.append(pnum)
             pp.append(knum)
             tps.append(pp)
-        elif i[0] == '其他':
-            gg = tdat.filter(kinds=i[0])
-            for j in gg:
-                pp.append(i[0])
-                pp.append(j.telse)
-                tps.append(pp)
     return tps

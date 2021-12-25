@@ -25,47 +25,33 @@
 </form>
     <h3>绩效展示</h3>
     <table class="table">
-
         <tr>
             <th>类型</th>
             <th>项目名字</th>
             <th>图片数量</th>
             <th>框数</th>
-            <th>其他事项</th>
         </tr>
-        
-            {% for i in tks_nw %} <!-- 本周工作量 -->
-                
-                <tr>
-                    {% if i.0 == '审核' %}
-                        <td>{{ i.0 }}</td>
-                        <td>{{ i.1 }}</td>
-                        <td>{{ i.2 }}</td>
-                        <td></td>
-                        <td></td>
-                    {% endif %}
-                    {% if i.0 == '筛选' %}
-                        <td>{{ i.0 }}</td>
-                        <td>{{ i.1 }}</td>
-                        <td>{{ i.2 }}</td>
-                        <td></td>
-                        <td></td>
-                    {% endif %}
-                    {% if i.0 == '标注' %}
-                        <td>{{ i.0 }}</td>
-                        <td>{{ i.1 }}</td>
-                        <td>{{ i.2 }}</td>
-                        <td>{{ i.3 }}</td>
-                        <td></td>
-                    {% endif %}
-                    {% if i.0 == '其他' %}
-                        <td>{{ i.0 }}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>{{ i.1 }}</td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
+        {% for i in tks_nw %}
+            <tr>
+                {% if i.0 == '审核' %}
+                    <td>{{ i.0 }}</td>
+                    <td>{{ i.1 }}</td>
+                    <td>{{ i.2 }}</td>
+                    <td></td>
+                {% endif %}
+                {% if i.0 == '筛选' %}
+                    <td>{{ i.0 }}</td>
+                    <td>{{ i.1 }}</td>
+                    <td>{{ i.2 }}</td>
+                    <td></td>
+                {% endif %}
+                {% if i.0 == '标注' %}
+                    <td>{{ i.0 }}</td>
+                    <td>{{ i.1 }}</td>
+                    <td>{{ i.2 }}</td>
+                    <td>{{ i.3 }}</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
     </table>
 {% endblock %}
