@@ -49,8 +49,8 @@ def login(request):
         login_form = UserForm(request.POST)
         message = "请检查填写的内容！"
         if login_form.is_valid():
-            username = request.POST.get('username', None)
-            password = request.POST.get('password', None)
+            username = request.POST.get('username', None).strip()
+            password = request.POST.get('password', None).strip()
             try:
                 user = models.User.objects.get(uname=username)
                 if user.pword == hash_code(password):
@@ -95,32 +95,45 @@ def register(request):
 # insert data
 def insert(request):
     if request.method == "POST":
-        uname = request.POST.get('uname')
-        pname = request.POST.get('pname')
-        waibao = request.POST.get('waibao')
-        task_id  = request.POST.get('task_id')
-        dtime = request.POST.get('dtime')
-        kinds = request.POST.get('kinds')
-        pnums = request.POST.get('pnums')
-        knums = request.POST.get('knums')
-        telse = request.POST.get('telse')
-        ptimes = request.POST.get('ptimes')
-        try:
-            new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=task_id,dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),telse=telse,ptimes=float(ptimes))
-            new_tasks.save()
-        except:
-            return render(request,'tasks/insert.html',{'message':'请检查内容！'})
+        uname = request.POST.get('uname').strip()
+        pname = request.POST.get('pname').strip()
+        waibao = request.POST.get('waibao').strip()
+        task_id  = request.POST.get('task_id').strip()
+        dtime = request.POST.get('dtime').strip()
+        kinds = request.POST.get('kinds').strip()
+        pnums = request.POST.get('pnums').strip()
+        knums = request.POST.get('knums').strip()
+        telse = request.POST.get('telse').strip()
+        ptimes = request.POST.get('ptimes').strip()
         print('用户名:{},项目名字:{},是否外包:{},任务ID:{},日期:{},任务类型:{}，图片数量:{},框数:{},其他事项:{},工时:{}'.format(
             uname,pname,waibao,task_id,dtime,kinds,pnums,knums,telse,ptimes))
+        try:
+            if kinds == '标注':
+                new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),ptimes=float(ptimes))
+                new_tasks.save()
+            elif kinds == '审核':
+                new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),ptimes=float(ptimes))
+                new_tasks.save()
+            elif kinds == '筛选':
+                new_tasks = models.Task(uname=uname,pname=pname,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),ptimes=float(ptimes))
+                new_tasks.save()
+            elif kinds == '其他':
+                new_tasks = models.Task(uname=uname,pname=pname,dtime=dtime,kinds=kinds,pnums=int(pnums),telse=telse,ptimes=float(ptimes))
+                new_tasks.save()
+            else:
+                pass
+        except:
+            return render(request,'tasks/insert.html',{'message':'请检查内容！'})
+        
         return redirect('/index')
     return render(request, 'tasks/insert.html')
 
 def efficiency(request):
     if request.method == "POST":
-        now_begin_time = request.POST.get('now-begin-time')
-        now_over_time = request.POST.get('now-over-time')
-        last_begin_time = request.POST.get('last-begin-time')
-        last_over_time = request.POST.get('last-over-time')
+        now_begin_time = request.POST.get('now-begin-time').strip()
+        now_over_time = request.POST.get('now-over-time').strip()
+        last_begin_time = request.POST.get('last-begin-time').strip()
+        last_over_time = request.POST.get('last-over-time').strip()
         
         print('now_begin_time:{},now_over_time:{},last_begin_time:{},last_over_time:{}'.format(now_begin_time,now_over_time,last_begin_time,last_over_time))
         try:
@@ -139,8 +152,8 @@ def efficiency(request):
 # 绩效
 def performance(request):
     if request.method == "POST":
-        now_begin_time = request.POST.get('now-begin-time')
-        now_over_time = request.POST.get('now-over-time')
+        now_begin_time = request.POST.get('now-begin-time').strip()
+        now_over_time = request.POST.get('now-over-time').strip()
         uname = request.POST.get('uname')
         print('now_begin_time:{},now_over_time:{},uname:{}'.format(now_begin_time,now_over_time,uname))
         try:
