@@ -28,6 +28,15 @@ def tims(begin_time,over_time):
             pp.append(pnum)
             pp.append(math.floor(pnum/ptm))
             tps.append(pp)
+        if i[0] == '筛选':
+            for j in gg:
+                pnum += j.pnums
+                ptm += j.ptimes
+            pp.append(i[0])
+            pp.append(i[1])
+            pp.append(pnum)
+            pp.append(math.floor(pnum/ptm))
+            tps.append(pp)
         elif i[0] == '标注':
             for j in gg:
                 pnum += j.pnums
@@ -69,6 +78,16 @@ def pppee(begin_time,over_time):
             pp = []
             gg = tdat.filter(kinds=i[0],pname=i[1],uname=g)
             if i[0] == '审核':
+                for j in gg:
+                    pnum += j.pnums
+                    ptm += j.ptimes
+                pp.append(g)
+                pp.append(i[0])
+                pp.append(i[1])
+                pp.append(pnum)
+                pp.append(math.floor(pnum/ptm))
+                tps.append(pp)
+            if i[0] == '筛选':
                 for j in gg:
                     pnum += j.pnums
                     ptm += j.ptimes
@@ -126,6 +145,14 @@ def performanceq(begin_time,over_time,name):
         pp = []
         gg = tdat.filter(kinds=i[0],pname=i[1])
         if i[0] == '审核':
+            for j in gg:
+                pnum += j.pnums
+                ptm += j.ptimes
+            pp.append(i[0])
+            pp.append(i[1])
+            pp.append(pnum)
+            tps.append(pp)
+        elif i[0] == '筛选':
             for j in gg:
                 pnum += j.pnums
                 ptm += j.ptimes
