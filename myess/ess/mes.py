@@ -43,7 +43,7 @@ def tims(begin_time,over_time):
             pp.append(i[1])
             pp.append(pnum)
             pp.append(knum)
-            pp.append(math.floor(pnum/ptm))
+            pp.append(math.floor(knum/ptm))
             tps.append(pp)
     return tps
 
@@ -97,7 +97,7 @@ def pppee(begin_time,over_time):
                 pp.append(i[1])
                 pp.append(pnum)
                 pp.append(knum)
-                pp.append(math.floor(pnum/ptm))
+                pp.append(math.floor(knum/ptm))
                 tps.append(pp)
         ggg.append(tps)
     return ggg
