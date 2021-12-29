@@ -36,6 +36,7 @@
             <li class="active"><a href="/index/">首页</a></li>
           </ul>
           {% endblock %}
+          {% block navbarR %}
           <ul class="nav navbar-nav navbar-right">
               {% if request.session.is_login %}
                   <li><a href="#">当前在线：{{ request.session.user_name }}</a></li>
@@ -45,6 +46,7 @@
                   <li><a href="/register/">注册</a></li>
               {% endif %}
           </ul>
+          {% endblock %}
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>

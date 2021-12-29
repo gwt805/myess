@@ -154,6 +154,11 @@ def performance(request):
         except:
             pass
     return render(request,'tasks/performance.html')
+
+# 外包数据记录
+def waibao(request):
+    
+    return render(request,'tasks/waibao.html')
 # 注销
 def logout(request):
     if not request.session.get('is_login',None):

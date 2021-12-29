@@ -26,6 +26,7 @@ urlpatterns = [
     path('register/',views.register),
     path('logout/',views.logout),
     path('insert/',views.insert),
+    path('waibao/',views.waibao),
     path('efficiency/',views.efficiency),
     path('performance/',views.performance),
 ]
