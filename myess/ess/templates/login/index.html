@@ -1,9 +1,14 @@
 {% extends 'login/base.html' %}
 {% block title %}主页{% endblock %}
+{% block css %}
+    <style>
+        body {background-image: url(/static/img/Smaterial/background.jpeg);}
+        tr:not(:first-child):hover{background-color: #dafdf3;} 
+    </style>
+{% endblock %}
 {% block navbar %}
     {% if request.session.is_login %}
         <ul class="nav navbar-nav">
-            <!-- <li class="active"><a href="/tasks/=">任务大厅</a></li> -->
             <li class="active"><a href="/index">任务大厅</a></li>
             <li class="active"><a href="/insert">添加数据</a></li>
             <li class="active"><a href="/efficiency">效率查看</a></li>

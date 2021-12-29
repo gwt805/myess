@@ -15,13 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.urls.conf import include
+# from django.urls.conf import include
 from ess import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.login),
     path('login/',views.login),
-    path('captcha',include('captcha.urls')),
+    # path('captcha',include('captcha.urls')),
     path('index/',views.index),
     path('register/',views.register),
     path('logout/',views.logout),

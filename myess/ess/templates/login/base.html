@@ -11,6 +11,7 @@
     {% block css %}
       <style>
         h3 {text-align: center;}
+        body {background-image: url(/static/img/Smaterial/background.jpeg);}
     </style>
     {% endblock %}
   </head>
@@ -25,14 +26,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">MyESS</a>
+          <a class="navbar-brand">MyESS</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="my-nav">
           {% block navbar %}
           <ul class="nav navbar-nav">
-            <li class="active"><a href="/index/">主页</a></li>
+            <li class="active"><a href="/index/">首页</a></li>
           </ul>
           {% endblock %}
           <ul class="nav navbar-nav navbar-right">
