@@ -2,7 +2,7 @@
 {% block title %}主页{% endblock %}
 {% block css %}
     <style>
-        body {background-image: url(/static/img/Smaterial/background.jpeg);}
+        /* body {background-image: url(/static/img/Smaterial/background.jpeg);} */
         tr:not(:first-child):hover{background-color: #dafdf3;} 
     </style>
 {% endblock %}
@@ -10,26 +10,13 @@
     {% if request.session.is_login %}
         <ul class="nav navbar-nav">
             <li class="active"><a href="/index">任务大厅</a></li>
+            <li class="active"><a href="#" id="index_insert" onclick="inst()">添加数据</a></li>
             <li class="active"><a href="/efficiency">效率查看</a></li>
             <li class="active"><a href="/performance">绩效</a></li>
             <li class="active"><a href="/waibao">外包数据</a></li>
         </ul>
     {% endif %}
 {% endblock %}
-<div class="collapse navbar-collapse" id="my-nav">
-    {% block navbarR %}
-    <ul class="nav navbar-nav navbar-right">
-        {% if request.session.is_login %}
-            <li><a href="#">当前在线：{{ request.session.user_name }}</a></li>
-            <li><a href="/logout/">登出</a></li>
-            <li><a href="#" id="index_insert" onclick="inst()">添加数据</a></li>
-        {% else %}
-            <li><a href="/login/">登录</a></li>
-            <li><a href="/register/">注册</a></li>
-        {% endif %}
-    </ul>
-    {% endblock %}
-  </div><!-- /.navbar-collapse -->
 
 {% block content %}
     {% if request.session.is_login %}
@@ -94,7 +81,7 @@
                     </td>
                     <td><input type="text" name="pnums" class="form-control"></td>
                     <td><input type="text" name="knums" class="form-control"></td>
-                    <td><input type="text" name="ptimes" class="form-control"></td>
+                    <td><input type="text" name="ptimes" class="form-control" required='required'></td>
                     <td>
                         <input type="reset" class="btn btn-default pull-left" value="重置">
                         <input type="submit" class="btn btn-primary pull-right" value="提交">
@@ -121,7 +108,7 @@
                 <th>工时</th>
             </tr>
             {% for tasks in stus %}
-            <tr>
+            <tr id="gtv">
                 <td>{{ tasks.uname }}</td>
                 <td>{{ tasks.pname }}</td>
                 <td>{{ tasks.waibao }}</td>
