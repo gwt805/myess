@@ -30,23 +30,11 @@ def index(request):
         uname = request.POST.get('uname').strip()
         pname = request.POST.get('pname').strip()
         dtime = request.POST.get('dtime').strip()
-        stu = search(uname,pname,dtime).order_by('-dtime')
-        # print(stu)
-        page = Paginator(stu,20)
-        #获取当前的页码数，默认为1
-        page_id = request.GET.get("page_id")
-        if page_id:
-            try:
-                stus = page.page(page_id)
-            except PageNotAnInteger:
-                stus = page.page(1)
-            except EmptyPage:
-                stus = page.page(1)
-        else:
-            stus = page.page(1)
-        return render(request,'login/index.html',{'stus':stus,'page':page})
+        stu = search(uname,pname,dtime)
+        return render(request,'login/index.html',{'stus':stu})
     stu = models.Task.objects.all().order_by('-dtime')
-    page = Paginator(stu,20)
+    
+    page = Paginator(stu,16)
     #获取当前的页码数，默认为1
     page_id = request.GET.get("page_id")
     if page_id:

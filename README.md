@@ -11,8 +11,6 @@ pip install django-simple-captcha
 run
 ```
 cd myess
-rm ess/migrations/__pycache__/*
-rm ess/migrations/000xxx_initial.py
 python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver 8080
@@ -30,6 +28,6 @@ TODO
 - [x] 日期默认当天
 - [x] 导航栏添加 "外包"
 - [ ] 外包数据展示
-- [ ] 首页添加搜索,条件(名字,项目名字,指定某天日期)
+- [x] 首页添加搜索,条件(名字,项目名字,指定某天日期)
 - [x] li 鼠标放上去的效果
 - [x] 支持在首页页面添加数据

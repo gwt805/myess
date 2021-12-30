@@ -9,7 +9,7 @@
 {% block navbar %}
     {% if request.session.is_login %}
         <ul class="nav navbar-nav">
-            <li class="active"><a href="/index">任务大厅</a></li>
+            <li class="active"><a href="/index">首页</a></li>
             <li class="active"><a href="#" id="index_insert" onclick="inst()">添加数据</a></li>
             <li class="active"><a href="/efficiency">效率查看</a></li>
             <li class="active"><a href="/performance">绩效</a></li>
@@ -88,22 +88,14 @@
                         <input type="reset" class="btn btn-default pull-left" value="重置">
                         <input type="submit" class="btn btn-primary pull-right" value="提交">
                     </td>
-                    <!-- <td></td> -->
                 </tr>
-                <!-- <tr>
-                    <td><input type="reset" class="btn btn-default pull-left" value="重置"></td>
-                    <td><input type="submit" class="btn btn-primary pull-right" value="提交"></td>
-                </tr> -->
                 </table>
             </form>
     </div>
     <!-- searcch -->
     <div id="search" style="display: none;">
         <form class='form-register' action="/index/" method="post">
-            {% if message %}
-            <div class="alert alert-warning">{{ message }}</div>
-            {% endif %}
-                {% csrf_token %}
+            {% csrf_token %}
             <table class="table">
                 <tr>
                     <th>用户名</th>
@@ -207,8 +199,10 @@
             var day = ('0' + now.getDate()).slice(-2);
             var month = ('0' + (now.getMonth() + 1)).slice(-2);
             var today = now.getFullYear() + '-' + (month)+ '-' + (day);
-            console.log(today)
             mydateInput.value = today;
+
+        }else{
+            $('#ginsert').css("display","none");
         };
         if ($('#search').css('display') == 'block'){
             $('#search').css("display","none");
@@ -224,8 +218,10 @@
             var day = ('0' + now.getDate()).slice(-2);
             var month = ('0' + (now.getMonth() + 1)).slice(-2);
             var today = now.getFullYear() + '-' + (month)+ '-' + (day);
-            console.log(today);
             mydateInput.value = today;
+        }
+        else {
+            $('#search').css("display","none");
         };
         if ($('#ginsert').css('display') == 'block'){
             $('#ginsert').css("display","none");
