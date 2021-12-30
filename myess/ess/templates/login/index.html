@@ -20,6 +20,8 @@
 
 {% block content %}
     {% if request.session.is_login %}
+    <div id="div-btn-search" style="float: right;"><button id="btn-search" onclick="search()">搜索</button></div>
+    <!-- insert -->
     <div id="ginsert" style="display: none;">
         <form class='form-register' action="/insert/" method="post">
             {% if message %}
@@ -95,6 +97,53 @@
                 </table>
             </form>
     </div>
+    <!-- searcch -->
+    <div id="search" style="display: none;">
+        <form class='form-register' action="/index/" method="post">
+            {% if message %}
+            <div class="alert alert-warning">{{ message }}</div>
+            {% endif %}
+                {% csrf_token %}
+            <table class="table">
+                <tr>
+                    <th>用户名</th>
+                    <th>项目名字</th>
+                    <th>时间</th>
+                    <th style="text-align: center;">按钮</th>
+                </tr>
+                <tr>
+                    <td>
+                        <select class="form-control" name="uname">
+                            <option value ="---">---</option>
+                            <option value ="郭卫焘">郭卫焘</option>
+                            <option value ="韩波">韩波</option>
+                            <option value="张永娇">张永娇</option>
+                            <option value="高波">高波</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" name="pname">
+                            <option value ="---">---</option>
+                            <option value ="杂物">杂物</option>
+                            <option value ="脏污">脏污</option>
+                            <option value="行人扶梯一米栏">行人扶梯一米栏</option>
+                            <option value="红绿灯">红绿灯</option>
+                            <option value="S线数据">S线数据</option>
+                            <option value="室内可通行">室内可通行</option>
+                            <option value="75车库车辆行人">75车库车辆行人</option>
+                            <option value="111室外车辆行人">111室外车辆行人</option>
+                        </select>
+                    </td>
+                    <td><input type="date" name="dtime" class="form-control" id="sriqi"></td>
+                    <td>
+                        <input type="reset" class="btn btn-default pull-left" value="重置">
+                        <input type="submit" class="btn btn-primary pull-right" value="提交">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+     <!-- show -->
         <table class="table">
             <tr>
                 <th>用户名</th>
@@ -108,7 +157,7 @@
                 <th>工时</th>
             </tr>
             {% for tasks in stus %}
-            <tr id="gtv">
+            <tr>
                 <td>{{ tasks.uname }}</td>
                 <td>{{ tasks.pname }}</td>
                 <td>{{ tasks.waibao }}</td>
@@ -148,7 +197,7 @@
         <h3>你尚未登录,请先登录！</h3>
     {% endif %}
 <script type="text/javascript">
-    // 点击添加数据后才会显示出插入数据的界面
+    // 添加数据之日期组件默认为当天日期
     function inst(){
         if ($('#ginsert').css('display') == 'none'){
             $('#ginsert').css("display","block");
@@ -160,6 +209,26 @@
             var today = now.getFullYear() + '-' + (month)+ '-' + (day);
             console.log(today)
             mydateInput.value = today;
+        };
+        if ($('#search').css('display') == 'block'){
+            $('#search').css("display","none");
+        };
+    };
+    // 搜索之日期组件默认为当天日期
+    function search(){
+        if ($('#search').css('display') == 'none'){
+            $('#search').css("display","block");
+            
+            var mydateInput = document.getElementById("sriqi");
+            var now = new Date();
+            var day = ('0' + now.getDate()).slice(-2);
+            var month = ('0' + (now.getMonth() + 1)).slice(-2);
+            var today = now.getFullYear() + '-' + (month)+ '-' + (day);
+            console.log(today);
+            mydateInput.value = today;
+        };
+        if ($('#ginsert').css('display') == 'block'){
+            $('#ginsert').css("display","none");
         };
     };
 </script>

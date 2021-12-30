@@ -5,7 +5,7 @@ from django import forms
 # from captcha.fields import CaptchaField
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
-from .mes import nw,lw, performanceq, plw, pnw
+from .mes import nw,lw, performanceq, plw, pnw, search
 # Create your views here.
 
 class UserForm(forms.Form):
@@ -26,6 +26,25 @@ def hash_code(s):# 加点盐
 
 # 首页
 def index(request):
+    if request.method == "POST":
+        uname = request.POST.get('uname').strip()
+        pname = request.POST.get('pname').strip()
+        dtime = request.POST.get('dtime').strip()
+        stu = search(uname,pname,dtime).order_by('-dtime')
+        # print(stu)
+        page = Paginator(stu,20)
+        #获取当前的页码数，默认为1
+        page_id = request.GET.get("page_id")
+        if page_id:
+            try:
+                stus = page.page(page_id)
+            except PageNotAnInteger:
+                stus = page.page(1)
+            except EmptyPage:
+                stus = page.page(1)
+        else:
+            stus = page.page(1)
+        return render(request,'login/index.html',{'stus':stus,'page':page})
     stu = models.Task.objects.all().order_by('-dtime')
     page = Paginator(stu,20)
     #获取当前的页码数，默认为1
