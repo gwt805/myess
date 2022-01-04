@@ -6,6 +6,7 @@ from django import forms
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
 from .mes import nw,lw, performanceq, plw, pnw, search
+import time
 # Create your views here.
 
 class UserForm(forms.Form):
@@ -26,7 +27,14 @@ def hash_code(s):# 加点盐
 
 # 首页
 def index(request):
+    # 格式化成2016-03-20 11:45:39形式
+    now_time = time.strftime("%Y-%m-%d", time.localtime())
     if request.method == "POST":
+        if request.POST.get('showp').strip() != '':
+            print('------------')
+            stu = models.Task.objects.filter(uname=request.POST.get('showp').strip(),dtime=now_time)
+            return render(request,'login/index.html',{'stus':stu})
+            pass
         uname = request.POST.get('uname').strip()
         pname = request.POST.get('pname').strip()
         dtime = request.POST.get('dtime').strip()
@@ -121,10 +129,11 @@ def insert(request):
                 new_tasks.save()
             else:
                 pass
+            return render(request,'tasks/insert.html',{'message':'添加成功~'})
         except:
             return render(request,'tasks/insert.html',{'message':'请检查内容！'})
         
-        return redirect('/index')
+        return redirect('/insert')
     return render(request, 'tasks/insert.html')
 
 # 效率
