@@ -5,7 +5,7 @@
     {% if request.session.is_login %}
         <form class='form-register' action="/insert/" method="post">
             {% if message %}
-            <div class="alert alert-warning">{{ message }}</div>
+            <div class="alert alert-warning" id="warning">{{ message }}</div>
             {% endif %}
                 {% csrf_token %}
             <table class="table">
@@ -75,7 +75,6 @@
         <h3>你尚未登录,请先登录！</h3>
     {% endif %}
     <script type="text/javascript">
-        // 添加数据之日期组件默认为当天日期
         // 日期组件默认为当天日期
         var mydateInput = document.getElementById("riqi");
         var now = new Date();

@@ -1,3 +1,4 @@
+from collections import namedtuple
 from ess import models
 import math
 
@@ -169,3 +170,9 @@ def search(uname,pname,dtime):
         return tdat
     else:
         pass
+
+# person
+def person(uname,dtime):
+    stu = models.Task.objects.filter(uname=uname,dtime=dtime)
+    print(uname)
+    return stu

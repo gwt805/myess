@@ -9,7 +9,7 @@
 {% block navbar %}
     {% if request.session.is_login %}
         <ul class="nav navbar-nav">
-            <li class="active"><a href="/index">首页</a></li>
+            <li class="active"><a href="/index?name={{ request.session.user_name }}">首页</a></li>
             <li class="active"><a href="/insert">添加数据</a></li>
             <li class="active"><a href="/efficiency">效率查看</a></li>
             <li class="active"><a href="/performance">绩效</a></li>
@@ -26,7 +26,7 @@
                 <button id="btn-sp" style="border:none" onclick="showp(window)">展示个人的数据</button>
             </li>
             <li class="active" style="border-right: solid 1px black;">
-                <button id="btn-sa" style="border:none" onclick="showa()">展示所有人的数据</button>
+                <button id="btn-sa" style="border:none" onclick="showa(window)">展示所有人的数据</button>
             </li>
             <li class="active">
                 <button id="btn-search" onclick="search()" style="border:none">搜索</button>
@@ -153,11 +153,11 @@
 
     //showp
     function showp(windows){
-        alert($('#id_name').text());
         windows.location.href="/index?showp=" + $('#id_name').text()
     };
     //showa
-    function showa(){
+    function showa(windows){
+        windows.location.href="/index?showa=all"
     };
 </script>
 {% endblock %}

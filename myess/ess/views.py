@@ -1,3 +1,4 @@
+from collections import namedtuple
 from django.shortcuts import render
 from ess import models
 from django.shortcuts import render,redirect
@@ -5,7 +6,7 @@ from django import forms
 # from captcha.fields import CaptchaField
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
-from .mes import nw,lw, performanceq, plw, pnw, search
+from .mes import nw,lw, performanceq, person, plw, pnw, search
 import time
 # Create your views here.
 
@@ -24,37 +25,38 @@ def hash_code(s):# 加点盐
     h = hashlib.sha256()
     h.update(s.encode())  # update方法只接收bytes类型
     return h.hexdigest()
-
+def aa(name):
+    return name
 # 首页
 def index(request):
     # 格式化成2016-03-20 11:45:39形式
+    page_id = request.GET.get("page_id")
     now_time = time.strftime("%Y-%m-%d", time.localtime())
+    if request.GET.get('showp'):
+        stus = person(request.GET.get('showp'),now_time)
+        return render(request,'login/index.html',{'stus':stus})
     if request.method == "POST":
-        if request.POST.get('showp').strip() != '':
-            print('------------')
-            stu = models.Task.objects.filter(uname=request.POST.get('showp').strip(),dtime=now_time)
-            return render(request,'login/index.html',{'stus':stu})
-            pass
         uname = request.POST.get('uname').strip()
         pname = request.POST.get('pname').strip()
         dtime = request.POST.get('dtime').strip()
         stu = search(uname,pname,dtime)
         return render(request,'login/index.html',{'stus':stu})
-    stu = models.Task.objects.all().order_by('-dtime')
-    
-    page = Paginator(stu,16)
-    #获取当前的页码数，默认为1
-    page_id = request.GET.get("page_id")
-    if page_id:
-        try:
-            stus = page.page(page_id)
-        except PageNotAnInteger:
+    if page_id or request.GET.get('showa'):
+        stu = models.Task.objects.all().order_by('-dtime')
+        #获取当前的页码数，默认为1
+        page = Paginator(stu,16)
+        if page_id:
+            try:
+                stus = page.page(page_id)
+            except PageNotAnInteger:
+                stus = page.page(1)
+            except EmptyPage:
+                stus = page.page(1)
+        else:
             stus = page.page(1)
-        except EmptyPage:
-            stus = page.page(1)
-    else:
-        stus = page.page(1)
-    return render(request,'login/index.html',{'stus':stus,'page':page})
+        return render(request,'login/index.html',{'stus':stus,'page':page})
+    stu = person(request.GET.get('name'),now_time)
+    return render(request,'login/index.html',{'stus':stu})
 
 # 登录
 def login(request):
@@ -70,7 +72,8 @@ def login(request):
                     request.session['is_login'] = True
                     request.session['user_pword'] = user.pword
                     request.session['user_name'] = user.uname
-                    return redirect('/index')
+                    
+                    return redirect('/index?name='+username)
                 else:
                     message = "密码不正确！"
             except:
@@ -162,10 +165,8 @@ def performance(request):
         now_begin_time = request.POST.get('now-begin-time').strip()
         now_over_time = request.POST.get('now-over-time').strip()
         uname = request.POST.get('uname')
-        # print('now_begin_time:{},now_over_time:{},uname:{}'.format(now_begin_time,now_over_time,uname))
         try:
            tks_nw = performanceq(now_begin_time,now_over_time,uname)
-        #    print(tks_nw)
            return render(request,'tasks/performance.html',{'now_begin_time':now_begin_time,'now_over_time':now_over_time,'uname':uname,'tks_nw':tks_nw})
         except:
             pass
