@@ -10,7 +10,7 @@
     {% if request.session.is_login %}
         <ul class="nav navbar-nav">
             <li class="active"><a href="/index?name={{ request.session.user_name }}">首页</a></li>
-            <li class="active"><a href="/insert">添加数据</a></li>
+            <li class="active"><a href="#" onclick="ginsert()">添加数据</a></li>
             <li class="active"><a href="/efficiency">效率查看</a></li>
             <li class="active"><a href="/performance">绩效</a></li>
             <li class="active"><a href="/waibao">外包数据</a></li>
@@ -23,16 +23,90 @@
     <div id="div-btn-search" style="float: left; margin-top: -15px;">
         <ul class="nav navbar-nav">
             <li class="active" style="border-right: solid 1px black;">
-                <button id="btn-sp" style="border:none" onclick="showp(window)">展示个人的数据</button>
+                <button id="btn-sp" style="border:none" onclick="showp(window)">展示个人当天数据</button>
             </li>
             <li class="active" style="border-right: solid 1px black;">
-                <button id="btn-sa" style="border:none" onclick="showa(window)">展示所有人的数据</button>
+                <button id="btn-sp" style="border:none" onclick="showpd(window)">展示所有人当天数据</button>
+            </li>
+            <li class="active" style="border-right: solid 1px black;">
+                <button id="btn-sa" style="border:none" onclick="showa(window)">展示所有数据</button>
             </li>
             <li class="active">
                 <button id="btn-search" onclick="search()" style="border:none">搜索</button>
             </li>
         </ul>
            
+    </div>
+    <!-- insert -->
+    <div id="ginsert">
+        <form class='form-register' action="/insert/" method="post">
+            {% if message %}
+            <div class="alert alert-warning" id="warning">{{ message }}</div>
+            {% endif %}
+                {% csrf_token %}
+            <table class="table">
+                <tr>
+                    <th>用户名</th>
+                    <th>项目名字</th>
+                    <th>是否外包</th>
+                    <th>任务ID</th>
+                    <th>日期</th>
+                    <th>任务类型</th>
+                    <th>图片数量</th>
+                    <th>框数</th>
+                    <th>工时</th>
+                    <th style="text-align: center;">按钮</th>
+                </tr>
+                <tr>
+                    <td>
+                        <select class="form-control" name="uname">
+                            <option value ="---">---</option>
+                            <option value ="郭卫焘">郭卫焘</option>
+                            <option value ="韩波">韩波</option>
+                            <option value="张永娇">张永娇</option>
+                            <option value="高波">高波</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" name="pname">
+                            <option value ="---">---</option>
+                            <option value ="杂物">杂物</option>
+                            <option value ="脏污">脏污</option>
+                            <option value="行人扶梯一米栏">行人扶梯一米栏</option>
+                            <option value="红绿灯">红绿灯</option>
+                            <option value="S线数据">S线数据</option>
+                            <option value="室内可通行">室内可通行</option>
+                            <option value="75车库车辆行人">75车库车辆行人</option>
+                            <option value="111室外车辆行人">111室外车辆行人</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" name="waibao">
+                            <option value ="---">---</option>
+                            <option value ="否">否</option>
+                            <option value ="是">是</option>
+                        </select>
+                    </td>
+                    <td><input type="text" name="task_id" class="form-control"></td>
+                    <td><input type="date" name="dtime" class="form-control" id="riqi"></td>
+                    <td>
+                        <select class="form-control" name="kinds">
+                            <option value ="---">---</option>
+                            <option value ="标注">标注</option>
+                            <option value ="审核">审核</option>
+                            <option value ="筛选">筛选</option>
+                        </select>
+                    </td>
+                    <td><input type="text" name="pnums" class="form-control"></td>
+                    <td><input type="text" name="knums" class="form-control"></td>
+                    <td><input type="text" name="ptimes" class="form-control" required='required'></td>
+                    <td>
+                        <input type="reset" class="btn btn-default pull-left" value="重置">
+                        <input type="submit" class="btn btn-primary pull-right" value="添加">
+                    </td>
+                </tr>
+            </table>
+        </form>
     </div>
     <!-- searcch -->
     <div id="search" style="display: none;">
@@ -71,7 +145,7 @@
                     <td><input type="date" name="dtime" class="form-control" id="sriqi"></td>
                     <td>
                         <input type="reset" class="btn btn-default pull-left" value="重置">
-                        <input type="submit" class="btn btn-primary pull-right" value="提交">
+                        <input type="submit" class="btn btn-primary pull-right" value="搜索">
                     </td>
                 </tr>
             </table>
@@ -131,6 +205,25 @@
         <h3>你尚未登录,请先登录！</h3>
     {% endif %}
 <script type="text/javascript">
+    // 添加数据之 日期组件默认为当天日期
+    var mydateInput = document.getElementById("riqi");
+    var now = new Date();
+    var day = ('0' + now.getDate()).slice(-2);
+    var month = ('0' + (now.getMonth() + 1)).slice(-2);
+    var today = now.getFullYear() + '-' + (month)+ '-' + (day);
+    mydateInput.value = today;
+    // insert
+    function ginsert(){
+        
+        if ($('#search').css('display') == 'block'){
+            $('#search').css("display","none");
+            $('#ginsert').css("display","block");
+        }
+        else{
+            $('#ginsert').css("display","block");
+        };
+    };
+    
     // 搜索之日期组件默认为当天日期
     function search(){
         if ($('#search').css('display') == 'none'){
@@ -158,6 +251,10 @@
     //showa
     function showa(windows){
         windows.location.href="/index?showa=all"
+    };
+    //showpd
+    function showpd(windows){
+        windows.location.href="/index?showpd=pd"
     };
 </script>
 {% endblock %}

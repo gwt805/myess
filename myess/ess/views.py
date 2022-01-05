@@ -29,10 +29,10 @@ def aa(name):
     return name
 # 首页
 def index(request):
-    # 格式化成2016-03-20 11:45:39形式
-    page_id = request.GET.get("page_id")
-    now_time = time.strftime("%Y-%m-%d", time.localtime())
-    if request.GET.get('showp'):
+    page_id = request.GET.get("page_id")#获取当前的页码数，默认为1
+    now_time = time.strftime("%Y-%m-%d", time.localtime()) # 格式化成2016-03-20形式
+
+    if request.GET.get('showp'): # 展示个人当天数据
         stus = person(request.GET.get('showp'),now_time)
         return render(request,'login/index.html',{'stus':stus})
     if request.method == "POST":
@@ -41,9 +41,8 @@ def index(request):
         dtime = request.POST.get('dtime').strip()
         stu = search(uname,pname,dtime)
         return render(request,'login/index.html',{'stus':stu})
-    if page_id or request.GET.get('showa'):
+    if page_id or request.GET.get('showa'): # 展示所有数据
         stu = models.Task.objects.all().order_by('-dtime')
-        #获取当前的页码数，默认为1
         page = Paginator(stu,16)
         if page_id:
             try:
@@ -55,6 +54,10 @@ def index(request):
         else:
             stus = page.page(1)
         return render(request,'login/index.html',{'stus':stus,'page':page})
+    if request.GET.get('showpd'): # 展示i所有人当天数据
+        stu = models.Task.objects.filter(dtime=now_time).order_by('-uname')
+        return render(request,'login/index.html',{'stus':stu})
+        
     stu = person(request.GET.get('name'),now_time)
     return render(request,'login/index.html',{'stus':stu})
 
@@ -132,12 +135,10 @@ def insert(request):
                 new_tasks.save()
             else:
                 pass
-            return render(request,'tasks/insert.html',{'message':'添加成功~'})
+            return redirect('/index?name='+uname)
         except:
-            return render(request,'tasks/insert.html',{'message':'请检查内容！'})
-        
-        return redirect('/insert')
-    return render(request, 'tasks/insert.html')
+            return render(request,'login/index.html?name='+uname,{'message':'请检查内容！'})
+    return render(request, 'login/index.html')
 
 # 效率
 def efficiency(request):

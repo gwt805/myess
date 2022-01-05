@@ -157,7 +157,6 @@ def performanceq(begin_time,over_time,name):
 def search(uname,pname,dtime):
     if uname != '---' and pname != '---':
         tdat = models.Task.objects.filter(uname=uname,pname=pname,dtime=dtime)
-        print(tdat)
         return tdat
     elif uname == '---' and pname != '---':
         tdat = models.Task.objects.filter(pname=pname,dtime=dtime)
@@ -174,5 +173,4 @@ def search(uname,pname,dtime):
 # person
 def person(uname,dtime):
     stu = models.Task.objects.filter(uname=uname,dtime=dtime)
-    print(uname)
     return stu
