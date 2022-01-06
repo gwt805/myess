@@ -8,3 +8,7 @@ admin.site.register(models.User)
 @admin.register(models.Task)
 class ControlTASK(admin.ModelAdmin):
     ordering = ('-dtime',)
+
+admin.site.register(models.Project)
+
+admin.site.register(models.Tkinds)

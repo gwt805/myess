@@ -174,3 +174,42 @@ def search(uname,pname,dtime):
 def person(uname,dtime):
     stu = models.Task.objects.filter(uname=uname,dtime=dtime)
     return stu
+
+# update
+def pupdate(id):
+    stu = models.Task.objects.filter(id=id)
+    return stu
+# nupdate
+def nupdate(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
+    now_data = pupdate
+    if kinds == '标注':
+        now_data.uname=uname
+        now_data.pname=pname
+        now_data.waibao=waibao
+        now_data.task_id=int(task_id)
+        now_data.dtime=dtime
+        now_data.kinds=kinds
+        now_data.pnums=int(pnums)
+        now_data.knums=int(knums)
+        now_data.ptimes=float(ptimes)
+        # now_data.save()
+    elif kinds == '审核':
+        now_data.uname=uname
+        now_data.pname=pname
+        now_data.waibao=waibao
+        now_data.task_id=int(task_id)
+        now_data.dtime=dtime
+        now_data.kinds=kinds
+        now_data.pnums=int(pnums)
+        now_data.ptimes=float(ptimes)
+        # now_data.save()
+    elif kinds == '筛选':
+        now_data.uname=uname
+        now_data.pname=pname
+        now_data.dtime=dtime
+        now_data.kinds=kinds
+        now_data.pnums=int(pnums)
+        now_data.ptimes=float(ptimes)
+        # now_data.save()
+    else:
+        pass

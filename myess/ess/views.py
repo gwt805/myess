@@ -6,9 +6,10 @@ from django import forms
 # from captcha.fields import CaptchaField
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
-from .mes import nw,lw, performanceq, person, plw, pnw, search
-import time,datetime
+from .mes import nupdate, nw,lw, performanceq, person, plw, pnw, pupdate, search
+import time
 import xlrd
+import json
 # Create your views here.
 
 class UserForm(forms.Form):
@@ -173,8 +174,24 @@ def insert(request):
 
 # 修改
 def update(request):
-    
-    pass
+    id = request.GET.get('id')
+    if request.method == "POST":
+        uname = request.POST.get('uname').strip()
+        pname = request.POST.get('pname').strip()
+        waibao = request.POST.get('waibao').strip()
+        task_id  = request.POST.get('task_id').strip()
+        dtime = request.POST.get('dtime').strip()
+        kinds = request.POST.get('kinds').strip()
+        pnums = request.POST.get('pnums').strip()
+        knums = request.POST.get('knums').strip()
+        ptimes = request.POST.get('ptimes').strip()
+        nupdate(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes)
+        return redirect('/index?name='+uname)
+    stu = pupdate(id)
+    projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')])
+    tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list('kinds')])
+
+    return render(request,'tasks/update.html',{'stu':stu,'projects':projects,'tkinds':tkinds})
 
 # 效率
 def efficiency(request):

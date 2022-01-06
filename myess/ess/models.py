@@ -41,3 +41,13 @@ class Task(models.Model):
 
     def __str__(self):
         return f'{self.uname} | {self.pname} | {self.waibao} | {self.task_id} | {self.dtime} | {self.kinds} | {self.pnums} | {self.knums} | {self.ptimes}'
+class Project(models.Model):
+    pname = models.CharField(max_length=125,unique=True,verbose_name='项目名字',blank=True) # 项目类型
+    def __str__(self):
+        return self.pname
+
+
+class Tkinds(models.Model):
+    kinds = models.CharField(max_length=20,unique=True,verbose_name='任务类型')# 任务类型：标注，审核，其他
+    def __str__(self):
+        return self.kinds

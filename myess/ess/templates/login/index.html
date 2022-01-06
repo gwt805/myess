@@ -70,18 +70,9 @@
                     <th style="text-align: center;">按钮</th>
                 </tr>
                 <tr>
-                    <td>
-                        <select class="form-control" name="uname">
-                            <option value ="---">---</option>
-                            <option value ="郭卫焘">郭卫焘</option>
-                            <option value ="韩波">韩波</option>
-                            <option value="张永娇">张永娇</option>
-                            <option value="高波">高波</option>
-                        </select>
-                    </td>
+                    <td><input type="text" name="uname" value="{{ request.session.user_name }}" class="form-control" readonly="readonly"></td>
                     <td>
                         <select class="form-control" name="pname">
-                            <option value ="---">---</option>
                             <option value ="杂物">杂物</option>
                             <option value ="脏污">脏污</option>
                             <option value="行人扶梯一米栏">行人扶梯一米栏</option>
@@ -103,7 +94,6 @@
                     <td><input type="date" name="dtime" class="form-control" id="riqi"></td>
                     <td>
                         <select class="form-control" name="kinds">
-                            <option value ="---">---</option>
                             <option value ="标注">标注</option>
                             <option value ="审核">审核</option>
                             <option value ="筛选">筛选</option>

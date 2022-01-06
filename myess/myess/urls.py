@@ -29,4 +29,5 @@ urlpatterns = [
     path('waibao/',views.waibao),
     path('efficiency/',views.efficiency),
     path('performance/',views.performance),
+    path('update/',views.update),
 ]
