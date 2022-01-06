@@ -1,4 +1,4 @@
-from collections import namedtuple
+from django.http.response import HttpResponse
 from django.shortcuts import render
 from ess import models
 from django.shortcuts import render,redirect
@@ -7,7 +7,8 @@ from django import forms
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
 from .mes import nw,lw, performanceq, person, plw, pnw, search
-import time
+import time,datetime
+import xlrd
 # Create your views here.
 
 class UserForm(forms.Form):
@@ -114,6 +115,36 @@ def register(request):
 # 添加数据
 def insert(request):
     if request.method == "POST":
+        # 上传文件-批量添加
+        if request.FILES.get('file_obj'):
+            excel = request.FILES.get('file_obj')
+            if excel.name.split('.')[-1] not in ['xlsx','xls']:
+                return HttpResponse('请上传以 xslx 或 xls 结尾的文件!')
+            data = xlrd.open_workbook(filename=None, file_contents=excel.read())
+            sheet = data.sheet_by_index(0)
+            name = ''
+            for i in range(1,sheet.nrows):
+                row = sheet.row_values(i)
+                print()
+                name = row[0]
+                if row[5] == '标注':
+                    new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
+                                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
+                                            knums=int(row[7]),ptimes=float(row[8]))
+                    new_tasks.save()
+                elif row[5] == '审核':
+                    new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
+                                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
+                                            ptimes=float(row[8]))
+                    new_tasks.save()
+                elif row[5] == '筛选':
+                    new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),
+                                            kinds=row[5].strip(),pnums=int(row[6]),ptimes=float(row[8]))
+                    new_tasks.save()
+                else:
+                    pass
+            return redirect('/index?name='+name)
+        # 自己填写数据
         uname = request.POST.get('uname').strip()
         pname = request.POST.get('pname').strip()
         waibao = request.POST.get('waibao').strip()
@@ -139,6 +170,11 @@ def insert(request):
         except:
             return render(request,'login/index.html?name='+uname,{'message':'请检查内容！'})
     return render(request, 'login/index.html')
+
+# 修改
+def update(request):
+    
+    pass
 
 # 效率
 def efficiency(request):

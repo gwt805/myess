@@ -4,6 +4,7 @@
     <style>
         /* body {background-image: url(/static/img/Smaterial/background.jpeg);} */
         tr:not(:first-child):hover{background-color: #dafdf3;}
+        button:hover{color: blue;}
     </style>
 {% endblock %}
 {% block navbar %}
@@ -35,7 +36,18 @@
                 <button id="btn-search" onclick="search()" style="border:none">搜索</button>
             </li>
         </ul>
-           
+    </div>
+    <div id="div-execl" style="float: right; margin-top: -15px;">
+        <form action="/insert/" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table>
+                <tr>
+                    <td><input type="file" name="file_obj" style="margin-right: -75px;"></td>
+                    <td><input type="submit" value="批量添加"></td>
+                    <td><span style="color: red">{{ error }}</span></td>
+                </tr>
+            </table>
+        </form>
     </div>
     <!-- insert -->
     <div id="ginsert">
@@ -179,6 +191,7 @@
                 <td>{{ tasks.pnums }}</td>
                 <td>{{ tasks.knums }}</td>
                 <td>{{ tasks.ptimes }}</td>
+                <td><a href="/update?id={{ tasks.id }}"><button style="border:none">修改</button></a></td>
             </tr>
             {% endfor %}
         </table>

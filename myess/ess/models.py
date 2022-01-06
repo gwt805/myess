@@ -5,7 +5,7 @@ from django.db import models
 class User(models.Model):
     uname = models.CharField(max_length=20,unique=True,primary_key=True)
     pword = models.CharField(max_length=128)
-    power = models.IntegerField(max_length=1,default=2)
+    power = models.IntegerField(default=2)
     def __str__(self):
         return self.uname
 
