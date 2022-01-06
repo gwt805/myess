@@ -180,8 +180,8 @@ def pupdate(id):
     stu = models.Task.objects.filter(id=id)
     return stu
 # nupdate
-def nupdate(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
-    now_data = pupdate
+def nupdate(id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
+    now_data = models.Task.objects.get(id=id)
     if kinds == '标注':
         now_data.uname=uname
         now_data.pname=pname
@@ -192,7 +192,7 @@ def nupdate(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
         now_data.pnums=int(pnums)
         now_data.knums=int(knums)
         now_data.ptimes=float(ptimes)
-        # now_data.save()
+        now_data.save()
     elif kinds == '审核':
         now_data.uname=uname
         now_data.pname=pname
@@ -202,7 +202,7 @@ def nupdate(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
         now_data.kinds=kinds
         now_data.pnums=int(pnums)
         now_data.ptimes=float(ptimes)
-        # now_data.save()
+        now_data.save()
     elif kinds == '筛选':
         now_data.uname=uname
         now_data.pname=pname
@@ -210,6 +210,6 @@ def nupdate(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
         now_data.kinds=kinds
         now_data.pnums=int(pnums)
         now_data.ptimes=float(ptimes)
-        # now_data.save()
+        now_data.save()
     else:
         pass

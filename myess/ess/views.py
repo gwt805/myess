@@ -59,9 +59,10 @@ def index(request):
     if request.GET.get('showpd'): # 展示i所有人当天数据
         stu = models.Task.objects.filter(dtime=now_time).order_by('-uname')
         return render(request,'login/index.html',{'stus':stu})
-        
+    projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')])
+    tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list('kinds')])
     stu = person(request.GET.get('name'),now_time)
-    return render(request,'login/index.html',{'stus':stu})
+    return render(request,'login/index.html',{'stus':stu,'projects':projects,'tkinds':tkinds})
 
 # 登录
 def login(request):
@@ -75,7 +76,7 @@ def login(request):
                 user = models.User.objects.get(uname=username)
                 if user.pword == hash_code(password):
                     request.session['is_login'] = True
-                    request.session['user_pword'] = user.pword
+                    request.session['user_power'] = user.power
                     request.session['user_name'] = user.uname
                     
                     return redirect('/index?name='+username)
@@ -176,6 +177,7 @@ def insert(request):
 def update(request):
     id = request.GET.get('id')
     if request.method == "POST":
+        id = request.POST.get('id')
         uname = request.POST.get('uname').strip()
         pname = request.POST.get('pname').strip()
         waibao = request.POST.get('waibao').strip()
@@ -185,7 +187,8 @@ def update(request):
         pnums = request.POST.get('pnums').strip()
         knums = request.POST.get('knums').strip()
         ptimes = request.POST.get('ptimes').strip()
-        nupdate(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes)
+        nupdate(id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes)
+        print(id)
         return redirect('/index?name='+uname)
     stu = pupdate(id)
     projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')])

@@ -72,31 +72,18 @@
                 <tr>
                     <td><input type="text" name="uname" value="{{ request.session.user_name }}" class="form-control" readonly="readonly"></td>
                     <td>
-                        <select class="form-control" name="pname">
-                            <option value ="杂物">杂物</option>
-                            <option value ="脏污">脏污</option>
-                            <option value="行人扶梯一米栏">行人扶梯一米栏</option>
-                            <option value="红绿灯">红绿灯</option>
-                            <option value="S线数据">S线数据</option>
-                            <option value="室内可通行">室内可通行</option>
-                            <option value="75车库车辆行人">75车库车辆行人</option>
-                            <option value="111室外车辆行人">111室外车辆行人</option>
+                        <select class="form-control" name="pname" id="pname">
                         </select>
                     </td>
                     <td>
-                        <select class="form-control" name="waibao">
+                        <select class="form-control" name="waibao" id="waibao">
                             <option value ="---">---</option>
-                            <option value ="否">否</option>
-                            <option value ="是">是</option>
                         </select>
                     </td>
                     <td><input type="text" name="task_id" class="form-control"></td>
                     <td><input type="date" name="dtime" class="form-control" id="riqi"></td>
                     <td>
-                        <select class="form-control" name="kinds">
-                            <option value ="标注">标注</option>
-                            <option value ="审核">审核</option>
-                            <option value ="筛选">筛选</option>
+                        <select class="form-control" name="kinds" id="kinds">
                         </select>
                     </td>
                     <td><input type="text" name="pnums" class="form-control"></td>
@@ -259,5 +246,42 @@
     function showpd(windows){
         windows.location.href="/index?showpd=pd"
     };
+    //----------------------------添加数据 之 下拉框动态赋值------------------------------
+    var projects = JSON.parse('{{ projects|safe }}'); // 项目名字 列表
+        var tkinds = JSON.parse('{{ tkinds|safe }}'); // 任务类型 列表
+
+        // 给是否外包赋值
+        var wb_list = ['是','否','---'];
+        var wb_s = document.getElementById("waibao");
+        for (var i=0;i<tkinds.length;i++){
+            if (wb_list[i] != document.getElementById("waibao").value){
+                var objOption = document.createElement("option");
+                objOption.value = wb_list[i];
+                objOption.text =wb_list[i];
+                wb_s.add(objOption);
+            };
+        };
+
+        // 给项目名字 添加下拉框
+        var p_s = document.getElementById('pname');
+        for (var i=0;i<projects.length;i++){
+            if (projects[i] != document.getElementById("pname").value){
+                var objOption = document.createElement("option");
+                objOption.value = projects[i];
+                objOption.text =projects[i];
+                p_s.add(objOption);
+            };
+        };
+
+        // 给任务类型 赋值
+        var tk_s = document.getElementById('kinds');
+        for (var i=0;i<tkinds.length;i++){
+            if (tkinds[i] != document.getElementById("kinds").value){
+                var objOption = document.createElement("option");
+                objOption.value = tkinds[i];
+                objOption.text =tkinds[i];
+                tk_s.add(objOption);
+            };
+        };
 </script>
 {% endblock %}
