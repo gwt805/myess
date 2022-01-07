@@ -30,4 +30,5 @@ urlpatterns = [
     path('efficiency/',views.efficiency),
     path('performance/',views.performance),
     path('update/',views.update),
+    path('dtdel/',views.dtdel),
 ]

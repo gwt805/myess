@@ -213,3 +213,14 @@ def nupdate(id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
         now_data.save()
     else:
         pass
+
+# 单条/批量数据删除
+def data_del(ids):
+    id = []
+    for i in ids.split(','):
+        try:
+            id.append(int(i))
+        except:
+            pass
+    for i in id:
+        models.Task.objects.get(id = i).delete()

@@ -6,7 +6,7 @@ from django import forms
 # from captcha.fields import CaptchaField
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
-from .mes import nupdate, nw,lw, performanceq, person, plw, pnw, pupdate, search
+from .mes import data_del, nupdate, nw,lw, performanceq, person, plw, pnw, pupdate, search
 import time
 import xlrd
 import json
@@ -231,6 +231,12 @@ def performance(request):
         except:
             pass
     return render(request,'tasks/performance.html')
+
+# 单条或批量数据删除
+def dtdel(request):
+    uname = request.GET.get('n')
+    data_del(request.GET.get('dtid'))
+    return redirect('/index?name='+uname)
 
 # 外包数据记录
 def waibao(request):
