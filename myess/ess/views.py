@@ -31,18 +31,21 @@ def aa(name):
     return name
 # 首页
 def index(request):
-    page_id = request.GET.get("page_id")#获取当前的页码数，默认为1
-    now_time = time.strftime("%Y-%m-%d", time.localtime()) # 格式化成2016-03-20形式
-
-    if request.GET.get('showp'): # 展示个人当天数据
-        stus = person(request.GET.get('showp'),now_time)
-        return render(request,'login/index.html',{'stus':stus})
-    if request.method == "POST":
+    if request.method == "POST": # 这里是 搜索
         uname = request.POST.get('uname').strip()
         pname = request.POST.get('pname').strip()
         dtime = request.POST.get('dtime').strip()
         stu = search(uname,pname,dtime)
         return render(request,'login/index.html',{'stus':stu})
+
+    page_id = request.GET.get("page_id")#获取当前的页码数，默认为1
+    now_time = time.strftime("%Y-%m-%d", time.localtime()) # 格式化成2016-03-20形式
+    projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')]) #数据库里所有的项目名字
+    tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list('kinds')]) # 数据库里所有的任务类型
+
+    if request.GET.get('showp'): # 展示个人当天数据
+        stus = person(request.GET.get('showp'),now_time)
+        return render(request,'login/index.html',{'stus':stus,'projects':projects,'tkinds':tkinds})
     if page_id or request.GET.get('showa'): # 展示所有数据
         stu = models.Task.objects.all().order_by('-dtime')
         page = Paginator(stu,16)
@@ -55,12 +58,10 @@ def index(request):
                 stus = page.page(1)
         else:
             stus = page.page(1)
-        return render(request,'login/index.html',{'stus':stus,'page':page})
+        return render(request,'login/index.html',{'stus':stus,'page':page,'projects':projects,'tkinds':tkinds})
     if request.GET.get('showpd'): # 展示i所有人当天数据
         stu = models.Task.objects.filter(dtime=now_time).order_by('-uname')
-        return render(request,'login/index.html',{'stus':stu})
-    projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')])
-    tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list('kinds')])
+        return render(request,'login/index.html',{'stus':stu,'projects':projects,'tkinds':tkinds})
     stu = person(request.GET.get('name'),now_time)
     return render(request,'login/index.html',{'stus':stu,'projects':projects,'tkinds':tkinds})
 
@@ -171,7 +172,9 @@ def insert(request):
             return redirect('/index?name='+uname)
         except:
             return render(request,'login/index.html?name='+uname,{'message':'请检查内容！'})
-    return render(request, 'login/index.html')
+    projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')])
+    tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list('kinds')])
+    return render(request, 'login/index.html',{'projects':projects,'tkinds':tkinds})
 
 # 修改
 def update(request):
