@@ -80,7 +80,7 @@
                         <td>{{ i.3 }}</td>
                         <td>{{ i.4 }}框/h</td>
                         {% for j in tks_lw %} <!-- 上周工作量 -->
-                            {% if j.0 == '标注' and j.1 == i.1 %}
+                            {% if j.0 == '试标' and j.1 == i.1 %}
                                 <td>{{ j.4 }}框/h</td>
                             {% endif %}
                         {% endfor %}
@@ -156,7 +156,7 @@
                 <td>{{ gp.5 }}框/h</td>
                 {% for j3 in pks_lw %} <!-- 上周工作量  -->
                     {% for j4 in j3 %}
-                        {% if j4.1 == '标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
+                        {% if j4.1 == '试标' and j4.2 == gp.2 and j4.0 == gp.0 %}
                             <td>{{ j4.5 }}框/h</td>
                         {% endif %}
                     {% endfor %}
