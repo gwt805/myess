@@ -163,7 +163,8 @@
                 <td>{{ tasks.pnums }}</td>
                 <td>{{ tasks.knums }}</td>
                 <td>{{ tasks.ptimes }}</td>
-                <td><a href="/update?id={{ tasks.id }}"><button style="border:none">修改</button></a></td>
+                <td><a href="" onclick='test("{{ tasks.id }}","{{ tasks.uname }}")'><button style="border:none">修改</button></a></td>
+                <!-- /update?id={{ tasks.id }} -->
             </tr>
             {% endfor %}
         </table>
@@ -190,6 +191,16 @@
         <h3>你尚未登录,请先登录！</h3>
     {% endif %}
 <script type="text/javascript">
+    function test(id,uname){
+        alert(id);
+        alert(uname);
+        if (uname != $('#id_name').text()){
+            alert('无权限修改');
+            window.open("/index?showp=" + $('#id_name').text(),replace=true,_self);
+        }else{
+            window.open("/update?id="+id,_self);
+        };
+    };
     //----------------------------添加数据 之 下拉框动态赋值------------------------------
     var projects = JSON.parse('{{ projects|safe }}'); // 项目名字 列表
     var tkinds = JSON.parse('{{ tkinds|safe }}'); // 任务类型 列表

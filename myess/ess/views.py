@@ -27,8 +27,6 @@ def hash_code(s):# 加点盐
     h = hashlib.sha256()
     h.update(s.encode())  # update方法只接收bytes类型
     return h.hexdigest()
-def aa(name):
-    return name
 # 首页
 def index(request):
     if request.method == "POST": # 这里是 搜索

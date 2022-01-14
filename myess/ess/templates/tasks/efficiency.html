@@ -73,6 +73,18 @@
                             {% endif %}
                         {% endfor %}
                     {% endif %}
+                    {% if i.0 == '试标' %}
+                        <td>{{ i.0 }}</td>
+                        <td>{{ i.1 }}</td>
+                        <td>{{ i.2 }}</td>
+                        <td>{{ i.3 }}</td>
+                        <td>{{ i.4 }}框/h</td>
+                        {% for j in tks_lw %} <!-- 上周工作量 -->
+                            {% if j.0 == '标注' and j.1 == i.1 %}
+                                <td>{{ j.4 }}框/h</td>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </tr>
             {% endfor %}
     </table>
@@ -121,6 +133,21 @@
                 {% endfor %}
             {% endif %}
             {% if gp.1 == '标注' %}<!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
+                <td>{{ gp.0 }}</td>
+                <td>{{ gp.1 }}</td>
+                <td>{{ gp.2 }}</td>
+                <td>{{ gp.3 }}</td>
+                <td>{{ gp.4 }}</td>
+                <td>{{ gp.5 }}框/h</td>
+                {% for j3 in pks_lw %} <!-- 上周工作量  -->
+                    {% for j4 in j3 %}
+                        {% if j4.1 == '标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
+                            <td>{{ j4.5 }}框/h</td>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+            {% if gp.1 == '试标' %}<!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
                 <td>{{ gp.0 }}</td>
                 <td>{{ gp.1 }}</td>
                 <td>{{ gp.2 }}</td>
