@@ -221,33 +221,39 @@
             var wb_list = ['是','否','---'];
             var wb_s = document.getElementById("waibao");
             for (var i=0;i<tkinds.length;i++){
-                if (wb_list[i] != document.getElementById("waibao").value){
-                    var objOption = document.createElement("option");
-                    objOption.value = wb_list[i];
-                    objOption.text =wb_list[i];
-                    wb_s.add(objOption);
+                if (wb_s.length < wb_list.length){ // 这里不判断的话会一直添加
+                    if (wb_list[i] != document.getElementById("waibao").value){
+                        var objOption = document.createElement("option");
+                        objOption.value = wb_list[i];
+                        objOption.text =wb_list[i];
+                        wb_s.add(objOption);
+                    };
                 };
             };
 
             // 给项目名字 添加下拉框
             var p_s = document.getElementById('pname');
             for (var i=0;i<projects.length;i++){
-                if (projects[i] != document.getElementById("pname").value){
-                    var objOption = document.createElement("option");
-                    objOption.value = projects[i];
-                    objOption.text =projects[i];
-                    p_s.add(objOption);
+                if (p_s.length < projects.length){ // 这里不判断的话会一直添加
+                    if (projects[i] != document.getElementById("pname").value){
+                        var objOption = document.createElement("option");
+                        objOption.value = projects[i];
+                        objOption.text =projects[i];
+                        p_s.add(objOption);
+                    };
                 };
             };
 
             // 给任务类型 赋值
             var tk_s = document.getElementById('kinds');
             for (var i=0;i<tkinds.length;i++){
-                if (tkinds[i] != document.getElementById("kinds").value){
-                    var objOption = document.createElement("option");
-                    objOption.value = tkinds[i];
-                    objOption.text =tkinds[i];
-                    tk_s.add(objOption);
+                if (tk_s.length < tkinds.length){ // 这里不判断的话会一直添加
+                    if (tkinds[i] != document.getElementById("kinds").value){
+                        var objOption = document.createElement("option");
+                        objOption.value = tkinds[i];
+                        objOption.text =tkinds[i];
+                        tk_s.add(objOption);
+                    };
                 };
             };
         }else{
