@@ -279,11 +279,13 @@
             // 给项目名字 添加下拉框
             var p_s = document.getElementById('spname');
             for (var i=0;i<projects.length;i++){
-                if (projects[i] != document.getElementById("pname").value){
-                    var objOption = document.createElement("option");
-                    objOption.value = projects[i];
-                    objOption.text =projects[i];
-                    p_s.add(objOption);
+                if (p_s.length < projects.length+1){ // 这里不判断的话会一直添加
+                    if (projects[i] != document.getElementById("pname").value){
+                        var objOption = document.createElement("option");
+                        objOption.value = projects[i];
+                        objOption.text =projects[i];
+                        p_s.add(objOption);
+                    };
                 };
             };
         }
