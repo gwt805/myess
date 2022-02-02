@@ -188,17 +188,26 @@ def performanceq(begin_time,over_time,name):
 
 # search
 def search(uname,pname,dtime):
-    if uname != '---' and pname != '---':
+    if uname != '' and pname != '---' and dtime != '': # 用户名-不为空 ， 项目名-不为空 ， 时间-不为空
         tdat = models.Task.objects.filter(uname=uname,pname=pname,dtime=dtime)
         return tdat
-    elif uname == '---' and pname != '---':
+    elif uname == '' and pname != '---' and dtime != '': # 用户名-为空 ， 项目名-不为空 ， 时间-不为空
         tdat = models.Task.objects.filter(pname=pname,dtime=dtime)
         return tdat
-    elif uname != '---' and pname == '---':
+    elif uname != '' and pname == '---' and dtime != '': # 用户名-不为空 ， 项目名-为空 ， 时间-不为空
         tdat = models.Task.objects.filter(uname=uname,dtime=dtime)
         return tdat
-    elif uname == '---' and pname == '---':
+    elif uname == '' and pname == '---' and dtime != '': # 用户名-为空 ， 项目名-为空 ， 时间-不为空
         tdat = models.Task.objects.filter(dtime=dtime)
+        return tdat
+    elif uname != '' and pname != '---' and dtime == '': # 用户名-不为空 ， 项目名-不为空 ， 时间-为空
+        tdat = models.Task.objects.filter(uname=uname,pname=pname)
+        return tdat
+    elif uname != '' and pname == '---' and dtime == '': # 用户名-不为空 ， 项目名-为空 ， 时间-为空
+        tdat = models.Task.objects.filter(uname=uname)
+        return tdat
+    elif uname == '' and pname != '---' and dtime == '': # 用户名-为空 ， 项目名-不为空 ， 时间-为空
+        tdat = models.Task.objects.filter(pname=pname)
         return tdat
     else:
         pass

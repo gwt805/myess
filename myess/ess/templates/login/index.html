@@ -5,6 +5,7 @@
         h3 {text-align: center;}
         tr:not(:first-child):hover{background-color: #dafdf3;}
         button:hover{color: blue;}
+        ul li:hover{color: blue;}
     </style>
 {% endblock %}
 {% block navbar %}
@@ -15,60 +16,125 @@
             <li class="active"><a href="/efficiency">效率查看</a></li>
             <li class="active"><a href="/performance">绩效</a></li>
             <li class="active"><a href="/waibao">外包数据</a></li>
+            <!-- 批量添加 -->
+            <div id="div-execl" style="float: right; margin-top: 10px; margin-left: 400px;">
+                <form action="/insert/" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <table>
+                        <tr>
+                            <td><input type="file" name="file_obj" style="margin-right: -75px;"></td>
+                            <td><input type="submit" value="批量添加"></td>
+                            <td><span style="color: red">{{ error }}</span></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
         </ul>
     {% endif %}
 {% endblock %}
 
 {% block content %}
     {% if request.session.is_login %}
-    <div style="width: 100%;"> <!-- 操作栏 -->
-        <!-- show and search -->
-        <div id="div-btn-search" style="float: left; margin-top: -15px;">
-            <ul class="nav navbar-nav">
-                <li class="active" style="border-right: solid 1px black;">
-                    <button id="btn-sp" style="border:none" onclick="showp(window)">展示个人当天数据</button>
-                </li>
-                <li class="active" style="border-right: solid 1px black;">
-                    <button id="btn-sp" style="border:none" onclick="showpd(window)">展示所有人当天数据</button>
-                </li>
-                <li class="active" style="border-right: solid 1px black;">
-                    <button id="btn-sa" style="border:none" onclick="showa(window)">展示所有数据</button>
-                </li>
-                <li class="active">
-                    <button id="btn-search" onclick="search()" style="border:none">搜索</button>
-                </li>
+    <div style="width:8.5%; height: 100%; position: fixed; float: left; margin-top: -15px; background-color: #e3e3e3;"> <!-- 侧边栏div-->
+        <div> <!-- 操作栏 -->
+            <ul class="nav nav-pills nav-stacked">
+                <li role="presentation" style="cursor: pointer;"><a onclick="showp(window)">展示个人当天数据</a></li>
+                <li role="presentation" style="cursor: pointer;"><a onclick="showpd(window)">展示所有人当天数据</a></li>
+                <li role="presentation" style="cursor: pointer;"><a onclick="showa(window)">展示所有数据</a></li>
+                <li role="presentation" style="cursor: pointer;" onclick="search()"><a>搜索</a></li>
+                {% if request.session.user_power == 1 %}<!-- 只有管理员才能删除数据 -->
+                    <li role="presentation" style="cursor: pointer;"><a onclick="pl_dl(window)">批量删除</a></li>
+                {% endif %}
             </ul>
         </div>
-        <!-- 批量删除 -->
-        {% if request.session.user_power == 1 %}<!-- 只有管理员才能删除数据 -->
-            <div id="pl_del" style="float: left; width: 80px; margin-top: -15px; margin-left: 50px;">
-                <button style="border:none" onclick="pl_dl(window)">批量删除</button>
-            </div>
-        {% endif %}
-        <!-- 批量添加 -->
-        <div id="div-execl" style="float: right; margin-top: -15px; margin-right: 5px;">
-            <form action="/insert/" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <table>
-                    <tr>
-                        <td><input type="file" name="file_obj" style="margin-right: -75px;"></td>
-                        <td><input type="submit" value="批量添加"></td>
-                        <td><span style="color: red">{{ error }}</span></td>
-                    </tr>
-                </table>
-            </form>
-        </div>
     </div>
-    <!-- insert -->
-    <div id="ginsert" style="display: none;">
-        <form class='form-register' action="/insert/" method="post">
-            {% if message %}
-            <div class="alert alert-warning" id="warning">{{ message }}</div>
-            {% endif %}
-                {% csrf_token %}
+
+    <div style="float: left; height: 100%; width: 91.5%; margin-top: -15px; position: fixed; margin-left: 164px;"> <!-- 右边主体div-->
+        <div style="width: 100%; height: 10%;"> <!-- 右边上面div -->
+            <div id="index_right_img" style="border: 1px solid black; overflow: hidden;">
+                <img src="/static/img/index_right_img.jpeg">
+            </div>
+            <!-- insert -->
+            <div id="ginsert" style="display: none;">
+                <form class='form-register' action="/insert/" method="post">
+                    {% if message %}
+                    <div class="alert alert-warning" id="warning">{{ message }}</div>
+                    {% endif %}
+                        {% csrf_token %}
+                    <table class="table">
+                        <tr>
+                            <th>用户名</th>
+                            <th>项目名字</th>
+                            <th>是否外包</th>
+                            <th>任务ID</th>
+                            <th>日期</th>
+                            <th>任务类型</th>
+                            <th>图片数量</th>
+                            <th>框数</th>
+                            <th>工时</th>
+                            <th style="text-align: center;">按钮</th>
+                        </tr>
+                        <tr>
+                            <td><input type="text" name="uname" value="{{ request.session.user_name }}" class="form-control" readonly="readonly"></td>
+                            <td>
+                                <select class="form-control" name="pname" id="pname">
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control" name="waibao" id="waibao">
+                                    <option value ="---">---</option>
+                                </select>
+                            </td>
+                            <td><input type="text" name="task_id" class="form-control"></td>
+                            <td><input type="date" name="dtime" class="form-control" id="riqi"></td>
+                            <td>
+                                <select class="form-control" name="kinds" id="kinds">
+                                </select>
+                            </td>
+                            <td><input type="text" name="pnums" class="form-control"></td>
+                            <td><input type="text" name="knums" class="form-control"></td>
+                            <td><input type="text" name="ptimes" class="form-control" required='required'></td>
+                            <td>
+                                <input type="reset" class="btn btn-default pull-left" value="重置">
+                                <input type="submit" class="btn btn-primary pull-right" value="添加">
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <!-- searcch -->
+            <div id="search" style="display: none;">
+                <form class='form-register' action="/index/" method="post">
+                    {% csrf_token %}
+                    <table class="table">
+                        <tr>
+                            <th>用户名</th>
+                            <th>项目名字</th>
+                            <th>时间</th>
+                            <th style="text-align: center;">按钮</th>
+                        </tr>
+                        <tr>
+                            <td><input type="text" class="form-control" name="uname"></td>
+                            <td>
+                                <select class="form-control" name="pname" id="spname">
+                                    <option value ="---">---</option>
+                                </select>
+                            </td>
+                            <td><input type="date" name="dtime" class="form-control" id="sriqi"></td>
+                            <td>
+                                <input type="reset" class="btn btn-default pull-left" value="重置">
+                                <input type="submit" class="btn btn-primary pull-right" value="搜索">
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div> <!-- 右边上面div -->
+        <!-- show -->
+        <div style="position: fixed; width: 91.5%; height: 83%; overflow-y: scroll;"> <!-- 展示div-->
             <table class="table">
                 <tr>
-                    <th>用户名</th>
+                    <th><span style="margin-right: 10px;" onclick="qx_all()"><input type="checkbox" name="fbs" id="fbs"> 全选</span>用户名</th>
                     <th>项目名字</th>
                     <th>是否外包</th>
                     <th>任务ID</th>
@@ -77,97 +143,28 @@
                     <th>图片数量</th>
                     <th>框数</th>
                     <th>工时</th>
-                    <th style="text-align: center;">按钮</th>
+                    <th>修改</th>
                 </tr>
+                {% for tasks in stus %}
                 <tr>
-                    <td><input type="text" name="uname" value="{{ request.session.user_name }}" class="form-control" readonly="readonly"></td>
-                    <td>
-                        <select class="form-control" name="pname" id="pname">
-                        </select>
-                    </td>
-                    <td>
-                        <select class="form-control" name="waibao" id="waibao">
-                            <option value ="---">---</option>
-                        </select>
-                    </td>
-                    <td><input type="text" name="task_id" class="form-control"></td>
-                    <td><input type="date" name="dtime" class="form-control" id="riqi"></td>
-                    <td>
-                        <select class="form-control" name="kinds" id="kinds">
-                        </select>
-                    </td>
-                    <td><input type="text" name="pnums" class="form-control"></td>
-                    <td><input type="text" name="knums" class="form-control"></td>
-                    <td><input type="text" name="ptimes" class="form-control" required='required'></td>
-                    <td>
-                        <input type="reset" class="btn btn-default pull-left" value="重置">
-                        <input type="submit" class="btn btn-primary pull-right" value="添加">
-                    </td>
+                    <td><span style="margin-right: 45px;"><input type="checkbox" name="fb" value="{{ tasks.id }}"></span>{{ tasks.uname }}</td>
+                    <td>{{ tasks.pname }}</td>
+                    <td>{{ tasks.waibao }}</td>
+                    {% if tasks.waibao == '否' %}
+                    <td>#{{ tasks.task_id }}</td>
+                    {% else %}
+                    <td>{{ tasks.task_id }}</td>
+                    {% endif %}
+                    <td>{{ tasks.dtime }}</td>
+                    <td>{{ tasks.kinds }}</td>
+                    <td>{{ tasks.pnums }}</td>
+                    <td>{{ tasks.knums }}</td>
+                    <td>{{ tasks.ptimes }}</td>
+                    <td><a href="" onclick='test("{{ tasks.id }}","{{ tasks.uname }}")'><button style="border:none">修改</button></a></td>
+                    <!-- /update?id={{ tasks.id }} -->
                 </tr>
+                {% endfor %}
             </table>
-        </form>
-    </div>
-    <!-- searcch -->
-    <div id="search" style="display: none;">
-        <form class='form-register' action="/index/" method="post">
-            {% csrf_token %}
-            <table class="table">
-                <tr>
-                    <th>用户名</th>
-                    <th>项目名字</th>
-                    <th>时间</th>
-                    <th style="text-align: center;">按钮</th>
-                </tr>
-                <tr>
-                    <td><input type="text" class="form-control" name="uname"></td>
-                    <td>
-                        <select class="form-control" name="pname" id="spname">
-                            <option value ="---">---</option>
-                        </select>
-                    </td>
-                    <td><input type="date" name="dtime" class="form-control" id="sriqi"></td>
-                    <td>
-                        <input type="reset" class="btn btn-default pull-left" value="重置">
-                        <input type="submit" class="btn btn-primary pull-right" value="搜索">
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
-     <!-- show -->
-        <table class="table">
-            <tr>
-                <th><span style="margin-right: 10px;" onclick="qx_all()"><input type="checkbox" name="fbs" id="fbs"> 全选</span>用户名</th>
-                <th>项目名字</th>
-                <th>是否外包</th>
-                <th>任务ID</th>
-                <th>日期</th>
-                <th>任务类型</th>
-                <th>图片数量</th>
-                <th>框数</th>
-                <th>工时</th>
-                <th>修改</th>
-            </tr>
-            {% for tasks in stus %}
-            <tr>
-                <td><span style="margin-right: 45px;"><input type="checkbox" name="fb" value="{{ tasks.id }}"></span>{{ tasks.uname }}</td>
-                <td>{{ tasks.pname }}</td>
-                <td>{{ tasks.waibao }}</td>
-                {% if tasks.waibao == '否' %}
-                <td>#{{ tasks.task_id }}</td>
-                {% else %}
-                <td>{{ tasks.task_id }}</td>
-                {% endif %}
-                <td>{{ tasks.dtime }}</td>
-                <td>{{ tasks.kinds }}</td>
-                <td>{{ tasks.pnums }}</td>
-                <td>{{ tasks.knums }}</td>
-                <td>{{ tasks.ptimes }}</td>
-                <td><a href="" onclick='test("{{ tasks.id }}","{{ tasks.uname }}")'><button style="border:none">修改</button></a></td>
-                <!-- /update?id={{ tasks.id }} -->
-            </tr>
-            {% endfor %}
-        </table>
             <div class="container">
                 {% if stus.has_previous %}
                     <a href="/index?page_id={{stus.previous_page_number}}">
@@ -186,7 +183,10 @@
                         <button> &nbsp;>>&nbsp; </button>
                     </a>
                 {% endif %}
-                </div>
+            </div>
+            </div>
+        </div>
+    </div>
     {% else %}
         <h3>你尚未登录,请先登录！</h3>
     {% endif %}
@@ -196,9 +196,8 @@
         alert(uname);
         if (uname != $('#id_name').text()){
             alert('无权限修改');
-            window.open("/index?showp=" + $('#id_name').text(),replace=true,_self);
         }else{
-            window.open("/update?id="+id,_self);
+            window.open("/update?id="+id);
         };
     };
     //----------------------------添加数据 之 下拉框动态赋值------------------------------
@@ -209,6 +208,7 @@
     function ginsert(){
         if ($('#ginsert').css('display') == 'none'){
             $('#ginsert').css("display","block");
+            $('#index_right_img').css("display","none");
             // 添加数据之 日期组件默认为当天日期
             var mydateInput = document.getElementById("riqi");
             var now = new Date();
@@ -258,6 +258,7 @@
             };
         }else{
             $('#ginsert').css("display","none");
+            $('#index_right_img').css("display","block");
         };
         if ($('#search').css('display') == 'block'){
             $('#search').css("display","none");
@@ -267,6 +268,7 @@
     // 搜索之日期组件默认为当天日期
     function search(){
         if ($('#search').css('display') == 'none'){
+            $('#index_right_img').css("display","none");
             $('#search').css("display","block");
             
             var mydateInput = document.getElementById("sriqi");
@@ -288,9 +290,9 @@
                     };
                 };
             };
-        }
-        else {
+        }else {
             $('#search').css("display","none");
+            $('#index_right_img').css("display","block");
         };
         if ($('#ginsert').css('display') == 'block'){
             $('#ginsert').css("display","none");

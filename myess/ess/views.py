@@ -33,8 +33,9 @@ def index(request):
         uname = request.POST.get('uname').strip()
         pname = request.POST.get('pname').strip()
         dtime = request.POST.get('dtime').strip()
+        projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')]) #数据库里所有的项目名字
         stu = search(uname,pname,dtime)
-        return render(request,'login/index.html',{'stus':stu})
+        return render(request,'login/index.html',{'stus':stu,'projects':projects})
 
     page_id = request.GET.get("page_id")#获取当前的页码数，默认为1
     now_time = time.strftime("%Y-%m-%d", time.localtime()) # 格式化成2016-03-20形式
@@ -132,7 +133,7 @@ def insert(request):
                     new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
                                             dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
                                             knums=int(row[7]),ptimes=float(row[8]))
-                if row[5] == '标注':
+                if row[5] == '试标':
                     new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
                                             dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
                                             knums=int(row[7]),ptimes=float(row[8]))
@@ -163,7 +164,7 @@ def insert(request):
             if kinds == '标注':
                 new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),ptimes=float(ptimes))
                 new_tasks.save()
-            elif kinds == '标注':
+            elif kinds == '试标':
                 new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),ptimes=float(ptimes))
                 new_tasks.save()
             elif kinds == '审核':
