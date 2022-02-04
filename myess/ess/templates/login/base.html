@@ -44,6 +44,7 @@
                   {% if request.session.user_power == 1 %}
                     <li><a href="/sites/" target="black">设置</a></li>
                   {% endif %}
+                  <li><a href="#" onclick="help()">Help</a></li>
               {% else %}
                   <li><a href="/login/">登录</a></li>
                   <li><a href="/register/">注册</a></li>
@@ -62,5 +63,6 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript">function help(){alert('请联系卫龙')};</script>
   </body>
 </html>

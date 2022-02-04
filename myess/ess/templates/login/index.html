@@ -11,59 +11,156 @@
 {% block navbar %}
     {% if request.session.is_login %}
         <ul class="nav navbar-nav">
-            <li class="active"><a href="/index?name={{ request.session.user_name }}">首页</a></li>
-            <li class="active"><a href="#" onclick="ginsert()">添加数据</a></li>
-            <li class="active"><a href="/efficiency">效率查看</a></li>
-            <li class="active"><a href="/performance">绩效</a></li>
-            <li class="active"><a href="/waibao">外包数据</a></li>
-            <!-- 批量添加 -->
-            <div id="div-execl" style="float: right; margin-top: 10px; margin-left: 400px;">
-                <form action="/insert/" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <table>
-                        <tr>
-                            <td><input type="file" name="file_obj" style="margin-right: -75px;"></td>
-                            <td><input type="submit" value="批量添加"></td>
-                            <td><span style="color: red">{{ error }}</span></td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
+            {% if request.session.user_power == 1 %}
+                <li class="active"><a href="/index?name={{ request.session.user_name }}">首页</a></li>
+                <li class="active"><a href="/efficiency">效率查看</a></li>
+                <li class="active"><a href="/performance">绩效</a></li>
+                <li class="active"><a href="/waibao">外包数据</a></li>
+                <!-- 批量添加 -->
+                <div id="div-execl" style="float: right; margin-top: 10px; margin-left: 400px;">
+                    <form action="/insert/" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <table>
+                            <tr>
+                                <td><input type="file" name="file_obj" style="margin-right: -75px;"></td>
+                                <td><input type="submit" value="批量添加"></td>
+                                <td><span style="color: red">{{ error }}</span></td>
+                                <td><a href="/static/files/gs_insert_template.xlsx" download="gs_insert_template.xlsx" style="margin-left: 20px;">点击下载GS数据批量添加模板</a></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            {% elif request.session.user_power == 2 %}
+                <li class="active"><a href="/index?name={{ request.session.user_name }}">首页</a></li>
+                <li class="active"><a href="/efficiency">效率查看</a></li>
+                <li class="active"><a href="/performance">绩效</a></li>
+                <!-- 批量添加 -->
+                <div id="div-execl" style="float: right; margin-top: 10px; margin-left: 400px;">
+                    <form action="/insert/" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <table>
+                            <tr>
+                                <td><input type="file" name="file_obj" style="margin-right: -75px;"></td>
+                                <td><input type="submit" value="批量添加"></td>
+                                <td><span style="color: red">{{ error }}</span></td>
+                                <td><a href="/static/files/gs_insert_template.xlsx" download="gs_insert_template.xlsx" style="margin-left: 20px;">点击下载GS数据批量添加模板</a></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            {% elif request.session.user_power == 3 %}
+                <li class="active"><a href="/waibao">外包数据</a></li>
+            {% elif request.session.user_power == 4 %}
+            {% endif %}
+            
         </ul>
     {% endif %}
 {% endblock %}
 
 {% block content %}
     {% if request.session.is_login %}
-    <div style="width:8.5%; height: 100%; position: fixed; float: left; margin-top: -15px; background-color: #e3e3e3;"> <!-- 侧边栏div-->
-        <div> <!-- 操作栏 -->
-            <ul class="nav nav-pills nav-stacked">
-                <li role="presentation" style="cursor: pointer;"><a onclick="showp(window)">展示个人当天数据</a></li>
-                <li role="presentation" style="cursor: pointer;"><a onclick="showpd(window)">展示所有人当天数据</a></li>
-                <li role="presentation" style="cursor: pointer;"><a onclick="showa(window)">展示所有数据</a></li>
-                <li role="presentation" style="cursor: pointer;" onclick="search()"><a>搜索</a></li>
-                {% if request.session.user_power == 1 %}<!-- 只有管理员才能删除数据 -->
-                    <li role="presentation" style="cursor: pointer;"><a onclick="pl_dl(window)">批量删除</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-
-    <div style="float: left; height: 100%; width: 91.5%; margin-top: -15px; position: fixed; margin-left: 164px;"> <!-- 右边主体div-->
-        <div style="width: 100%; height: 10%;"> <!-- 右边上面div -->
-            <div id="index_right_img" style="border: 1px solid black; overflow: hidden;">
-                <img src="/static/img/index_right_img.jpeg">
+        {% if request.session.user_power == 1 or request.session.user_power == 2 %}
+            <div style="width:8.5%; height: 100%; position: fixed; float: left; margin-top: -15px; background-color: #e3e3e3;"> <!-- 侧边栏div-->
+                <div> <!-- 操作栏 -->
+                    <ul class="nav nav-pills nav-stacked">
+                        <li role="presentation" style="cursor: pointer;"><a onclick="ginsert()">添加数据</a></li>
+                        <li role="presentation" style="cursor: pointer;"><a onclick="showp(window)">展示个人当天数据</a></li>
+                        <li role="presentation" style="cursor: pointer;"><a onclick="showpd(window)">展示所有人当天数据</a></li>
+                        <li role="presentation" style="cursor: pointer;"><a onclick="showa(window)">展示所有数据</a></li>
+                        <li role="presentation" style="cursor: pointer;" onclick="search()"><a>搜索</a></li>
+                        {% if request.session.user_power == 1 %}<!-- 只有管理员才能删除数据 -->
+                            <li role="presentation" style="cursor: pointer;"><a onclick="pl_dl(window)">批量删除</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
-            <!-- insert -->
-            <div id="ginsert" style="display: none;">
-                <form class='form-register' action="/insert/" method="post">
-                    {% if message %}
-                    <div class="alert alert-warning" id="warning">{{ message }}</div>
-                    {% endif %}
-                        {% csrf_token %}
+
+            <div style="float: left; height: 100%; width: 91.5%; margin-top: -15px; position: fixed; margin-left: 164px;"> <!-- 右边主体div-->
+                <div style="width: 100%; height: 10%;"> <!-- 右边上面div -->
+                    <div id="index_right_img" style="border: 1px solid black; overflow: hidden;">
+                        <img src="/static/img/index_right_img.jpeg">
+                    </div>
+                    <!-- insert -->
+                    <div id="ginsert" style="display: none;">
+                        <form class='form-register' action="/insert/" method="post">
+                            {% if message %}
+                            <div class="alert alert-warning" id="warning">{{ message }}</div>
+                            {% endif %}
+                                {% csrf_token %}
+                            <table class="table">
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>项目名字</th>
+                                    <th>是否外包</th>
+                                    <th>任务ID</th>
+                                    <th>日期</th>
+                                    <th>任务类型</th>
+                                    <th>图片数量</th>
+                                    <th>框数</th>
+                                    <th>工时</th>
+                                    <th style="text-align: center;">按钮</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="text" name="uname" value="{{ request.session.user_name }}" class="form-control" readonly="readonly"></td>
+                                    <td>
+                                        <select class="form-control" name="pname" id="pname">
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-control" name="waibao" id="waibao">
+                                            <option value ="---">---</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" name="task_id" class="form-control"></td>
+                                    <td><input type="date" name="dtime" class="form-control" id="riqi"></td>
+                                    <td>
+                                        <select class="form-control" name="kinds" id="kinds">
+                                        </select>
+                                    </td>
+                                    <td><input type="text" name="pnums" class="form-control"></td>
+                                    <td><input type="text" name="knums" class="form-control"></td>
+                                    <td><input type="text" name="ptimes" class="form-control" required='required'></td>
+                                    <td>
+                                        <input type="reset" class="btn btn-default pull-left" value="重置">
+                                        <input type="submit" class="btn btn-primary pull-right" value="添加">
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                    <!-- searcch -->
+                    <div id="search" style="display: none;">
+                        <form class='form-register' action="/index/" method="post">
+                            {% csrf_token %}
+                            <table class="table">
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>项目名字</th>
+                                    <th>时间</th>
+                                    <th style="text-align: center;">按钮</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="text" class="form-control" name="uname"></td>
+                                    <td>
+                                        <select class="form-control" name="pname" id="spname">
+                                            <option value ="---">---</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="date" name="dtime" class="form-control" id="sriqi"></td>
+                                    <td>
+                                        <input type="reset" class="btn btn-default pull-left" value="重置">
+                                        <input type="submit" class="btn btn-primary pull-right" value="搜索">
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div> <!-- 右边上面div -->
+                <!-- show -->
+                <div style="position: fixed; width: 91.5%; height: 83%; overflow-y: scroll;"> <!-- 展示div-->
                     <table class="table">
                         <tr>
-                            <th>用户名</th>
+                            <th><span style="margin-right: 10px;" onclick="qx_all()"><input type="checkbox" name="fbs" id="fbs"> 全选</span>用户名</th>
                             <th>项目名字</th>
                             <th>是否外包</th>
                             <th>任务ID</th>
@@ -72,132 +169,63 @@
                             <th>图片数量</th>
                             <th>框数</th>
                             <th>工时</th>
-                            <th style="text-align: center;">按钮</th>
+                            <th>修改</th>
                         </tr>
+                        {% for tasks in stus %}
                         <tr>
-                            <td><input type="text" name="uname" value="{{ request.session.user_name }}" class="form-control" readonly="readonly"></td>
-                            <td>
-                                <select class="form-control" name="pname" id="pname">
-                                </select>
-                            </td>
-                            <td>
-                                <select class="form-control" name="waibao" id="waibao">
-                                    <option value ="---">---</option>
-                                </select>
-                            </td>
-                            <td><input type="text" name="task_id" class="form-control"></td>
-                            <td><input type="date" name="dtime" class="form-control" id="riqi"></td>
-                            <td>
-                                <select class="form-control" name="kinds" id="kinds">
-                                </select>
-                            </td>
-                            <td><input type="text" name="pnums" class="form-control"></td>
-                            <td><input type="text" name="knums" class="form-control"></td>
-                            <td><input type="text" name="ptimes" class="form-control" required='required'></td>
-                            <td>
-                                <input type="reset" class="btn btn-default pull-left" value="重置">
-                                <input type="submit" class="btn btn-primary pull-right" value="添加">
-                            </td>
+                            <td><span style="margin-right: 45px;"><input type="checkbox" name="fb" value="{{ tasks.id }}"></span>{{ tasks.uname }}</td>
+                            <td>{{ tasks.pname }}</td>
+                            <td>{{ tasks.waibao }}</td>
+                            {% if tasks.waibao == '否' %}
+                            <td>#{{ tasks.task_id }}</td>
+                            {% else %}
+                            <td>{{ tasks.task_id }}</td>
+                            {% endif %}
+                            <td>{{ tasks.dtime }}</td>
+                            <td>{{ tasks.kinds }}</td>
+                            <td>{{ tasks.pnums }}</td>
+                            <td>{{ tasks.knums }}</td>
+                            <td>{{ tasks.ptimes }}</td>
+                            <td><a onclick='test("{{ tasks.id }}","{{ tasks.uname }}")'><button style="border:none">修改</button></a></td>
+                            <!-- /update?id={{ tasks.id }} -->
                         </tr>
+                        {% endfor %}
                     </table>
-                </form>
+                    <div class="container">
+                        {% if stus.has_previous %}
+                            <a href="/index?page_id={{stus.previous_page_number}}">
+                                <button><<</button>
+                            </a>
+                        {% endif %}
+                        
+                        {% for i in page.page_range %}
+                            <a href="/index?page_id={{i}}">
+                                <button>{{ i }}</button>
+                            </a>
+                        {% endfor %}
+                        
+                        {% if stus.has_next %}
+                            <a href="/index?page_id={{stus.next_page_number}}">
+                                <button> &nbsp;>>&nbsp; </button>
+                            </a>
+                        {% endif %}
+                    </div>
+
+                </div>
             </div>
-            <!-- searcch -->
-            <div id="search" style="display: none;">
-                <form class='form-register' action="/index/" method="post">
-                    {% csrf_token %}
-                    <table class="table">
-                        <tr>
-                            <th>用户名</th>
-                            <th>项目名字</th>
-                            <th>时间</th>
-                            <th style="text-align: center;">按钮</th>
-                        </tr>
-                        <tr>
-                            <td><input type="text" class="form-control" name="uname"></td>
-                            <td>
-                                <select class="form-control" name="pname" id="spname">
-                                    <option value ="---">---</option>
-                                </select>
-                            </td>
-                            <td><input type="date" name="dtime" class="form-control" id="sriqi"></td>
-                            <td>
-                                <input type="reset" class="btn btn-default pull-left" value="重置">
-                                <input type="submit" class="btn btn-primary pull-right" value="搜索">
-                            </td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
-        </div> <!-- 右边上面div -->
-        <!-- show -->
-        <div style="position: fixed; width: 91.5%; height: 83%; overflow-y: scroll;"> <!-- 展示div-->
-            <table class="table">
-                <tr>
-                    <th><span style="margin-right: 10px;" onclick="qx_all()"><input type="checkbox" name="fbs" id="fbs"> 全选</span>用户名</th>
-                    <th>项目名字</th>
-                    <th>是否外包</th>
-                    <th>任务ID</th>
-                    <th>日期</th>
-                    <th>任务类型</th>
-                    <th>图片数量</th>
-                    <th>框数</th>
-                    <th>工时</th>
-                    <th>修改</th>
-                </tr>
-                {% for tasks in stus %}
-                <tr>
-                    <td><span style="margin-right: 45px;"><input type="checkbox" name="fb" value="{{ tasks.id }}"></span>{{ tasks.uname }}</td>
-                    <td>{{ tasks.pname }}</td>
-                    <td>{{ tasks.waibao }}</td>
-                    {% if tasks.waibao == '否' %}
-                    <td>#{{ tasks.task_id }}</td>
-                    {% else %}
-                    <td>{{ tasks.task_id }}</td>
-                    {% endif %}
-                    <td>{{ tasks.dtime }}</td>
-                    <td>{{ tasks.kinds }}</td>
-                    <td>{{ tasks.pnums }}</td>
-                    <td>{{ tasks.knums }}</td>
-                    <td>{{ tasks.ptimes }}</td>
-                    <td><a href="" onclick='test("{{ tasks.id }}","{{ tasks.uname }}")'><button style="border:none">修改</button></a></td>
-                    <!-- /update?id={{ tasks.id }} -->
-                </tr>
-                {% endfor %}
-            </table>
-            <div class="container">
-                {% if stus.has_previous %}
-                    <a href="/index?page_id={{stus.previous_page_number}}">
-                        <button><<</button>
-                    </a>
-                {% endif %}
-                
-                {% for i in page.page_range %}
-                    <a href="/index?page_id={{i}}">
-                        <button>{{ i }}</button>
-                    </a>
-                {% endfor %}
-                
-                {% if stus.has_next %}
-                    <a href="/index?page_id={{stus.next_page_number}}">
-                        <button> &nbsp;>>&nbsp; </button>
-                    </a>
-                {% endif %}
-            </div>
-            </div>
-        </div>
-    </div>
+        {% else %}
+        <h3>无权限查看</h6>
+        {% endif %}
     {% else %}
         <h3>你尚未登录,请先登录！</h3>
     {% endif %}
 <script type="text/javascript">
+    // 数据修改
     function test(id,uname){
-        alert(id);
-        alert(uname);
         if (uname != $('#id_name').text()){
             alert('无权限修改');
         }else{
-            window.open("/update?id="+id);
+            windows.location.href = "/update?id="+id;
         };
     };
     //----------------------------添加数据 之 下拉框动态赋值------------------------------
@@ -339,7 +367,7 @@
         };
         if (fb_flag == false){
             alert('请选择要删除的数据!');
-            windows.location.href="/index?showp=" + $('#id_name').text();
+            windows.location.href;
         }else{
             if (confirm('确定要删除吗?')){ //删除时的确认提示，如果点击取消则不删除
                 for (var i = 0; i < alls.length; i++){
@@ -351,9 +379,9 @@
                         };
                     };
                 };
-                windows.location.href="/dtdel?dtid=" + id_list +'&n=' + $('#id_name').text();
+                windows.location.href="/wb_dtdel?dtid=" + id_list;
             }else{
-                windows.location.href="/index?showp=" + $('#id_name').text();
+                windows.location.href;
             };
         };
     };

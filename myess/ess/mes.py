@@ -277,3 +277,80 @@ def data_del(ids):
             pass
     for i in id:
         models.Task.objects.get(id = i).delete()
+
+def waibao_insert(pname,get_data_time,completes_time,pnums,knums,settlement_method,unit_price,money,wb_name):
+    try:
+        waibao_tasks = models.Waibao(pname=pname,get_data_time=get_data_time,completes_time=completes_time,pnums=int(pnums),knums=int(knums),
+                                settlement_method=settlement_method,unit_price=float(unit_price),money=float(money),wb_name=wb_name)
+        waibao_tasks.save()
+        return 'ok'
+    except:
+        return 'error'
+
+# waibao_search
+def waibao_search(pname,begin_time,over_time):
+    if pname != '---' and begin_time != '' and over_time != '': # 项目名-不为空 ， 开始时间-不为空 ， 结束时间-不为空
+        print('进入了 判断1')
+        tdat = models.Waibao.objects.filter(pname = pname, get_data_time__range=[begin_time,over_time])
+        print('判断1 modle',tdat)
+        return tdat
+    elif pname == '---' and begin_time != '' and over_time != '': # 项目名-为空 ， 开始时间-不为空 ， 结束时间-不为空
+        print('进入了 判断2')
+        tdat = models.Waibao.objects.filter(get_data_time__range=[begin_time,over_time])
+        print('判断2 modle',tdat)
+        return tdat
+    elif pname != '---' and begin_time == '' and over_time != '': # 项目名-不为空 ， 开始时间-为空 ， 结束时间-不为空
+        print('进入了 判断3')
+        tdat = models.Waibao.objects.filter(pname = pname, completes_time = over_time)
+        print('判断3 modle',tdat)
+        return tdat
+    elif pname == '---' and begin_time == '' and over_time != '': # 项目名-为空 ， 开始时间-为空 ， 结束时间-不为空
+        print('进入了 判断4')
+        tdat = models.Waibao.objects.filter(completes_time = over_time)
+        print('判断4 modle',tdat)
+        return tdat
+    elif pname != '---' and begin_time != '' and over_time == '': # 项目名-不为空 ， 开始时间-不为空 ， 结束时间-为空
+        print('进入了 判断5')
+        tdat = models.Waibao.objects.filter(pname = pname, get_data_time = begin_time)
+        print('判断5 modle',tdat)
+        return tdat
+    elif pname != '---' and begin_time == '' and over_time == '': # 项目名-不为空 ， 开始时间-为空 ， 结束时间-为空
+        print('进入了 判断6')
+        tdat = models.Waibao.objects.filter(pname = pname)
+        print('判断6 modle',tdat)
+        return tdat
+    elif pname == '---' and begin_time != '' and over_time == '': # 项目名-为空 ， 开始时间-不为空 ， 结束时间-为空
+        print('进入了 判断7')
+        tdat = models.Waibao.objects.filter(get_data_time = begin_time)
+        print('判断7 modle',tdat)
+        return tdat
+    else:
+        pass
+
+# 外包数据之 单条/批量删除
+def wb_data_del(ids):
+    id = []
+    for i in ids.split(','):
+        try:
+            id.append(int(i))
+        except:
+            pass
+    for i in id:
+        models.Waibao.objects.get(id = i).delete()
+
+# 外包要修改的数据渲染
+def waibao_update(id):
+    stu = models.Waibao.objects.filter(id=id)
+    return stu
+def wb_nupdate(id,pname,get_data_time,completes_time,pnums,knums,settlement_method,unit_price,money,wb_name):
+    wb_data = models.Waibao.objects.get(id=id)
+    wb_data.pname = pname
+    wb_data.get_data_time = get_data_time
+    wb_data.completes_time = completes_time
+    wb_data.pnums = int(pnums)
+    wb_data.knums = int(knums)
+    wb_data.settlement_method = settlement_method
+    wb_data.unit_price = float(unit_price)
+    wb_data.money = float(money)
+    wb_data.wb_name = wb_name
+    wb_data.save()

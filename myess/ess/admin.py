@@ -3,7 +3,6 @@ from ess import models
 
 # Register your models here.
 admin.site.register(models.User)
-# admin.site.register(models.Task)
 
 @admin.register(models.Task)
 class ControlTASK(admin.ModelAdmin):
@@ -12,3 +11,7 @@ class ControlTASK(admin.ModelAdmin):
 admin.site.register(models.Project)
 
 admin.site.register(models.Tkinds)
+
+@admin.register(models.Waibao)
+class ControlWaibao(admin.ModelAdmin):
+    ordering = ('-get_data_time',)

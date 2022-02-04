@@ -1,19 +1,29 @@
 # 工作量及效率统计系统设计
 
-install
+环境
 ```
-安装mysql并创建数据库，命名为myess
+安装mysql并创建数据库，数据库名字为myess
+python >= 3.6
 pip install django
 pip install mysqlclient
-pip install django-simple-captcha
+pip install xlrd==1.2.0
+
+注：xlrd安装完成后需要找到环境中的xlrd.py，把里面的getiterator改成iter
 ```
 
-run
+启动项目
 ```
 cd myess
 python manage.py makemigrations
 python manage.py migrate
-python manage.py runserver 8080
+python manage.py runserver 0.0.0.0:8088
+```
+权限说明
+```
+ 1 : 代表管理员，即可操作所有内容
+ 2 : 代表标注人员,即除了外包数据外都可操作(数据删除权限除外)
+ 3 : 代表研发人员,即只能看外包数据部分(数据删除权限除外)
+ 4 : 代表刚注册的新用户,需要找管理员更改权限
 ```
 
 TODO
@@ -27,7 +37,7 @@ TODO
 - [x] 插入数据的时候，名字换成中文
 - [x] 日期默认当天
 - [x] 导航栏添加 "外包"
-- [ ] 外包数据展示
+- [x] 外包数据展示
 - [x] 首页添加搜索,条件(名字,项目名字,指定某天日期)
 - [x] li 鼠标放上去的效果
 - [x] 支持在首页页面添加数据

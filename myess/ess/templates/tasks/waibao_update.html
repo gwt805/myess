@@ -1,0 +1,58 @@
+{% extends 'login/base.html' %}
+{% block title %}数据修改{% endblock %}
+
+{% block content %}
+    {% if request.session.is_login %}
+    <form class='form-register' action="/wb_update/" method="post">
+        {% if message %}
+        <div class="alert alert-warning" id="warning">{{ message }}</div>
+        {% endif %}
+            {% csrf_token %}
+        <table class="table">
+            <tr>
+                <th>ID</th>
+                <th>项目名字</th>
+                <th>发送数据时间</th>
+                <th>结束标注时间</th>
+                <th>图片数量</th>
+                <th>标注框数量</th>
+                <th>结算方式</th>
+                <th>单价</th>
+                <th>金额</th>
+                <th>外包名字</th>
+                <th>按钮</th>
+            </tr>
+            <tr>
+                <td><input type="text" name="id" id="id" value="{{ stu.0.id }}" class="form-control" readonly="readonly"></td>
+                <td><select class="form-control" name="pname" id="pname"><option value="{{ stu.0.pname }}">{{ stu.0.pname }}</option></select></td>
+                <td><input type="date" name="get_data_time" class="form-control" value="{{ stu.0.get_data_time }}"></td>
+                <td><input type="date" name="completes_time" class="form-control" value="{{ stu.0.completes_time }}"></td>
+                <td><input type="text" name="pnums" class="form-control" value="{{ stu.0.pnums }}"></td>
+                <td><input type="text" name="knums" class="form-control" value="{{ stu.0.knums }}"></td>
+                <td><input type="text" name="settlement_method" class="form-control" required='required' value="{{ stu.0.settlement_method }}"></td>
+                <td><input type="text" name="unit_price" class="form-control" value="{{ stu.0.unit_price }}"></td>
+                <td><input type="text" name="money" class="form-control" value="{{ stu.0.money }}"></td>
+                <td><input type="text" name="wb_name" class="form-control" value="{{ stu.0.wb_name }}"></td>
+                <td>
+                    <input type="submit" class="btn btn-primary pull-right" value="修改">
+                </td>
+            </tr>
+        </table>
+    </form>
+    {% else %}
+        <h3>你尚未登录,请先登录！</h3>
+    {% endif %}
+    <script>
+        var projects = JSON.parse('{{ projects|safe }}'); // 项目名字 列表
+        // 给项目名字 添加下拉框
+        var p_s = document.getElementById('pname');
+        for (var i=0;i<projects.length;i++){
+            if (projects[i] != document.getElementById("pname").value){
+                var objOption = document.createElement("option");
+                objOption.value = projects[i];
+                objOption.text =projects[i];
+                p_s.add(objOption);
+            };
+        };
+    </script>
+{% endblock %}
