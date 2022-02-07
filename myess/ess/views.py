@@ -125,7 +125,6 @@ def insert(request):
             name = ''
             for i in range(1,sheet.nrows):
                 row = sheet.row_values(i)
-                print()
                 name = row[0]
                 if row[5] == '标注':
                     new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
