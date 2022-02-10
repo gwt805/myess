@@ -44,6 +44,17 @@ def tims(begin_time,over_time):
             pp.append(knum)
             pp.append(math.floor(knum/ptm))
             tps.append(pp)
+        elif i[0] == '属性标注':
+            for j in gg:
+                pnum += j.pnums
+                knum += j.knums
+                ptm += j.ptimes
+            pp.append(i[0])
+            pp.append(i[1])
+            pp.append(pnum)
+            pp.append(knum)
+            pp.append(math.floor(knum/ptm))
+            tps.append(pp)
         elif i[0] == '试标':
             for j in gg:
                 pnum += j.pnums
@@ -98,6 +109,18 @@ def pppee(begin_time,over_time):
                 pp.append(math.floor(pnum/ptm))
                 tps.append(pp)
             elif i[0] == '标注':
+                for j in gg:
+                    pnum += j.pnums
+                    knum += j.knums
+                    ptm += j.ptimes
+                pp.append(g)
+                pp.append(i[0])
+                pp.append(i[1])
+                pp.append(pnum)
+                pp.append(knum)
+                pp.append(math.floor(knum/ptm))
+                tps.append(pp)
+            elif i[0] == '属性标注':
                 for j in gg:
                     pnum += j.pnums
                     knum += j.knums
@@ -174,6 +197,16 @@ def performanceq(begin_time,over_time,name):
             pp.append(pnum)
             pp.append(knum)
             tps.append(pp)
+        elif i[0] == '属性标注':
+            for j in gg:
+                pnum += j.pnums
+                knum += j.knums
+                ptm += j.ptimes
+            pp.append(i[0])
+            pp.append(i[1])
+            pp.append(pnum)
+            pp.append(knum)
+            tps.append(pp)
         elif i[0] == '试标':
             for j in gg:
                 pnum += j.pnums
@@ -225,6 +258,17 @@ def pupdate(id):
 def nupdate(id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
     now_data = models.Task.objects.get(id=id)
     if kinds == '标注':
+        now_data.uname=uname
+        now_data.pname=pname
+        now_data.waibao=waibao
+        now_data.task_id=int(task_id)
+        now_data.dtime=dtime
+        now_data.kinds=kinds
+        now_data.pnums=int(pnums)
+        now_data.knums=int(knums)
+        now_data.ptimes=float(ptimes)
+        now_data.save()
+    elif kinds == '属性标注':
         now_data.uname=uname
         now_data.pname=pname
         now_data.waibao=waibao
@@ -290,39 +334,25 @@ def waibao_insert(pname,get_data_time,completes_time,pnums,knums,settlement_meth
 # waibao_search
 def waibao_search(pname,begin_time,over_time):
     if pname != '---' and begin_time != '' and over_time != '': # 项目名-不为空 ， 开始时间-不为空 ， 结束时间-不为空
-        print('进入了 判断1')
         tdat = models.Waibao.objects.filter(pname = pname, get_data_time__range=[begin_time,over_time])
-        print('判断1 modle',tdat)
         return tdat
     elif pname == '---' and begin_time != '' and over_time != '': # 项目名-为空 ， 开始时间-不为空 ， 结束时间-不为空
-        print('进入了 判断2')
         tdat = models.Waibao.objects.filter(get_data_time__range=[begin_time,over_time])
-        print('判断2 modle',tdat)
         return tdat
     elif pname != '---' and begin_time == '' and over_time != '': # 项目名-不为空 ， 开始时间-为空 ， 结束时间-不为空
-        print('进入了 判断3')
         tdat = models.Waibao.objects.filter(pname = pname, completes_time = over_time)
-        print('判断3 modle',tdat)
         return tdat
     elif pname == '---' and begin_time == '' and over_time != '': # 项目名-为空 ， 开始时间-为空 ， 结束时间-不为空
-        print('进入了 判断4')
         tdat = models.Waibao.objects.filter(completes_time = over_time)
-        print('判断4 modle',tdat)
         return tdat
     elif pname != '---' and begin_time != '' and over_time == '': # 项目名-不为空 ， 开始时间-不为空 ， 结束时间-为空
-        print('进入了 判断5')
         tdat = models.Waibao.objects.filter(pname = pname, get_data_time = begin_time)
-        print('判断5 modle',tdat)
         return tdat
     elif pname != '---' and begin_time == '' and over_time == '': # 项目名-不为空 ， 开始时间-为空 ， 结束时间-为空
-        print('进入了 判断6')
         tdat = models.Waibao.objects.filter(pname = pname)
-        print('判断6 modle',tdat)
         return tdat
     elif pname == '---' and begin_time != '' and over_time == '': # 项目名-为空 ， 开始时间-不为空 ， 结束时间-为空
-        print('进入了 判断7')
         tdat = models.Waibao.objects.filter(get_data_time = begin_time)
-        print('判断7 modle',tdat)
         return tdat
     else:
         pass

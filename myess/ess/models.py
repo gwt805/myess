@@ -12,6 +12,7 @@ class User(models.Model):
 class Task(models.Model):
     gender = (
         ('标注','标注'),
+        ('属性标注','属性标注'),
         ('试标','试标'),
         ('审核','审核'),
         ('筛选','筛选')
@@ -21,6 +22,7 @@ class Task(models.Model):
         ('脏污','脏污'),
         ('行人扶梯一米栏','行人扶梯一米栏'),
         ('xfy-2D-LPCD','xfy-2D-LPCD'),
+        ('50-xfy-person_orient','50-xfy-person_orient'),
         ('红绿灯','红绿灯'),
         ('S线数据','S线数据'),
         ('室内可通行','室内可通行'),
@@ -60,6 +62,7 @@ class Waibao(models.Model):
         ('脏污','脏污'),
         ('行人扶梯一米栏','行人扶梯一米栏'),
         ('xfy-2D-LPCD','xfy-2D-LPCD'),
+        ('50-xfy-person_orient','50-xfy-person_orient'),
         ('红绿灯','红绿灯'),
         ('S线数据','S线数据'),
         ('室内可通行','室内可通行'),

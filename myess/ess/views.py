@@ -131,7 +131,12 @@ def insert(request):
                                             dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
                                             knums=int(row[7]),ptimes=float(row[8]))
                     new_tasks.save()
-                if row[5] == '试标':
+                elif row[5] == '属性标注':
+                    new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
+                                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
+                                            knums=int(row[7]),ptimes=float(row[8]))
+                    new_tasks.save()
+                elif row[5] == '试标':
                     new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
                                             dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
                                             knums=int(row[7]),ptimes=float(row[8]))
@@ -160,6 +165,9 @@ def insert(request):
         ptimes = request.POST.get('ptimes').strip()
         try:
             if kinds == '标注':
+                new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),ptimes=float(ptimes))
+                new_tasks.save()
+            elif kinds == '属性标注':
                 new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),ptimes=float(ptimes))
                 new_tasks.save()
             elif kinds == '试标':
