@@ -55,6 +55,17 @@ def tims(begin_time,over_time):
             pp.append(knum)
             pp.append(math.floor(knum/ptm))
             tps.append(pp)
+        elif i[0] == '视频标注':
+            for j in gg:
+                pnum += j.pnums
+                knum += j.knums
+                ptm += j.ptimes
+            pp.append(i[0])
+            pp.append(i[1])
+            pp.append(pnum)
+            pp.append(knum)
+            pp.append(math.floor(knum/ptm))
+            tps.append(pp)
         elif i[0] == '试标':
             for j in gg:
                 pnum += j.pnums
@@ -120,6 +131,18 @@ def pppee(begin_time,over_time):
                 pp.append(knum)
                 pp.append(math.floor(knum/ptm))
                 tps.append(pp)
+            elif i[0] == '视频标注':
+                for j in gg:
+                    pnum += j.pnums
+                    knum += j.knums
+                    ptm += j.ptimes
+                pp.append(g)
+                pp.append(i[0])
+                pp.append(i[1])
+                pp.append(pnum)
+                pp.append(knum)
+                pp.append(math.floor(knum/ptm))
+                tps.append(pp)
             elif i[0] == '属性标注':
                 for j in gg:
                     pnum += j.pnums
@@ -148,6 +171,7 @@ def pppee(begin_time,over_time):
     return ggg
 # 团队效率
 def nw(now_begin_time,now_over_time):
+    print('团队效率',tims(now_begin_time,now_over_time))
     return tims(now_begin_time,now_over_time)
 def lw(last_begin_time,last_over_time):
     return tims(last_begin_time,last_over_time)
@@ -188,6 +212,16 @@ def performanceq(begin_time,over_time,name):
             pp.append(pnum)
             tps.append(pp)
         elif i[0] == '标注':
+            for j in gg:
+                pnum += j.pnums
+                knum += j.knums
+                ptm += j.ptimes
+            pp.append(i[0])
+            pp.append(i[1])
+            pp.append(pnum)
+            pp.append(knum)
+            tps.append(pp)
+        elif i[0] == '视频标注':
             for j in gg:
                 pnum += j.pnums
                 knum += j.knums
@@ -268,11 +302,21 @@ def nupdate(id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
         now_data.knums=int(knums)
         now_data.ptimes=float(ptimes)
         now_data.save()
-    elif kinds == '属性标注':
+    elif kinds == '视频标注':
         now_data.uname=uname
         now_data.pname=pname
         now_data.waibao=waibao
         now_data.task_id=int(task_id)
+        now_data.dtime=dtime
+        now_data.kinds=kinds
+        now_data.pnums=int(pnums)
+        now_data.knums=int(knums)
+        now_data.ptimes=float(ptimes)
+        now_data.save()
+    elif kinds == '属性标注':
+        now_data.uname=uname
+        now_data.pname=pname
+        now_data.waibao=waibao
         now_data.dtime=dtime
         now_data.kinds=kinds
         now_data.pnums=int(pnums)
