@@ -60,16 +60,16 @@
 {% block content %}
     {% if request.session.is_login %}
         {% if request.session.user_power == 1 or request.session.user_power == 2 %}
-            <div style="width:8.5%; height: 100%; position: fixed; float: left; margin-top: -15px; background-color: #bdbdbd;"> <!-- 侧边栏div-->
+            <div style="width:8.5%; height: 100%; position: fixed; float: left; margin-top: -15px; background-color: #a3a3a3;"> <!-- 侧边栏div-->
                 <div> <!-- 操作栏 -->
                     <ul class="nav nav-pills nav-stacked">
-                        <li role="presentation" style="cursor: pointer;"><a onclick="ginsert()">添加数据</a></li>
-                        <li role="presentation" style="cursor: pointer;"><a onclick="showp(window)">展示个人当天数据</a></li>
-                        <li role="presentation" style="cursor: pointer;"><a onclick="showpd(window)">展示所有人当天数据</a></li>
-                        <li role="presentation" style="cursor: pointer;"><a onclick="showa(window)">展示所有数据</a></li>
-                        <li role="presentation" style="cursor: pointer;" onclick="search()"><a>搜索</a></li>
+                        <li role="presentation" style="cursor: pointer;"><a onclick="ginsert()" style="color: black;">添加数据</a></li>
+                        <li role="presentation" style="cursor: pointer;"><a onclick="showp(window)" style="color: black;">展示个人当天数据</a></li>
+                        <li role="presentation" style="cursor: pointer;"><a onclick="showpd(window)" style="color: black;">展示所有人当天数据</a></li>
+                        <li role="presentation" style="cursor: pointer;"><a onclick="showa(window)" style="color: black;">展示所有数据</a></li>
+                        <li role="presentation" style="cursor: pointer;" onclick="search()"><a style="color: black;">搜索</a></li>
                         {% if request.session.user_power == 1 %}<!-- 只有管理员才能删除数据 -->
-                            <li role="presentation" style="cursor: pointer;"><a onclick="pl_dl(window)">批量删除</a></li>
+                            <li role="presentation" style="cursor: pointer;"><a onclick="pl_dl(window)" style="color: black;">批量删除</a></li>
                         {% endif %}
                     </ul>
                 </div>
