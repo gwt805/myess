@@ -40,7 +40,7 @@ class Task(models.Model):
     dtime = models.CharField(max_length=20,verbose_name='当天日期') # 当天日期
     kinds = models.CharField(max_length=20,choices=gender,verbose_name='任务类型')# 任务类型：标注，审核，其他
     pnums = models.IntegerField(null=True,verbose_name='图片数量',blank=True) # 图片数量
-    knums = models.IntegerField(null=True,verbose_name='框数',blank=True) # 标注框数量
+    knums = models.CharField(max_length=128,null=True,verbose_name='框数',blank=True) # 标注框数量
     ptimes = models.FloatField(verbose_name='工时') # 工时
 
     def __str__(self):

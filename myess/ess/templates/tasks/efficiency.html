@@ -31,7 +31,7 @@
             <th>类型</th>
             <th>项目名字</th>
             <th>图片数量</th>
-            <th>框数</th>
+            <th>框数/时长</th>
             <th>本周效率</th>
             <th>上周效率</th>
         </tr>
@@ -78,10 +78,10 @@
                         <td>{{ i.1 }}</td>
                         <td>{{ i.2 }}</td>
                         <td>{{ i.3 }}</td>
-                        <td>{{ i.4 }}时长/h</td>
+                        <td>{{ i.4 }} /h</td>
                         {% for j in tks_lw %} <!-- 上周工作量 -->
                             {% if j.0 == '视频标注' and j.1 == i.1 %}
-                                <td>{{ j.4 }}时长/h</td>
+                                <td>{{ j.4 }} /h</td>
                             {% endif %}
                         {% endfor %}
                     {% endif %}
@@ -120,7 +120,7 @@
             <th>类型</th>
             <th>项目名字</th>
             <th>图片数量</th>
-            <th>框数</th>
+            <th>框数/时长</th>
             <th>本周效率</th>
             <th>上周效率</th>
         </tr>
@@ -177,11 +177,11 @@
                 <td>{{ gp.2 }}</td>
                 <td>{{ gp.3 }}</td>
                 <td>{{ gp.4 }}</td>
-                <td>{{ gp.5 }}时长/h</td>
+                <td>{{ gp.5 }} /h</td>
                 {% for j3 in pks_lw %} <!-- 上周工作量  -->
                     {% for j4 in j3 %}
                         {% if j4.1 == '视频标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
-                            <td>{{ j4.5 }}时长/h</td>
+                            <td>{{ j4.5 }} /h</td>
                         {% endif %}
                     {% endfor %}
                 {% endfor %}

@@ -1,3 +1,4 @@
+from math import fabs
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from ess import models
@@ -139,7 +140,7 @@ def insert(request):
                 elif row[5] == '视频标注':
                     new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),
                                             dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
-                                            knums=int(row[7]),ptimes=float(row[8]))
+                                            knums=row[7],ptimes=float(row[8]))
                     new_tasks.save()
                 elif row[5] == '试标':
                     new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
@@ -168,6 +169,7 @@ def insert(request):
         pnums = request.POST.get('pnums').strip()
         knums = request.POST.get('knums').strip()
         ptimes = request.POST.get('ptimes').strip()
+        print('天假数据:',uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes)
         try:
             if kinds == '标注':
                 new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),ptimes=float(ptimes))
@@ -176,7 +178,7 @@ def insert(request):
                 new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),ptimes=float(ptimes))
                 new_tasks.save()
             elif kinds == '视频标注':
-                new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),ptimes=float(ptimes))
+                new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,dtime=dtime,kinds=kinds,pnums=int(pnums),knums=knums,ptimes=float(ptimes))
                 new_tasks.save()
             elif kinds == '试标':
                 new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),ptimes=float(ptimes))
@@ -231,6 +233,7 @@ def efficiency(request):
            tks_lw= lw(last_begin_time,last_over_time)
            pks_nw = pnw(now_begin_time,now_over_time)
            pks_lw = plw(last_begin_time,last_over_time)
+           print(tks_nw,tks_lw,pks_nw,pks_lw)
            return render(request,'tasks/efficiency.html',{'now_begin_time':now_begin_time,'now_over_time':now_over_time,
                                                             'last_begin_time':last_begin_time,'last_over_time':last_over_time,
                                                                 "tks_nw":tks_nw,"tks_lw":tks_lw,
@@ -256,6 +259,7 @@ def performance(request):
 def dtdel(request):
     uname = request.GET.get('n')
     data_del(request.GET.get('dtid'))
+    print(uname,request.GET.get('dtid'))
     return redirect('/index?name='+uname)
 
 # 外包数据记录
