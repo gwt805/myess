@@ -373,10 +373,10 @@ def data_del(ids):
     for i in id:
         models.Task.objects.get(id = i).delete()
 
-def waibao_insert(pname,get_data_time,completes_time,pnums,knums,settlement_method,unit_price,money,wb_name):
+def waibao_insert(pname,get_data_time,pnums,knums,settlement_method,unit_price,wb_name):
     try:
-        waibao_tasks = models.Waibao(pname=pname,get_data_time=get_data_time,completes_time=completes_time,pnums=int(pnums),knums=int(knums),
-                                settlement_method=settlement_method,unit_price=float(unit_price),money=float(money),wb_name=wb_name)
+        waibao_tasks = models.Waibao(pname=pname,get_data_time=get_data_time,pnums=int(pnums),knums=int(knums),
+                                settlement_method=settlement_method,unit_price=float(unit_price),wb_name=wb_name)
         waibao_tasks.save()
         return 'ok'
     except:
@@ -427,11 +427,34 @@ def wb_nupdate(id,pname,get_data_time,completes_time,pnums,knums,settlement_meth
     wb_data = models.Waibao.objects.get(id=id)
     wb_data.pname = pname
     wb_data.get_data_time = get_data_time
-    wb_data.completes_time = completes_time
     wb_data.pnums = int(pnums)
     wb_data.knums = int(knums)
     wb_data.settlement_method = settlement_method
     wb_data.unit_price = float(unit_price)
-    wb_data.money = float(money)
     wb_data.wb_name = wb_name
     wb_data.save()
+
+# 外包数据统计
+def wbdata_tj(btime,otime):
+    if btime == otime == '':
+        all_data = models.Waibao.objects.all()
+        pname = [i[0] for i in models.Waibao.objects.values_list('pname')]
+    elif btime != '' and otime != '':
+        all_data = models.Waibao.objects.filter(get_data_time__range=[btime,otime])
+        pname = [i.pname for i in all_data]
+    data_list = []
+    for i in pname:
+        one_data = []
+        pnums = 0
+        knums = 0
+        money = 0
+        for j in all_data.filter(pname=i):
+            pnums += j.pnums
+            knums += j.knums
+            money += j.knums * j.unit_price
+        one_data.append(i)
+        one_data.append(pnums)
+        one_data.append(knums)
+        one_data.append(money)
+        data_list.append(one_data)
+    return data_list

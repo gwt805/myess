@@ -13,12 +13,10 @@
                 <th>ID</th>
                 <th>项目名字</th>
                 <th>发送数据时间</th>
-                <th>结束标注时间</th>
                 <th>图片数量</th>
                 <th>标注框数量</th>
                 <th>结算方式</th>
                 <th>单价</th>
-                <th>金额</th>
                 <th>外包名字</th>
                 <th>按钮</th>
             </tr>
@@ -26,16 +24,12 @@
                 <td><input type="text" name="id" id="id" value="{{ stu.0.id }}" class="form-control" readonly="readonly"></td>
                 <td><select class="form-control" name="pname" id="pname"><option value="{{ stu.0.pname }}">{{ stu.0.pname }}</option></select></td>
                 <td><input type="date" name="get_data_time" class="form-control" value="{{ stu.0.get_data_time }}"></td>
-                <td><input type="date" name="completes_time" class="form-control" value="{{ stu.0.completes_time }}"></td>
                 <td><input type="text" name="pnums" class="form-control" value="{{ stu.0.pnums }}"></td>
                 <td><input type="text" name="knums" class="form-control" value="{{ stu.0.knums }}"></td>
                 <td><input type="text" name="settlement_method" class="form-control" required='required' value="{{ stu.0.settlement_method }}"></td>
                 <td><input type="text" name="unit_price" class="form-control" value="{{ stu.0.unit_price }}"></td>
-                <td><input type="text" name="money" class="form-control" value="{{ stu.0.money }}"></td>
                 <td><input type="text" name="wb_name" class="form-control" value="{{ stu.0.wb_name }}"></td>
-                <td>
-                    <input type="submit" class="btn btn-primary pull-right" value="修改">
-                </td>
+                <td><input type="submit" class="btn btn-primary pull-right" value="修改"></td>
             </tr>
         </table>
     </form>

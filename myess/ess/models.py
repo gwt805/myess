@@ -71,12 +71,10 @@ class Waibao(models.Model):
     )
     pname = models.CharField(null=False,max_length=128,choices=p_gender,verbose_name='项目名字',blank=True) # 项目名字
     get_data_time = models.CharField(null=True,max_length=20,verbose_name='外包收到数据的日期') # 发生数据时间
-    completes_time = models.CharField(null=True,max_length=20,verbose_name='结束标注时间') # 结束标注时间
     pnums = models.IntegerField(null=False,verbose_name='图片数量',blank=True) # 图片数量
     knums = models.IntegerField(null=False,verbose_name='框数',blank=True) # 标注框数量
     settlement_method = models.CharField(null=False,max_length=128,choices=p_gender,verbose_name='结算方式',blank=True) # 结算方式
     unit_price = models.FloatField(null=False,verbose_name='单价',blank=True) # 单价
-    money = models.FloatField(null=False,verbose_name='金额',blank=True) # 金额
     wb_name = models.CharField(null=False,max_length=128,choices=p_gender,verbose_name='外包名字',blank=True) # 外包名字
     def __str__(self):
         return f'{self.pname} | {self.get_data_time} | {self.completes_time} | {self.pnums} | {self.knums} | {self.settlement_method} | {self.unit_price} | {self.money} | {self.wb_name}'

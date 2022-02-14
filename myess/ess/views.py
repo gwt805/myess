@@ -6,7 +6,7 @@ from django.shortcuts import render,redirect
 from django import forms
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
-from .mes import data_del, nupdate, nw,lw, performanceq, person, plw, pnw, pupdate, search, waibao_insert, waibao_search, waibao_update, wb_data_del, wb_nupdate
+from .mes import data_del, nupdate, nw,lw, performanceq, person, plw, pnw, pupdate, search, waibao_insert, waibao_search, waibao_update, wb_data_del, wb_nupdate, wbdata_tj
 import time
 import xlrd
 import json
@@ -298,22 +298,19 @@ def waiabo_data_insert(request):
             for i in range(1,sheet.nrows):
                 row = sheet.row_values(i)
                 waibao_tasks = models.Waibao(pname = row[0].strip(), get_data_time = xlrd.xldate_as_datetime(row[1], 0).strftime('%Y-%m-%d'),
-                                            completes_time = xlrd.xldate_as_datetime(row[2], 0).strftime('%Y-%m-%d'),pnums = int(row[3]),
-                                            knums = int(row[4]), settlement_method = row[5].strip(), unit_price = float(row[6]),
-                                            money = float(row[7]), wb_name = row[8])
+                                            pnums = int(row[2]),knums = int(row[3]), settlement_method = row[4].strip(), unit_price = float(row[5]),
+                                            wb_name = row[6])
                 waibao_tasks.save()
             return redirect('/waibao/')
         # 单条数据添加
         pname = request.POST.get('pname')
         get_data_time = request.POST.get('get_data_time')
-        completes_time = request.POST.get('completes_time')
         pnums = request.POST.get('pnums')
         knums = request.POST.get('knums')
         settlement_method = request.POST.get('settlement_method')
         unit_price = request.POST.get('unit_price')
-        money = request.POST.get('money')
         wb_name = request.POST.get('wb_name')
-        if waibao_insert(pname,get_data_time,completes_time,pnums,knums,settlement_method,unit_price,money,wb_name) == 'ok':
+        if waibao_insert(pname,get_data_time,pnums,knums,settlement_method,unit_price,wb_name) == 'ok':
             
             return redirect('/waibao')
         else:
@@ -343,6 +340,16 @@ def wb_update(request):
     projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')])
 
     return render(request,'tasks/waibao_update.html',{'stu':stu,'projects':projects})
+
+# 外包数据统计
+def wbdata_count(request):
+    if request.method == "POST":
+        btime = request.POST.get('btime')
+        otime = request.POST.get('otime')
+        tj = wbdata_tj(btime,otime)
+        return render(request,'tasks/wbdata_count.html',{'tj':tj,'btime':btime,'otime':otime})
+    tj = wbdata_tj('','')
+    return render(request,'tasks/wbdata_count.html',{'tj':tj})
 # 注销
 def logout(request):
     if not request.session.get('is_login',None):

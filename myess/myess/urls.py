@@ -33,4 +33,5 @@ urlpatterns = [
     path('waiabo_data_insert/',views.waiabo_data_insert),
     path('wb_update/',views.wb_update),
     path('wb_dtdel/',views.wb_dtdel),
+    path('wbdata_count/',views.wbdata_count),
 ]
