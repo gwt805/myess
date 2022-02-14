@@ -169,7 +169,6 @@ def insert(request):
         pnums = request.POST.get('pnums').strip()
         knums = request.POST.get('knums').strip()
         ptimes = request.POST.get('ptimes').strip()
-        print('天假数据:',uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes)
         try:
             if kinds == '标注':
                 new_tasks = models.Task(uname=uname,pname=pname,waibao=waibao,task_id=int(task_id),dtime=dtime,kinds=kinds,pnums=int(pnums),knums=int(knums),ptimes=float(ptimes))
@@ -213,7 +212,6 @@ def update(request):
         knums = request.POST.get('knums').strip()
         ptimes = request.POST.get('ptimes').strip()
         nupdate(id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes)
-        print(id)
         return redirect('/index?name='+uname)
     stu = pupdate(id)
     projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')])
@@ -233,7 +231,6 @@ def efficiency(request):
            tks_lw= lw(last_begin_time,last_over_time)
            pks_nw = pnw(now_begin_time,now_over_time)
            pks_lw = plw(last_begin_time,last_over_time)
-           print(tks_nw,tks_lw,pks_nw,pks_lw)
            return render(request,'tasks/efficiency.html',{'now_begin_time':now_begin_time,'now_over_time':now_over_time,
                                                             'last_begin_time':last_begin_time,'last_over_time':last_over_time,
                                                                 "tks_nw":tks_nw,"tks_lw":tks_lw,
@@ -259,7 +256,6 @@ def performance(request):
 def dtdel(request):
     uname = request.GET.get('n')
     data_del(request.GET.get('dtid'))
-    print(uname,request.GET.get('dtid'))
     return redirect('/index?name='+uname)
 
 # 外包数据记录
@@ -267,7 +263,6 @@ def waibao(request):
     projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')]) #数据库里所有的项目名字
     # 搜索
     if request.method == "POST":
-        print('post进来了')
         pname = request.POST.get('pname')
         begin_time = request.POST.get('begin_time')
         over_time = request.POST.get('over_time')
@@ -343,7 +338,6 @@ def wb_update(request):
         money = request.POST.get('money').strip()
         wb_name = request.POST.get('wb_name').strip()
         wb_nupdate(id,pname,get_data_time,completes_time,pnums,knums,settlement_method,unit_price,money,wb_name)
-        print(id)
         return redirect('/waibao/')
     stu = waibao_update(id)
     projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')])

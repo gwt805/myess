@@ -30,7 +30,7 @@ def tims(begin_time,over_time):
             pp.append(i[0])
             pp.append(i[1])
             pp.append(pnum)
-            pp.append(strftime("%H:%M:%S", gmtime((pnum/ptm))))
+            pp.append(math.floor(pnum/ptm))
             tps.append(pp)
         if i[0] == '筛选':
             for j in gg:
@@ -176,19 +176,14 @@ def pppee(begin_time,over_time):
                 pp.append(math.floor(knum/ptm))
                 tps.append(pp)
         ggg.append(tps)
-    print('224412412414',ggg)
     return ggg
 # 团队效率
 def nw(now_begin_time,now_over_time):
-    print('团队效率进来了')
     return tims(now_begin_time,now_over_time)
 def lw(last_begin_time,last_over_time):
-
     return tims(last_begin_time,last_over_time)
 # 个人效率
 def pnw(now_begin_time,now_over_time):
-    
-    print('个人效率进来了')
     return pppee(now_begin_time,now_over_time)
 def plw(last_begin_time,last_over_time):
     return pppee(last_begin_time,last_over_time)
@@ -315,7 +310,6 @@ def nupdate(id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
         now_data.ptimes=float(ptimes)
         now_data.save()
     elif kinds == '视频标注':
-        print('修改数据:',knums)
         now_data.uname=uname
         now_data.pname=pname
         now_data.waibao=waibao
