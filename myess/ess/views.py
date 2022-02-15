@@ -138,9 +138,13 @@ def insert(request):
                                             knums=int(row[7]),ptimes=float(row[8]))
                     new_tasks.save()
                 elif row[5] == '视频标注':
-                    new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),
+                    if '-' not in row[4]:
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),
                                             dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
                                             knums=row[7],ptimes=float(row[8]))
+                    else:
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),dtime=row[4],
+                                                kinds=row[5].strip(),pnums=int(row[6]),knums=row[7],ptimes=float(row[8]))
                     new_tasks.save()
                 elif row[5] == '试标':
                     new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
@@ -297,9 +301,13 @@ def waiabo_data_insert(request):
             sheet = data.sheet_by_index(0)
             for i in range(1,sheet.nrows):
                 row = sheet.row_values(i)
-                waibao_tasks = models.Waibao(pname = row[0].strip(), get_data_time = xlrd.xldate_as_datetime(row[1], 0).strftime('%Y-%m-%d'),
+                if '-' not in row[1]:
+                    waibao_tasks = models.Waibao(pname = row[0].strip(), get_data_time = xlrd.xldate_as_datetime(row[1], 0).strftime('%Y-%m-%d'),
                                             pnums = int(row[2]),knums = int(row[3]), settlement_method = row[4].strip(), unit_price = float(row[5]),
                                             wb_name = row[6])
+                else:
+                    waibao_tasks = models.Waibao(pname = row[0].strip(), get_data_time = row[1],pnums = int(row[2]),knums = int(row[3]),
+                                                settlement_method = row[4].strip(), unit_price = float(row[5]),wb_name = row[6])
                 waibao_tasks.save()
             return redirect('/waibao/')
         # 单条数据添加

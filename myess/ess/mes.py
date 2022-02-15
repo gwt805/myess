@@ -230,16 +230,19 @@ def performanceq(begin_time,over_time,name):
             tps.append(pp)
         elif i[0] == '视频标注':
             for j in gg:
+                print('视频knums:',j.knums)
                 pnum += j.pnums
-                knum += float(j.knums)
+                knum += str2sec(j.knums)
                 ptm += j.ptimes
+                
             pp.append(i[0])
             pp.append(i[1])
             pp.append(pnum)
-            pp.append(knum)
+            pp.append(strftime("%H时%M分%S秒", gmtime(knum)))
             tps.append(pp)
         elif i[0] == '属性标注':
             for j in gg:
+                print('属性框:',int(j.knums))
                 pnum += j.pnums
                 knum += int(j.knums)
                 ptm += j.ptimes
@@ -258,6 +261,7 @@ def performanceq(begin_time,over_time,name):
             pp.append(pnum)
             pp.append(knum)
             tps.append(pp)
+        print('tps:',tps)
     return tps
 
 # search
