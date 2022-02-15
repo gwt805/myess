@@ -442,23 +442,43 @@ def wb_nupdate(id,pname,get_data_time,completes_time,pnums,knums,settlement_meth
 def wbdata_tj(btime,otime):
     if btime == otime == '':
         all_data = models.Waibao.objects.all()
-        pname = [i[0] for i in models.Waibao.objects.values_list('pname')]
+        pname = []
+        for i in all_data:
+            if i.pname not in pname:
+                pname.append(i.pname)
     elif btime != '' and otime != '':
         all_data = models.Waibao.objects.filter(get_data_time__range=[btime,otime])
-        pname = [i.pname for i in all_data]
+        pname = []
+        for i in all_data:
+            if i.pname not in pname:
+                pname.append(i.pname)
     data_list = []
+    pname_list = []
+    pnums_list = []
+    knums_list = []
+    money_list = []
     for i in pname:
         one_data = []
         pnums = 0
         knums = 0
         money = 0
         for j in all_data.filter(pname=i):
-            pnums += j.pnums
-            knums += j.knums
-            money += j.knums * j.unit_price
+            one_data_length = len([k.pnums for k in all_data.filter(pname=i,get_data_time=j.get_data_time,pnums=j.pnums)])
+            if one_data_length == 2:
+                pnums = j.pnums
+                knums += j.knums
+                money += float(format(j.knums * j.unit_price, '.2f'))
+            else:
+                pnums += j.pnums
+                knums += j.knums
+                money += float(format(j.knums * j.unit_price, '.2f'))
         one_data.append(i)
         one_data.append(pnums)
         one_data.append(knums)
         one_data.append(money)
+        pname_list.append(i)
+        pnums_list.append(pnums)
+        knums_list.append(knums)
+        money_list.append(money)
         data_list.append(one_data)
-    return data_list
+    return data_list,pname_list,pnums_list,knums_list,money_list

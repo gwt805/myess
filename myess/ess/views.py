@@ -354,10 +354,15 @@ def wbdata_count(request):
     if request.method == "POST":
         btime = request.POST.get('btime')
         otime = request.POST.get('otime')
-        tj = wbdata_tj(btime,otime)
-        return render(request,'tasks/wbdata_count.html',{'tj':tj,'btime':btime,'otime':otime})
-    tj = wbdata_tj('','')
-    return render(request,'tasks/wbdata_count.html',{'tj':tj})
+        print(f'开始时间:{btime} 结束时间:{otime}')
+        tj,pname_list,pnums_list,knums_list,money_list = wbdata_tj(btime,otime)
+        pname_list_json,pnums_list_json,knums_list_json,money_list_json = json.dumps(pname_list),json.dumps(pnums_list),json.dumps(knums_list),json.dumps(money_list)
+        return render(request,'tasks/wbdata_count.html',{'tj':tj,'btime':btime,'otime':otime,'pname_list_json':pname_list_json,'pnums_list_json':pnums_list_json,
+                                                            'knums_list_json':knums_list_json,'money_list_json':money_list_json})
+    tj,pname_list,pnums_list,knums_list,money_list = wbdata_tj('','')
+    pname_list_json,pnums_list_json,knums_list_json,money_list_json = json.dumps(pname_list),json.dumps(pnums_list),json.dumps(knums_list),json.dumps(money_list)
+    return render(request,'tasks/wbdata_count.html',{'tj':tj,'pname_list_json':pname_list_json,'pnums_list_json':pnums_list_json,
+                                                            'knums_list_json':knums_list_json,'money_list_json':money_list_json})
 # 注销
 def logout(request):
     if not request.session.get('is_login',None):

@@ -11,45 +11,116 @@
 {% endblock %}
 {% block content %}
     {% if request.session.is_login %}
-    <div id="picture" style="background-color: #bdbdbd; margin-top: -15px;">
-        <div id="search">
-            <form class='form-register' action="/wbdata_count/" method="post">
-                {% csrf_token %}
+        <div id="picture" style="background-color: #bdbdbd; margin-top: -15px;">
+            <div id="search">
+                <form class='form-register' action="/wbdata_count/" method="post">
+                    {% csrf_token %}
+                    <table class="table">
+                        <tr>
+                            <th>本周开始时间</th>
+                            <th>本周结束时间</th>
+                            <th colspan="2" style="text-align: center;">按钮</th>
+                        </tr>
+                        <tr>
+                            <td><input type="date" name="btime" id="btime" class="form-control" value="{{ btime }}"></td>
+                            <td><input type="date" name="otime" id="otime" class="form-control" value="{{ otime }}"></td>
+                            <td><input type="reset" class="btn btn-default pull-left" value="重置"></td>
+                            <td><input type="submit" class="btn btn-primary pull-right" value="查看"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div style="float: left; position: fixed; width: 50%; height: 83.4%; overflow-y: scroll; background-color: #bdbdbd; margin-top: -20px;">
                 <table class="table">
                     <tr>
-                        <th>本周开始时间</th>
-                        <th>本周结束时间</th>
-                        <th colspan="2" style="text-align: center;">按钮</th>
+                        <th>项目名字</th>
+                        <th>图片数量</th>
+                        <th>框数</th>
+                        <th>金额</th>
                     </tr>
+                    {% for i in tj %} <!-- 本周工作量 -->
                     <tr>
-                        <td><input type="date" name="btime" id="btime" class="form-control" value="{{ btime }}"></td>
-                        <td><input type="date" name="otime" id="otime" class="form-control" value="{{ otime }}"></td>
-                        <td><input type="reset" class="btn btn-default pull-left" value="重置"></td>
-                        <td><input type="submit" class="btn btn-primary pull-right" value="查看"></td>
+                        <td>{{ i.0 }}</td>
+                        <td>{{ i.1 }}</td>
+                        <td>{{ i.2 }}</td>
+                        <td>{{ i.3 }}</td>
                     </tr>
+                    {% endfor %}
                 </table>
-            </form>
+            </div>
+            <div id="main" style="float: right; position: fixed; width: 50%;height:83.4%; margin-left: 50px; margin-top: -20px; overflow-x: scroll; background-color: #bdbdbd;"></div>
         </div>
-        <div style="position: fixed; width: 100%; height: 83.4%; overflow-y: scroll; background-color: #bdbdbd; margin-top: -20px;">
-            <table class="table">
-                <tr>
-                    <th>项目名字</th>
-                    <th>图片数量</th>
-                    <th>框数</th>
-                    <th>金额</th>
-                </tr>
-                {% for i in tj %} <!-- 本周工作量 -->
-                <tr>
-                    <td>{{ i.0 }}</td>
-                    <td>{{ i.1 }}</td>
-                    <td>{{ i.2 }}</td>
-                    <td>{{ i.3 }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-    </div>
     {% else %}
         <h3>你尚未登录,请先登录！</h3>
     {% endif %}
+    <script type="text/javascript">
+        var pname = JSON.parse('{{ pname_list_json|safe }}'); // 项目名字 列表
+        var pnums = JSON.parse('{{ pnums_list_json|safe }}'); // 项目名字 列表
+        var knums = JSON.parse('{{ knums_list_json|safe }}'); // 项目名字 列表
+        var money = JSON.parse('{{ money_list_json|safe }}'); // 项目名字 列表
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        // 指定图表的配置项和数据
+        var option = {title: {text: '各项目外包数据统计图'},tooltip: {},legend: {data:['图片数量','框数','金额'],right:'25%',},xAxis: {data: pname},
+        yAxis: {},
+        series: [
+                    {
+                        name: '图片数量',
+                        type: 'bar',
+                        stack:'图片数',
+                        data: pnums,
+                        itemStyle:{
+                            normal:{
+                                label:{
+                                    show:true, //开启显示
+                                    position:'top', //在上方显示
+                                    textStyle:{ //数值样式
+                                        color:'black',
+                                        fontSize:12
+                                    }
+                                }
+                            }
+                        },
+                    },
+                    {
+                        name: '框数',
+                        type: 'bar',
+                        stack:'框数',
+                        data: knums,
+                        itemStyle:{
+                            normal:{
+                                label:{
+                                    show:true, //开启显示
+                                    position:'top', //在上方显示
+                                    textStyle:{ //数值样式
+                                        color:'black',
+                                        fontSize:12
+                                    }
+                                }
+                            }
+                        },
+                    },
+                    {
+                        name: '金额',
+                        type: 'bar',
+                        stack:'金额',
+                        data: money,
+                        itemStyle:{
+                            normal:{
+                                label:{
+                                    show:true, //开启显示
+                                    position:'top', //在上方显示
+                                    textStyle:{ //数值样式
+                                        color:'black',
+                                        fontSize:12
+                                    }
+                                }
+                            }
+                        },
+                    },
+            ]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
 {% endblock %}
