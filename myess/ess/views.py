@@ -127,41 +127,69 @@ def insert(request):
             for i in range(1,sheet.nrows):
                 row = sheet.row_values(i)
                 name = row[0]
-                if row[5] == '标注':
-                    new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
-                                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
-                                            knums=int(row[7]),ptimes=float(row[8]))
-                    new_tasks.save()
-                elif row[5] == '属性标注':
-                    new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
-                                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
-                                            knums=int(row[7]),ptimes=float(row[8]))
-                    new_tasks.save()
-                elif row[5] == '视频标注':
-                    if '-' not in row[4]:
+                if '-' not in row[4]:
+                    if row[5] == '标注':
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
+                                                dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
+                                                knums=int(row[7]),ptimes=float(row[8]))
+                        new_tasks.save()
+                    elif row[5] == '属性标注':
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
+                                                dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
+                                                knums=int(row[7]),ptimes=float(row[8]))
+                        new_tasks.save()
+                    elif row[5] == '视频标注':
                         new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),
                                             dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
                                             knums=row[7],ptimes=float(row[8]))
+                        new_tasks.save()
+                    elif row[5] == '试标':
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
+                                                dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
+                                                knums=int(row[7]),ptimes=float(row[8]))
+                        new_tasks.save()
+                    elif row[5] == '审核':
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
+                                                dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
+                                                ptimes=float(row[8]))
+                        new_tasks.save()
+                    elif row[5] == '筛选':
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),
+                                                kinds=row[5].strip(),pnums=int(row[6]),ptimes=float(row[8]))
+                        new_tasks.save()
                     else:
-                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),dtime=row[4],
-                                                kinds=row[5].strip(),pnums=int(row[6]),knums=row[7],ptimes=float(row[8]))
-                    new_tasks.save()
-                elif row[5] == '试标':
-                    new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
-                                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
-                                            knums=int(row[7]),ptimes=float(row[8]))
-                    new_tasks.save()
-                elif row[5] == '审核':
-                    new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
-                                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),kinds=row[5].strip(),pnums=int(row[6]),
-                                            ptimes=float(row[8]))
-                    new_tasks.save()
-                elif row[5] == '筛选':
-                    new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),dtime=xlrd.xldate_as_datetime(row[4], 0).strftime('%Y-%m-%d'),
-                                            kinds=row[5].strip(),pnums=int(row[6]),ptimes=float(row[8]))
-                    new_tasks.save()
+                        pass
                 else:
-                    pass
+                    if row[5] == '标注':
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
+                                                dtime=row[4],kinds=row[5].strip(),pnums=int(row[6]),
+                                                knums=int(row[7]),ptimes=float(row[8]))
+                        new_tasks.save()
+                    elif row[5] == '属性标注':
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
+                                                dtime=row[4],kinds=row[5].strip(),pnums=int(row[6]),
+                                                knums=int(row[7]),ptimes=float(row[8]))
+                        new_tasks.save()
+                    elif row[5] == '视频标注':
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),
+                                            dtime=row[4],kinds=row[5].strip(),pnums=int(row[6]),
+                                            knums=row[7],ptimes=float(row[8]))
+                        new_tasks.save()
+                    elif row[5] == '试标':
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
+                                                dtime=row[4],kinds=row[5].strip(),pnums=int(row[6]),
+                                                knums=int(row[7]),ptimes=float(row[8]))
+                        new_tasks.save()
+                    elif row[5] == '审核':
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),
+                                                dtime=row[4],kinds=row[5].strip(),pnums=int(row[6]),
+                                                ptimes=float(row[8]))
+                        new_tasks.save()
+                    elif row[5] == '筛选':
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),dtime=row[4],kinds=row[5].strip(),pnums=int(row[6]),ptimes=float(row[8]))
+                        new_tasks.save()
+                    else:
+                        pass
             return redirect('/index?name='+name)
         # 自己填写数据
         uname = request.POST.get('uname').strip()
