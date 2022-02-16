@@ -68,6 +68,7 @@
                         <li role="presentation" style="cursor: pointer;"><a onclick="showpd(window)" style="color: black;">展示所有人当天数据</a></li>
                         <li role="presentation" style="cursor: pointer;"><a onclick="showa(window)" style="color: black;">展示所有数据</a></li>
                         <li role="presentation" style="cursor: pointer;" onclick="search()"><a style="color: black;">搜索</a></li>
+                        <li role="presentation" style="cursor: pointer;"><a href="/gsdata_count/" style="color: black;">图表展示</a></li>
                         {% if request.session.user_power == 1 %}<!-- 只有管理员才能删除数据 -->
                             <li role="presentation" style="cursor: pointer;"><a onclick="pl_dl(window)" style="color: black;">批量删除</a></li>
                         {% endif %}

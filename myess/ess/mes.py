@@ -427,7 +427,7 @@ def wb_data_del(ids):
 def waibao_update(id):
     stu = models.Waibao.objects.filter(id=id)
     return stu
-def wb_nupdate(id,pname,get_data_time,completes_time,pnums,knums,settlement_method,unit_price,money,wb_name):
+def wb_nupdate(id,pname,get_data_time,pnums,knums,settlement_method,unit_price,wb_name):
     wb_data = models.Waibao.objects.get(id=id)
     wb_data.pname = pname
     wb_data.get_data_time = get_data_time
@@ -482,3 +482,48 @@ def wbdata_tj(btime,otime):
         money_list.append(money)
         data_list.append(one_data)
     return data_list,pname_list,pnums_list,knums_list,money_list
+
+# GS 数据统计
+def gsdata_tj(btime,otime):
+    if btime == otime == '':
+        all_data = models.Task.objects.filter(kinds__in=['标注','视频标注','属性标注'])
+        pname = []
+        for i in all_data:
+            if i.pname not in pname:
+                pname.append(i.pname)
+    elif btime != '' and otime != '':
+        all_data = models.Task.objects.filter(dtime__range=[btime,otime],kinds__in=['标注','视频标注','属性标注'])
+        pname = []
+        for i in all_data:
+            if i.pname not in pname:
+                pname.append(i.pname)
+    data_list = []
+    pname_list = []
+    pnums_list = []
+    knums_list = []
+    for i in pname:
+        print('第一层循环:',i)
+        one_data = []
+        pnums = 0
+        knums = 0
+        video_flag = False
+        for j in all_data.filter(pname=i):
+            pnums += j.pnums
+            if j.kinds == '视频标注':
+                knums += str2sec(j.knums)
+                video_flag = True
+            else:
+                knums += int(j.knums)
+        one_data.append(i)
+        one_data.append(pnums)
+        if video_flag:
+            one_data.append(strftime("%H时%M分%S秒", gmtime(knums)))
+        else:
+            one_data.append(knums)
+        pname_list.append(i)
+        pnums_list.append(pnums)
+        if video_flag:
+            knums_list.append(knums)
+        knums_list.append(knums)
+        data_list.append(one_data)
+    return data_list,pname_list,pnums_list,knums_list

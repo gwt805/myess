@@ -6,7 +6,7 @@ from django.shortcuts import render,redirect
 from django import forms
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
-from .mes import data_del, nupdate, nw,lw, performanceq, person, plw, pnw, pupdate, search, waibao_insert, waibao_search, waibao_update, wb_data_del, wb_nupdate, wbdata_tj
+from .mes import data_del, gsdata_tj, nupdate, nw,lw, performanceq, person, plw, pnw, pupdate, search, waibao_insert, waibao_search, waibao_update, wb_data_del, wb_nupdate, wbdata_tj
 import time
 import xlrd
 import json
@@ -290,6 +290,20 @@ def dtdel(request):
     data_del(request.GET.get('dtid'))
     return redirect('/index?name='+uname)
 
+# GS数据统计
+def gsdata_count(request):
+    if request.method == "POST":
+        btime = request.POST.get('btime')
+        otime = request.POST.get('otime')
+        tj,pname_list,pnums_list,knums_list = gsdata_tj(btime,otime)
+        pname_list_json,pnums_list_json,knums_list_json = json.dumps(pname_list),json.dumps(pnums_list),json.dumps(knums_list)
+        return render(request,'tasks/gsdata_count.html',{'tj':tj,'btime':btime,'otime':otime,'pname_list_json':pname_list_json,'pnums_list_json':pnums_list_json,
+                                                            'knums_list_json':knums_list_json})
+    tj,pname_list,pnums_list,knums_list = gsdata_tj('','')
+    pname_list_json,pnums_list_json,knums_list_json = json.dumps(pname_list),json.dumps(pnums_list),json.dumps(knums_list)
+    return render(request,'tasks/gsdata_count.html',{'tj':tj,'pname_list_json':pname_list_json,'pnums_list_json':pnums_list_json,
+                                                            'knums_list_json':knums_list_json})
+
 # 外包数据记录
 def waibao(request):
     projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')]) #数据库里所有的项目名字
@@ -363,14 +377,12 @@ def wb_update(request):
         id = request.POST.get('id')
         pname = request.POST.get('pname')
         get_data_time = request.POST.get('get_data_time')
-        completes_time = request.POST.get('completes_time')
         pnums = request.POST.get('pnums').strip()
         knums = request.POST.get('knums').strip()
         settlement_method = request.POST.get('settlement_method').strip()
         unit_price = request.POST.get('unit_price').strip()
-        money = request.POST.get('money').strip()
         wb_name = request.POST.get('wb_name').strip()
-        wb_nupdate(id,pname,get_data_time,completes_time,pnums,knums,settlement_method,unit_price,money,wb_name)
+        wb_nupdate(id,pname,get_data_time,pnums,knums,settlement_method,unit_price,wb_name)
         return redirect('/waibao/')
     stu = waibao_update(id)
     projects = json.dumps([i[0] for i in models.Project.objects.values_list('pname')])

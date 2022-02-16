@@ -13,6 +13,7 @@ class Task(models.Model):
     gender = (
         ('标注','标注'),
         ('属性标注','属性标注'),
+        ('视频标注','视频标注'),
         ('试标','试标'),
         ('审核','审核'),
         ('筛选','筛选')
@@ -28,6 +29,8 @@ class Task(models.Model):
         ('室内可通行','室内可通行'),
         ('75车库车辆行人','75车库车辆行人'),
         ('111室外车辆行人','111室外车辆行人'),
+        ('AIOT清洁行为识别','AIOT清洁行为识别'),
+        ('75车库漏水检测','75车库漏水检测'),
     )
     wb_gender = (
         ('是','是'),
@@ -68,6 +71,8 @@ class Waibao(models.Model):
         ('室内可通行','室内可通行'),
         ('75车库车辆行人','75车库车辆行人'),
         ('111室外车辆行人','111室外车辆行人'),
+        ('AIOT清洁行为识别','AIOT清洁行为识别'),
+        ('75车库漏水检测','75车库漏水检测'),
     )
     pname = models.CharField(null=False,max_length=128,choices=p_gender,verbose_name='项目名字',blank=True) # 项目名字
     get_data_time = models.CharField(null=True,max_length=20,verbose_name='外包收到数据的日期') # 发生数据时间
