@@ -520,23 +520,22 @@ def wbdata_tj(btime, otime):
         pnums = 0
         knums = 0
         money = 0
+        date_list = []  # 日期列表
         for j in all_data.filter(pname=i):
-            one_data_length = len(
-                [
-                    k.pnums
-                    for k in all_data.filter(
-                        pname=i, get_data_time=j.get_data_time, pnums=j.pnums
-                    )
-                ]
-            )
-            if one_data_length == 2:
-                pnums = j.pnums
-                knums += j.knums
-                money += float(format(j.knums * j.unit_price, ".2f"))
-            else:
-                pnums += j.pnums
-                knums += j.knums
-                money += float(format(j.knums * j.unit_price, ".2f"))
+            if j.get_data_time not in date_list:
+                date_list.append(j.get_data_time)
+        pnum_list = []  # 图片数量列表
+
+        for dt in date_list:  # 算图片数量
+            for k in all_data.filter(pname=i, get_data_time=dt):
+                if k.pnums not in pnum_list:
+                    pnum_list.append(k.pnums)
+        pnums = sum(pnum_list)
+
+        for kk in all_data.filter(pname=i):  # 算框数和金额
+            knums += kk.knums
+            money += float(format(kk.knums * kk.unit_price, ".2f"))
+
         one_data.append(i)
         one_data.append(pnums)
         one_data.append(knums)
