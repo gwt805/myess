@@ -731,7 +731,6 @@ def wbdata_count(request):
     if request.method == "POST":
         btime = request.POST.get("btime")
         otime = request.POST.get("otime")
-        print(f"开始时间:{btime} 结束时间:{otime}")
         tj, pname_list, pnums_list, knums_list, money_list = wbdata_tj(btime, otime)
         pname_list_json, pnums_list_json, knums_list_json, money_list_json = (
             json.dumps(pname_list),

@@ -246,7 +246,6 @@ def performanceq(begin_time, over_time, name):
             tps.append(pp)
         elif i[0] == "视频标注":
             for j in gg:
-                print("视频knums:", j.knums)
                 pnum += j.pnums
                 knum += str2sec(j.knums)
                 ptm += j.ptimes
@@ -258,7 +257,6 @@ def performanceq(begin_time, over_time, name):
             tps.append(pp)
         elif i[0] == "属性标注":
             for j in gg:
-                print("属性框:", int(j.knums))
                 pnum += j.pnums
                 knum += int(j.knums)
                 ptm += j.ptimes
@@ -277,7 +275,6 @@ def performanceq(begin_time, over_time, name):
             pp.append(pnum)
             pp.append(knum)
             tps.append(pp)
-        print("tps:", tps)
     return tps
 
 
@@ -569,7 +566,6 @@ def gsdata_tj(btime, otime):
     pnums_list = []
     knums_list = []
     for i in pname:
-        print("第一层循环:", i)
         one_data = []
         pnums = 0
         knums = 0
