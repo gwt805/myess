@@ -13,7 +13,7 @@
         <ul class="nav navbar-nav">
             <li class="active"><a href="/index?name={{ request.session.user_name }}">首页</a></li>
             <!-- 批量添加 -->
-            <div id="div-execl" style="float: right; margin-top: 10px; margin-left: 400px;">
+            <div id="div-execl" style="float: right; margin-top: 10px; margin-left: 600px;">
                 <form action="/waiabo_data_insert/" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <table>

@@ -1,4 +1,5 @@
 from collections import namedtuple
+import pwd
 from ess import models
 import math
 from time import strftime, gmtime
@@ -590,3 +591,9 @@ def gsdata_tj(btime, otime):
         knums_list.append(knums)
         data_list.append(one_data)
     return data_list, pname_list, pnums_list, knums_list
+
+# 密码修改
+def pwd_upd(uname,pwd1):
+    usr_data = models.User.objects.get(uname=uname)
+    usr_data.pword = pwd1
+    usr_data.save()

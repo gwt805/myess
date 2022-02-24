@@ -1,4 +1,3 @@
-from math import fabs
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from ess import models
@@ -17,6 +16,7 @@ from .mes import (
     plw,
     pnw,
     pupdate,
+    pwd_upd,
     search,
     waibao_insert,
     waibao_search,
@@ -61,7 +61,6 @@ class RegisterForm(forms.Form):
         max_length=20,
         widget=forms.PasswordInput(attrs={"class": "form-control"}),
     )
-
 
 # 密码加密
 def hash_code(s):  # 加点盐
@@ -181,6 +180,22 @@ def register(request):
                 return redirect("/login")  # 自动跳转到登录页面
     register_form = RegisterForm()
     return render(request, "login/register.html", locals())
+
+# 密码修改
+def pwd_update(request):
+    if request.session.get("is_login"):
+        if request.method == "POST":
+            uname = request.POST.get('uname')
+            new_pwd1 = request.POST.get('new_pwd1').strip()
+            new_pwd2 = request.POST.get('new_pwd2').strip()
+            if new_pwd1 == new_pwd2:
+                pwd_upd(uname,hash_code(new_pwd1))
+                request.session.flush()
+                return redirect("/login")
+            else:
+                return HttpResponse("两次密码输入不同!") 
+    else:
+        return redirect("/login")
 
 
 # 添加数据

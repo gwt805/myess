@@ -25,6 +25,7 @@ urlpatterns = [
     path("login/", views.login),
     path("index/", views.index),
     path("register/", views.register),
+    path("pwd_update/",views.pwd_update),
     path("logout/", views.logout),
     path("insert/", views.insert),
     path("efficiency/", views.efficiency),
