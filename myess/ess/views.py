@@ -213,7 +213,22 @@ def insert(request):
                 row = sheet.row_values(i)
                 name = row[0]
                 if "-" not in row[4]:
-                    if row[5] == "标注":
+                    if row[5] == "标签标注":
+                        new_tasks = models.Task(
+                            uname=row[0].strip(),
+                            pname=row[1].strip(),
+                            waibao=row[2].strip(),
+                            task_id=int(row[3]),
+                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
+                                "%Y-%m-%d"
+                            ),
+                            kinds=row[5].strip(),
+                            pnums=int(row[6]),
+                            knums=int(row[7]),
+                            ptimes=float(row[8]),
+                        )
+                        new_tasks.save()
+                    elif row[5] == "2.5D点云标注":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
@@ -254,21 +269,6 @@ def insert(request):
                             kinds=row[5].strip(),
                             pnums=int(row[6]),
                             knums=row[7],
-                            ptimes=float(row[8]),
-                        )
-                        new_tasks.save()
-                    elif row[5] == "试标":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
-                                "%Y-%m-%d"
-                            ),
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=int(row[7]),
                             ptimes=float(row[8]),
                         )
                         new_tasks.save()
@@ -301,7 +301,20 @@ def insert(request):
                     else:
                         pass
                 else:
-                    if row[5] == "标注":
+                    if row[5] == "标签标注":
+                        new_tasks = models.Task(
+                            uname=row[0].strip(),
+                            pname=row[1].strip(),
+                            waibao=row[2].strip(),
+                            task_id=int(row[3]),
+                            dtime=row[4],
+                            kinds=row[5].strip(),
+                            pnums=int(row[6]),
+                            knums=int(row[7]),
+                            ptimes=float(row[8]),
+                        )
+                        new_tasks.save()
+                    elif row[5] == "2.5D点云标注":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
@@ -336,19 +349,6 @@ def insert(request):
                             kinds=row[5].strip(),
                             pnums=int(row[6]),
                             knums=row[7],
-                            ptimes=float(row[8]),
-                        )
-                        new_tasks.save()
-                    elif row[5] == "试标":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=int(row[7]),
                             ptimes=float(row[8]),
                         )
                         new_tasks.save()
@@ -388,7 +388,20 @@ def insert(request):
         knums = request.POST.get("knums").strip()
         ptimes = request.POST.get("ptimes").strip()
         try:
-            if kinds == "标注":
+            if kinds == "标签标注":
+                new_tasks = models.Task(
+                    uname=uname,
+                    pname=pname,
+                    waibao=waibao,
+                    task_id=int(task_id),
+                    dtime=dtime,
+                    kinds=kinds,
+                    pnums=int(pnums),
+                    knums=int(knums),
+                    ptimes=float(ptimes),
+                )
+                new_tasks.save()
+            elif kinds == "2.5D点云标注":
                 new_tasks = models.Task(
                     uname=uname,
                     pname=pname,
@@ -423,19 +436,6 @@ def insert(request):
                     kinds=kinds,
                     pnums=int(pnums),
                     knums=knums,
-                    ptimes=float(ptimes),
-                )
-                new_tasks.save()
-            elif kinds == "试标":
-                new_tasks = models.Task(
-                    uname=uname,
-                    pname=pname,
-                    waibao=waibao,
-                    task_id=int(task_id),
-                    dtime=dtime,
-                    kinds=kinds,
-                    pnums=int(pnums),
-                    knums=int(knums),
                     ptimes=float(ptimes),
                 )
                 new_tasks.save()

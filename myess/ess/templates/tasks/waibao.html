@@ -3,9 +3,7 @@
 {% block css %}
     <style>
         h3 {text-align: center;}
-        tr:not(:first-child):hover{background-color: #dafdf3;}
         button:hover{color: blue;}
-        ul li:hover{color: blue;}
     </style>
 {% endblock %}
 {% block navbar %}
@@ -51,7 +49,7 @@
     <div style="float: left; height: 100%; width: 91.5%; margin-top: -20px; position: fixed; margin-left: 164px; background-color: #bdbdbd;"> <!-- 右边主体div-->
         <div style="width: 100%; height: 10%;"> <!-- 右边上面div -->
             <div id="index_right_img" style="overflow: hidden; width: 1877px; height: 90px;">
-                <h3 style="line-height: 50px;">车子有油、手机有电、卡里有钱！这就是安全感！再牛的副驾驶，都不如自己紧握方向盘！</h3>
+                <h3 style="line-height: 60px;">车子有油、手机有电、卡里有钱！这就是安全感！再牛的副驾驶，都不如自己紧握方向盘！</h3>
             </div>
             <!-- insert -->
             <div id="ginsert" style="display: none;">
@@ -114,29 +112,33 @@
         </div> <!-- 右边上面div -->
         <!-- show -->
         <div style="position: fixed; width: 91.5%; height: 83%; overflow-y: scroll;"> <!-- 展示div-->
-            <table class="table">
-                <tr>
-                    <th><span style="margin-right: 10px;" onclick="qx_all()"><input type="checkbox" name="fbs" id="fbs"> 全选</span>项目名字</th>
-                    <th>发送数据时间</th>
-                    <th>图片数量</th>
-                    <th>标注框数量</th>
-                    <th>结算方式</th>
-                    <th>单价</th>
-                    <th>外包名字</th>
-                    <th>按钮</th>
-                </tr>
-                {% for tasks in stus %}
-                <tr>
-                    <td><span style="margin-right: 45px;"><input type="checkbox" name="fb" value="{{ tasks.id }}"></span>{{ tasks.pname }}</td>
-                    <td>{{ tasks.get_data_time }}</td>
-                    <td>{{ tasks.pnums }}</td>
-                    <td>{{ tasks.knums }}</td>
-                    <td>{{ tasks.settlement_method }}</td>
-                    <td>{{ tasks.unit_price }}</td>
-                    <td>{{ tasks.wb_name }}</td>
-                    <td><a onclick='test("{{ tasks.id }}","{{ tasks.uname }}")'><button style="border:none">修改</button></a></td>
-                </tr>
-                {% endfor %}
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th><span style="margin-right: 10px;" onclick="qx_all()"><input type="checkbox" name="fbs" id="fbs"> 全选</span>项目名字</th>
+                        <th>发送数据时间</th>
+                        <th>图片数量</th>
+                        <th>标注框数量</th>
+                        <th>结算方式</th>
+                        <th>单价</th>
+                        <th>外包名字</th>
+                        <th>按钮</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tasks in stus %}
+                        <tr>
+                            <td><span style="margin-right: 45px;"><input type="checkbox" name="fb" value="{{ tasks.id }}"></span>{{ tasks.pname }}</td>
+                            <td>{{ tasks.get_data_time }}</td>
+                            <td>{{ tasks.pnums }}</td>
+                            <td>{{ tasks.knums }}</td>
+                            <td>{{ tasks.settlement_method }}</td>
+                            <td>{{ tasks.unit_price }}</td>
+                            <td>{{ tasks.wb_name }}</td>
+                            <td><a onclick='test("{{ tasks.id }}","{{ tasks.uname }}")'><button style="border:none">修改</button></a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
             <div class="container">
                 {% if stus.has_previous %}

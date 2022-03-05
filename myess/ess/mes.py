@@ -44,7 +44,18 @@ def tims(begin_time, over_time):
             pp.append(pnum)
             pp.append(math.floor(pnum / ptm))
             tps.append(pp)
-        elif i[0] == "标注":
+        elif i[0] == "标签标注":
+            for j in gg:
+                pnum += j.pnums
+                knum += int(j.knums)
+                ptm += j.ptimes
+            pp.append(i[0])
+            pp.append(i[1])
+            pp.append(pnum)
+            pp.append(knum)
+            pp.append(math.floor(knum / ptm))
+            tps.append(pp)
+        elif i[0] == "2.5D点云标注":
             for j in gg:
                 pnum += j.pnums
                 knum += int(j.knums)
@@ -76,17 +87,6 @@ def tims(begin_time, over_time):
             pp.append(pnum)
             pp.append(strftime("%H时%M分%S秒", gmtime(knum)))
             pp.append(strftime("%H时%M分%S秒", gmtime(knum // ptm)))
-            tps.append(pp)
-        elif i[0] == "试标":
-            for j in gg:
-                pnum += j.pnums
-                knum += int(j.knums)
-                ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
-            pp.append(pnum)
-            pp.append(knum)
-            pp.append(math.floor(knum / ptm))
             tps.append(pp)
     return tps
 
@@ -133,7 +133,19 @@ def pppee(begin_time, over_time):
                 pp.append(pnum)
                 pp.append(math.floor(pnum / ptm))
                 tps.append(pp)
-            elif i[0] == "标注":
+            elif i[0] == "标签标注":
+                for j in gg:
+                    pnum += j.pnums
+                    knum += int(j.knums)
+                    ptm += j.ptimes
+                pp.append(g)
+                pp.append(i[0])
+                pp.append(i[1])
+                pp.append(pnum)
+                pp.append(knum)
+                pp.append(math.floor(knum / ptm))
+                tps.append(pp)
+            elif i[0] == "2.5D点云标注":
                 for j in gg:
                     pnum += j.pnums
                     knum += int(j.knums)
@@ -158,18 +170,6 @@ def pppee(begin_time, over_time):
                 pp.append(strftime("%H时%M分%S秒", gmtime(knum // ptm)))
                 tps.append(pp)
             elif i[0] == "属性标注":
-                for j in gg:
-                    pnum += j.pnums
-                    knum += int(j.knums)
-                    ptm += j.ptimes
-                pp.append(g)
-                pp.append(i[0])
-                pp.append(i[1])
-                pp.append(pnum)
-                pp.append(knum)
-                pp.append(math.floor(knum / ptm))
-                tps.append(pp)
-            elif i[0] == "试标":
                 for j in gg:
                     pnum += j.pnums
                     knum += int(j.knums)
@@ -235,7 +235,17 @@ def performanceq(begin_time, over_time, name):
             pp.append(i[1])
             pp.append(pnum)
             tps.append(pp)
-        elif i[0] == "标注":
+        elif i[0] == "标签标注":
+            for j in gg:
+                pnum += j.pnums
+                knum += int(j.knums)
+                ptm += j.ptimes
+            pp.append(i[0])
+            pp.append(i[1])
+            pp.append(pnum)
+            pp.append(knum)
+            tps.append(pp)
+        elif i[0] == "2.5D点云标注":
             for j in gg:
                 pnum += j.pnums
                 knum += int(j.knums)
@@ -257,16 +267,6 @@ def performanceq(begin_time, over_time, name):
             pp.append(strftime("%H时%M分%S秒", gmtime(knum)))
             tps.append(pp)
         elif i[0] == "属性标注":
-            for j in gg:
-                pnum += j.pnums
-                knum += int(j.knums)
-                ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
-            pp.append(pnum)
-            pp.append(knum)
-            tps.append(pp)
-        elif i[0] == "试标":
             for j in gg:
                 pnum += j.pnums
                 knum += int(j.knums)
@@ -321,7 +321,18 @@ def pupdate(id):
 # nupdate
 def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes):
     now_data = models.Task.objects.get(id=id)
-    if kinds == "标注":
+    if kinds == "标签标注":
+        now_data.uname = uname
+        now_data.pname = pname
+        now_data.waibao = waibao
+        now_data.task_id = int(task_id)
+        now_data.dtime = dtime
+        now_data.kinds = kinds
+        now_data.pnums = int(pnums)
+        now_data.knums = knums
+        now_data.ptimes = float(ptimes)
+        now_data.save()
+    elif kinds == "2.5D点云标注":
         now_data.uname = uname
         now_data.pname = pname
         now_data.waibao = waibao
@@ -351,17 +362,6 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
         now_data.kinds = kinds
         now_data.pnums = int(pnums)
         now_data.knums = int(knums)
-        now_data.ptimes = float(ptimes)
-        now_data.save()
-    elif kinds == "试标":
-        now_data.uname = uname
-        now_data.pname = pname
-        now_data.waibao = waibao
-        now_data.task_id = int(task_id)
-        now_data.dtime = dtime
-        now_data.kinds = kinds
-        now_data.pnums = int(pnums)
-        now_data.knums = knums
         now_data.ptimes = float(ptimes)
         now_data.save()
     elif kinds == "审核":
@@ -496,6 +496,7 @@ def wb_nupdate(
 
 # 外包数据统计
 def wbdata_tj(btime, otime):
+    from decimal import Decimal
     if btime == otime == "":
         all_data = models.Waibao.objects.all()
         pname = []
@@ -517,7 +518,7 @@ def wbdata_tj(btime, otime):
         one_data = []
         pnums = 0
         knums = 0
-        money = 0
+        money = 0.0
         date_list = []  # 日期列表
         for j in all_data.filter(pname=i):
             if j.get_data_time not in date_list:
@@ -532,16 +533,16 @@ def wbdata_tj(btime, otime):
 
         for kk in all_data.filter(pname=i):  # 算框数和金额
             knums += kk.knums
-            money += float(format(kk.knums * kk.unit_price, ".2f"))
+            money += kk.knums * kk.unit_price
 
         one_data.append(i)
         one_data.append(pnums)
         one_data.append(knums)
-        one_data.append(money)
+        one_data.append(float(Decimal(str(money)).quantize(Decimal('0.00'))))
         pname_list.append(i)
         pnums_list.append(pnums)
         knums_list.append(knums)
-        money_list.append(money)
+        money_list.append(float(Decimal(str(money)).quantize(Decimal('0.00'))))
         data_list.append(one_data)
     return data_list, pname_list, pnums_list, knums_list, money_list
 
@@ -549,14 +550,14 @@ def wbdata_tj(btime, otime):
 # GS 数据统计
 def gsdata_tj(btime, otime):
     if btime == otime == "":
-        all_data = models.Task.objects.filter(kinds__in=["标注", "视频标注", "属性标注"])
+        all_data = models.Task.objects.filter(kinds__in=["标签标注", "2.5D点云标注" ,"视频标注", "属性标注"])
         pname = []
         for i in all_data:
             if i.pname not in pname:
                 pname.append(i.pname)
     elif btime != "" and otime != "":
         all_data = models.Task.objects.filter(
-            dtime__range=[btime, otime], kinds__in=["标注", "视频标注", "属性标注"]
+            dtime__range=[btime, otime], kinds__in=["标签标注", "2.5D点云标注" ,"视频标注", "属性标注"]
         )
         pname = []
         for i in all_data:

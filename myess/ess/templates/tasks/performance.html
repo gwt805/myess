@@ -2,27 +2,28 @@
 {% block title %}绩效查看{% endblock %}
 
 {% block content %}
-<form class="form-efficiency" action="" method="post">
-    {% csrf_token %} 
-    <table class="table">
-        <tr>
-            <th>绩效开始时间</th>
-            <th>绩效结束时间</th>
-            <th>名字</th>
-        </tr>
-        <tr>
-            <td><input type="date" name="now-begin-time" id="now-begin-time" class="form-control" value="{{ now_begin_time }}"></td>
-            <td><input type="date" name="now-over-time" id="now-over-time" class="form-control" value="{{ now_over_time }}"></td>
-            <td><input type="input" name="uname" id="now-over-time" class="form-control" value="{{ uname }}"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><input type="reset" class="btn btn-default pull-left" value="重置"></td>
-            <td><input type="submit" class="btn btn-primary pull-right" value="查看"></td>
-            <td></td>
-        </tr>
-    </table>
-</form>
+<div style="margin-top: -20px;">
+    <form class="form-efficiency" action="" method="post">
+        {% csrf_token %} 
+        <table class="table">
+            <tr>
+                <th>绩效开始时间</th>
+                <th>绩效结束时间</th>
+                <th>名字</th>
+            </tr>
+            <tr>
+                <td><input type="date" name="now-begin-time" id="now-begin-time" class="form-control" value="{{ now_begin_time }}"></td>
+                <td><input type="date" name="now-over-time" id="now-over-time" class="form-control" value="{{ now_over_time }}"></td>
+                <td><input type="input" name="uname" id="now-over-time" class="form-control" value="{{ uname }}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="reset" class="btn btn-default pull-left" value="重置"></td>
+                <td><input type="submit" class="btn btn-primary pull-right" value="查看"></td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
     <h3>绩效展示</h3>
     <table class="table">
         <tr>
@@ -45,7 +46,13 @@
                     <td>{{ i.2 }}</td>
                     <td></td>
                 {% endif %}
-                {% if i.0 == '标注' %}
+                {% if i.0 == '标签标注' %}
+                    <td>{{ i.0 }}</td>
+                    <td>{{ i.1 }}</td>
+                    <td>{{ i.2 }}</td>
+                    <td>{{ i.3 }}</td>
+                {% endif %}
+                {% if i.0 == '2.5D点云标注' %}
                     <td>{{ i.0 }}</td>
                     <td>{{ i.1 }}</td>
                     <td>{{ i.2 }}</td>
@@ -63,13 +70,9 @@
                     <td>{{ i.2 }}</td>
                     <td>{{ i.3 }}</td>
                 {% endif %}
-                {% if i.0 == '试标' %} <!-- ['视频标注', '杂物', 1, '00时06分20秒'] -->
-                    <td>{{ i.0 }}</td>
-                    <td>{{ i.1 }}</td>
-                    <td>{{ i.2 }}</td>
-                    <td>{{ i.3 }}</td>
-                {% endif %}
             </tr>
         {% endfor %}
     </table>
+</div>
+
 {% endblock %}
