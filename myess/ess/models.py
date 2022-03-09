@@ -18,7 +18,7 @@ class Task(models.Model):
         ("属性标注", "属性标注"),
         ("视频标注", "视频标注"),
         ("跟踪标注", "跟踪标注"),
-        ("2.5D点云标注","2.5D点云标注"),
+        ("2.5D点云标注", "2.5D点云标注"),
         ("审核", "审核"),
         ("筛选", "筛选"),
     )
@@ -35,7 +35,7 @@ class Task(models.Model):
         ("75-车库垃圾", "75-车库垃圾"),
         ("111-室外车辆行人", "111-室外车辆行人"),
         ("AIOT-清洁行为", "AIOT-清洁行为"),
-        ("X线-行人","X线-行人"),
+        ("X线-行人", "X线-行人"),
     )
     wb_gender = (("是", "是"), ("否", "否"))
     uname = models.CharField(max_length=20, verbose_name="用户名")  # 用户名
@@ -92,7 +92,7 @@ class Waibao(models.Model):
         ("75-车库垃圾", "75-车库垃圾"),
         ("111-室外车辆行人", "111-室外车辆行人"),
         ("AIOT-清洁行为", "AIOT-清洁行为"),
-        ("X线-行人","X线-行人"),
+        ("X线-行人", "X线-行人"),
     )
     pname = models.CharField(
         null=False, max_length=128, choices=p_gender, verbose_name="项目名字", blank=True

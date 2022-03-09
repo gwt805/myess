@@ -497,6 +497,7 @@ def wb_nupdate(
 # 外包数据统计
 def wbdata_tj(btime, otime):
     from decimal import Decimal
+
     if btime == otime == "":
         all_data = models.Waibao.objects.all()
         pname = []
@@ -538,11 +539,11 @@ def wbdata_tj(btime, otime):
         one_data.append(i)
         one_data.append(pnums)
         one_data.append(knums)
-        one_data.append(float(Decimal(str(money)).quantize(Decimal('0.00'))))
+        one_data.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
         pname_list.append(i)
         pnums_list.append(pnums)
         knums_list.append(knums)
-        money_list.append(float(Decimal(str(money)).quantize(Decimal('0.00'))))
+        money_list.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
         data_list.append(one_data)
     return data_list, pname_list, pnums_list, knums_list, money_list
 
@@ -550,14 +551,16 @@ def wbdata_tj(btime, otime):
 # GS 数据统计
 def gsdata_tj(btime, otime):
     if btime == otime == "":
-        all_data = models.Task.objects.filter(kinds__in=["标签标注", "2.5D点云标注" ,"视频标注", "属性标注"])
+        all_data = models.Task.objects.filter(
+            kinds__in=["标签标注", "2.5D点云标注", "视频标注", "属性标注"]
+        )
         pname = []
         for i in all_data:
             if i.pname not in pname:
                 pname.append(i.pname)
     elif btime != "" and otime != "":
         all_data = models.Task.objects.filter(
-            dtime__range=[btime, otime], kinds__in=["标签标注", "2.5D点云标注" ,"视频标注", "属性标注"]
+            dtime__range=[btime, otime], kinds__in=["标签标注", "2.5D点云标注", "视频标注", "属性标注"]
         )
         pname = []
         for i in all_data:
@@ -593,8 +596,9 @@ def gsdata_tj(btime, otime):
         data_list.append(one_data)
     return data_list, pname_list, pnums_list, knums_list
 
+
 # 密码修改
-def pwd_upd(uname,pwd1):
+def pwd_upd(uname, pwd1):
     usr_data = models.User.objects.get(uname=uname)
     usr_data.pword = pwd1
     usr_data.save()

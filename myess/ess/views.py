@@ -62,6 +62,7 @@ class RegisterForm(forms.Form):
         widget=forms.PasswordInput(attrs={"class": "form-control"}),
     )
 
+
 # 密码加密
 def hash_code(s):  # 加点盐
     h = hashlib.sha256()
@@ -114,7 +115,14 @@ def index(request):
         return render(
             request,
             "login/index.html",
-            {"stus": stus, "page": page, "first_page": now_page, "sum_page": page.num_pages, "projects": projects, "tkinds": tkinds},
+            {
+                "stus": stus,
+                "page": page,
+                "first_page": now_page,
+                "sum_page": page.num_pages,
+                "projects": projects,
+                "tkinds": tkinds,
+            },
         )
     if request.GET.get("showpd"):  # 展示i所有人当天数据
         stu = models.Task.objects.filter(dtime=now_time).order_by("-uname")
@@ -183,21 +191,23 @@ def register(request):
     register_form = RegisterForm()
     return render(request, "login/register.html", locals())
 
+
 # 密码修改
 def pwd_update(request):
     if request.session.get("is_login"):
         if request.method == "POST":
-            uname = request.POST.get('uname')
-            new_pwd1 = request.POST.get('new_pwd1').strip()
-            new_pwd2 = request.POST.get('new_pwd2').strip()
+            uname = request.POST.get("uname")
+            new_pwd1 = request.POST.get("new_pwd1").strip()
+            new_pwd2 = request.POST.get("new_pwd2").strip()
             if new_pwd1 == new_pwd2:
-                pwd_upd(uname,hash_code(new_pwd1))
+                pwd_upd(uname, hash_code(new_pwd1))
                 request.session.flush()
                 return redirect("/login")
             else:
-                return HttpResponse("两次密码输入不同!") 
+                return HttpResponse("两次密码输入不同!")
     else:
         return redirect("/login")
+
 
 # 添加数据
 def insert(request):
@@ -473,6 +483,7 @@ def insert(request):
     tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list("kinds")])
     return render(request, "login/index.html", {"projects": projects, "tkinds": tkinds})
 
+
 # 修改
 def update(request):
     id = request.GET.get("id")
@@ -498,6 +509,7 @@ def update(request):
         "tasks/update.html",
         {"stu": stu, "projects": projects, "tkinds": tkinds},
     )
+
 
 # 效率
 def efficiency(request):
@@ -529,6 +541,7 @@ def efficiency(request):
             pass
     return render(request, "tasks/efficiency.html")
 
+
 # 绩效
 def performance(request):
     if request.method == "POST":
@@ -551,11 +564,13 @@ def performance(request):
             pass
     return render(request, "tasks/performance.html")
 
+
 # 单条或批量数据删除
 def dtdel(request):
     uname = request.GET.get("n")
     data_del(request.GET.get("dtid"))
     return redirect("/index?name=" + uname)
+
 
 # GS数据统计
 def gsdata_count(request):
@@ -597,6 +612,7 @@ def gsdata_count(request):
         },
     )
 
+
 # 外包数据记录
 def waibao(request):
     projects = json.dumps(
@@ -628,10 +644,17 @@ def waibao(request):
     else:
         stus = page.page(1)
     return render(
-            request,
-            "tasks/waibao.html",
-            {"stus": stus, "page": page, "first_page": now_page, "sum_page": page.num_pages, "projects": projects},
-        )
+        request,
+        "tasks/waibao.html",
+        {
+            "stus": stus,
+            "page": page,
+            "first_page": now_page,
+            "sum_page": page.num_pages,
+            "projects": projects,
+        },
+    )
+
 
 # 外包数据添加
 def waiabo_data_insert(request):
@@ -694,10 +717,12 @@ def waiabo_data_insert(request):
         else:
             return HttpResponse("请检查填写的内容!")
 
+
 # 外包数据 单条或批量数据删除
 def wb_dtdel(request):
     wb_data_del(request.GET.get("dtid"))
     return redirect("/waibao/")
+
 
 # 外包数据修改
 def wb_update(request):
@@ -728,6 +753,7 @@ def wb_update(request):
     return render(
         request, "tasks/waibao_update.html", {"stu": stu, "projects": projects}
     )
+
 
 # 外包数据统计
 def wbdata_count(request):
@@ -772,6 +798,7 @@ def wbdata_count(request):
             "money_list_json": money_list_json,
         },
     )
+
 
 # 注销
 def logout(request):
