@@ -1,4 +1,8 @@
 # 工作量及效率统计系统设计
+<div align=center>
+    <img src='myess/static/img/favicon.ico' width=150px height=150px>
+</div>
+
 项目启动时间
 ```
 2021-12-18启动,目前持续维护中
@@ -54,3 +58,4 @@ TODO
 - [x] 添加密码修改功能
 - [x] 图表展示页面用按钮控制显示内容
 - [x] 重新命名项目名字
+- [x] 修改页码样式
