@@ -100,9 +100,11 @@ def index(request):
     if page_id or request.GET.get("showa"):  # 展示所有数据
         stu = models.Task.objects.all().order_by("-dtime")
         page = Paginator(stu, 16)
+        now_page = 1
         if page_id:
             try:
                 stus = page.page(page_id)
+                now_page = page_id
             except PageNotAnInteger:
                 stus = page.page(1)
             except EmptyPage:
@@ -112,7 +114,7 @@ def index(request):
         return render(
             request,
             "login/index.html",
-            {"stus": stus, "page": page, "projects": projects, "tkinds": tkinds},
+            {"stus": stus, "page": page, "first_page": now_page, "sum_page": page.num_pages, "projects": projects, "tkinds": tkinds},
         )
     if request.GET.get("showpd"):  # 展示i所有人当天数据
         stu = models.Task.objects.filter(dtime=now_time).order_by("-uname")
@@ -196,7 +198,6 @@ def pwd_update(request):
                 return HttpResponse("两次密码输入不同!") 
     else:
         return redirect("/login")
-
 
 # 添加数据
 def insert(request):
@@ -472,7 +473,6 @@ def insert(request):
     tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list("kinds")])
     return render(request, "login/index.html", {"projects": projects, "tkinds": tkinds})
 
-
 # 修改
 def update(request):
     id = request.GET.get("id")
@@ -498,7 +498,6 @@ def update(request):
         "tasks/update.html",
         {"stu": stu, "projects": projects, "tkinds": tkinds},
     )
-
 
 # 效率
 def efficiency(request):
@@ -530,7 +529,6 @@ def efficiency(request):
             pass
     return render(request, "tasks/efficiency.html")
 
-
 # 绩效
 def performance(request):
     if request.method == "POST":
@@ -553,13 +551,11 @@ def performance(request):
             pass
     return render(request, "tasks/performance.html")
 
-
 # 单条或批量数据删除
 def dtdel(request):
     uname = request.GET.get("n")
     data_del(request.GET.get("dtid"))
     return redirect("/index?name=" + uname)
-
 
 # GS数据统计
 def gsdata_count(request):
@@ -601,7 +597,6 @@ def gsdata_count(request):
         },
     )
 
-
 # 外包数据记录
 def waibao(request):
     projects = json.dumps(
@@ -621,26 +616,22 @@ def waibao(request):
     # 分页
     stu = models.Waibao.objects.all().order_by("-get_data_time")
     page = Paginator(stu, 16)
+    now_page = 1
     if page_id:
         try:
             stus = page.page(page_id)
-            return render(
-                request,
-                "tasks/waibao.html",
-                {"stus": stus, "page": page, "projects": projects},
-            )
+            now_page = page_id
         except PageNotAnInteger:
             stus = page.page(1)
         except EmptyPage:
             stus = page.page(1)
     else:
         stus = page.page(1)
-        return render(
+    return render(
             request,
             "tasks/waibao.html",
-            {"stus": stus, "page": page, "projects": projects},
+            {"stus": stus, "page": page, "first_page": now_page, "sum_page": page.num_pages, "projects": projects},
         )
-
 
 # 外包数据添加
 def waiabo_data_insert(request):
@@ -703,12 +694,10 @@ def waiabo_data_insert(request):
         else:
             return HttpResponse("请检查填写的内容!")
 
-
 # 外包数据 单条或批量数据删除
 def wb_dtdel(request):
     wb_data_del(request.GET.get("dtid"))
     return redirect("/waibao/")
-
 
 # 外包数据修改
 def wb_update(request):
@@ -739,7 +728,6 @@ def wb_update(request):
     return render(
         request, "tasks/waibao_update.html", {"stu": stu, "projects": projects}
     )
-
 
 # 外包数据统计
 def wbdata_count(request):
@@ -784,7 +772,6 @@ def wbdata_count(request):
             "money_list_json": money_list_json,
         },
     )
-
 
 # 注销
 def logout(request):

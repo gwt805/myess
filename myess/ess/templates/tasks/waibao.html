@@ -111,7 +111,7 @@
             </div>
         </div> <!-- 右边上面div -->
         <!-- show -->
-        <div style="position: fixed; width: 91.5%; height: 83%; overflow-y: scroll;"> <!-- 展示div-->
+        <div style="position: fixed; width: 91.5%; height: 83%;"> <!-- 展示div-->
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -140,23 +140,29 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <div class="container">
+            <div class="container" style="margin-left: 32.5%;"> <!-- 底部页数 -->
                 {% if stus.has_previous %}
                     <a href="/waibao?page_id={{stus.previous_page_number}}">
-                        <button><<</button>
+                        <button>上一页</button>
                     </a>
                 {% endif %}
                 
-                {% for i in page.page_range %}
-                    <a href="/waibao?page_id={{i}}">
-                        <button>{{ i }}</button>
-                    </a>
-                {% endfor %}
+                {% if sum_page %}
+                    <span> {{ first_page }} / {{ sum_page }}</span>
+                {% endif %}
                 
                 {% if stus.has_next %}
                     <a href="/waibao?page_id={{stus.next_page_number}}">
-                        <button> &nbsp;>>&nbsp; </button>
+                        <button>下一页</button>
                     </a>
+                {% endif %}
+
+                {% if sum_page %}
+                    <span style="margin-left: 10px;">共<span id="total_page">{{ sum_page }}</span>页</span>
+                    <span>
+                        到第 <input type="text" class="form-control" style="width: 60px; display: inline;" id="now_page"> 页 
+                        <button class="btn btn-default" style="margin-left: 10px;" onclick="page_switch()">确定</button>
+                    </span>
                 {% endif %}
             </div>
         </div>
@@ -275,6 +281,17 @@
     // 图表展示
     function ptshow(){
         alert('功能待上线');
+    };
+
+    // 页数跳转
+    function page_switch(){
+        var total_id= parseInt($('#total_page').text()); // 总页数
+        var input_id= parseInt($('#now_page').val()); // 输入的页数
+        if (input_id <= 0 | input_id > total_id){
+            alert('请输入正确的页数!');
+        }else{
+            window.location.href = '/waibao?page_id=' + input_id;
+        };
     };
 </script>
 {% endblock %}
