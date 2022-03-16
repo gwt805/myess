@@ -111,4 +111,4 @@ class Waibao(models.Model):
     )  # 外包名字
 
     def __str__(self):
-        return f"{self.pname} | {self.get_data_time} | {self.pnums} | {self.knums} | {self.settlement_method} | {self.unit_price} | {self.money} | {self.wb_name}"
+        return f"{self.pname} | {self.get_data_time} | {self.pnums} | {self.knums} | {self.settlement_method} | {self.unit_price} | {self.wb_name}"
