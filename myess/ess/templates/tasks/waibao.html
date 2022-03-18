@@ -143,7 +143,7 @@
             <div class="container" style="margin-left: 32.5%;"> <!-- 底部页数 -->
                 {% if stus.has_previous %}
                     <a href="/waibao?page_id={{stus.previous_page_number}}">
-                        <button>上一页</button>
+                        <button class="btn btn-default">上一页</button>
                     </a>
                 {% endif %}
                 
@@ -153,7 +153,7 @@
                 
                 {% if stus.has_next %}
                     <a href="/waibao?page_id={{stus.next_page_number}}">
-                        <button>下一页</button>
+                        <button class="btn btn-default">下一页</button>
                     </a>
                 {% endif %}
 
