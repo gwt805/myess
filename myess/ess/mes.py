@@ -75,7 +75,7 @@ def pppee(begin_time, over_time):
             ptm = 0.0
             pp = []
             gg = tdat.filter(kinds=i[0], pname=i[1], uname=g)
-            #public code
+            # public code
             pp.append(g)
             pp.append(i[0])
             pp.append(i[1])
@@ -140,7 +140,7 @@ def performanceq(begin_time, over_time, name):
         ptm = 0.0
         pp = []
         gg = tdat.filter(kinds=i[0], pname=i[1])
-        #public code
+        # public code
         pp.append(i[0])
         pp.append(i[1])
         if i[0] == "审核" or i[0] == "筛选":
