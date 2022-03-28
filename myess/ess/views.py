@@ -251,12 +251,23 @@ def insert(request):
                             knums=row[7],
                             ptimes=float(row[8]),
                         )
-                    elif row[5] == "审核" or row[5] == "筛选":
+                    elif row[5] == "审核":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
                             waibao=row[2].strip(),
                             task_id=int(row[3]),
+                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
+                                "%Y-%m-%d"
+                            ),
+                            kinds=row[5].strip(),
+                            pnums=int(row[6]),
+                            ptimes=float(row[8]),
+                        )
+                    elif row[5] == "筛选":
+                        new_tasks = models.Task(
+                            uname=row[0].strip(),
+                            pname=row[1].strip(),
                             dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
                                 "%Y-%m-%d"
                             ),
@@ -289,12 +300,21 @@ def insert(request):
                             knums=row[7],
                             ptimes=float(row[8]),
                         )
-                    elif row[5] == "审核" or row[5] == "筛选":
+                    elif row[5] == "审核":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
                             waibao=row[2].strip(),
                             task_id=int(row[3]),
+                            dtime=row[4],
+                            kinds=row[5].strip(),
+                            pnums=int(row[6]),
+                            ptimes=float(row[8]),
+                        )
+                    elif row[5] == "筛选":
+                        new_tasks = models.Task(
+                            uname=row[0].strip(),
+                            pname=row[1].strip(),
                             dtime=row[4],
                             kinds=row[5].strip(),
                             pnums=int(row[6]),
@@ -336,12 +356,21 @@ def insert(request):
                     knums=knums,
                     ptimes=float(ptimes),
                 )
-            elif kinds == "审核" or kinds == "筛选":
+            elif kinds == "审核":
                 new_tasks = models.Task(
                     uname=uname,
                     pname=pname,
                     waibao=waibao,
                     task_id=int(task_id),
+                    dtime=dtime,
+                    kinds=kinds,
+                    pnums=int(pnums),
+                    ptimes=float(ptimes),
+                )
+            elif kinds == "筛选":
+                new_tasks = models.Task(
+                    uname=uname,
+                    pname=pname,
                     dtime=dtime,
                     kinds=kinds,
                     pnums=int(pnums),

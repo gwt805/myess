@@ -222,12 +222,13 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
         now_data.uname = uname
         now_data.pname = pname
         now_data.waibao = waibao
+        now_data.task_id = None
         now_data.dtime = dtime
         now_data.kinds = kinds
         now_data.pnums = pnums
         now_data.knums = knums
         now_data.ptimes = float(ptimes)
-    elif kinds == "审核" or kinds == "筛选":
+    elif kinds == "审核":
         now_data.uname = uname
         now_data.pname = pname
         now_data.waibao = waibao
@@ -235,6 +236,17 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
         now_data.dtime = dtime
         now_data.kinds = kinds
         now_data.pnums = int(pnums)
+        now_data.knums = None
+        now_data.ptimes = float(ptimes)
+    elif kinds == "筛选":
+        now_data.uname = uname
+        now_data.pname = pname
+        now_data.waibao = None
+        now_data.task_id = None
+        now_data.dtime = dtime
+        now_data.kinds = kinds
+        now_data.pnums = int(pnums)
+        now_data.knums = None
         now_data.ptimes = float(ptimes)
     now_data.save()
 
