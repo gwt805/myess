@@ -208,7 +208,7 @@ def pupdate(id):
 # nupdate
 def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes):
     now_data = models.Task.objects.get(id=id)
-    if kinds == "标签标注":
+    if kinds == "标签标注" or kinds == "2.5D点云标注" or kinds == "属性标注":
         now_data.uname = uname
         now_data.pname = pname
         now_data.waibao = waibao
@@ -218,18 +218,6 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
         now_data.pnums = int(pnums)
         now_data.knums = knums
         now_data.ptimes = float(ptimes)
-        now_data.save()
-    elif kinds == "2.5D点云标注":
-        now_data.uname = uname
-        now_data.pname = pname
-        now_data.waibao = waibao
-        now_data.task_id = int(task_id)
-        now_data.dtime = dtime
-        now_data.kinds = kinds
-        now_data.pnums = int(pnums)
-        now_data.knums = knums
-        now_data.ptimes = float(ptimes)
-        now_data.save()
     elif kinds == "视频标注":
         now_data.uname = uname
         now_data.pname = pname
@@ -239,19 +227,7 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
         now_data.pnums = pnums
         now_data.knums = knums
         now_data.ptimes = float(ptimes)
-        now_data.save()
-    elif kinds == "属性标注":
-        now_data.uname = uname
-        now_data.pname = pname
-        now_data.waibao = waibao
-        now_data.task_id = int(task_id)
-        now_data.dtime = dtime
-        now_data.kinds = kinds
-        now_data.pnums = int(pnums)
-        now_data.knums = int(knums)
-        now_data.ptimes = float(ptimes)
-        now_data.save()
-    elif kinds == "审核":
+    elif kinds == "审核" or kinds == "筛选":
         now_data.uname = uname
         now_data.pname = pname
         now_data.waibao = waibao
@@ -260,17 +236,7 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
         now_data.kinds = kinds
         now_data.pnums = int(pnums)
         now_data.ptimes = float(ptimes)
-        now_data.save()
-    elif kinds == "筛选":
-        now_data.uname = uname
-        now_data.pname = pname
-        now_data.dtime = dtime
-        now_data.kinds = kinds
-        now_data.pnums = int(pnums)
-        now_data.ptimes = float(ptimes)
-        now_data.save()
-    else:
-        pass
+    now_data.save()
 
 
 # 单条/批量数据删除
