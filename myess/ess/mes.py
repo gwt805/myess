@@ -1,5 +1,3 @@
-from collections import namedtuple
-import pwd
 from ess import models
 import math
 from time import strftime, gmtime
@@ -26,68 +24,32 @@ def tims(begin_time, over_time):
         ptm = 0.0
         pp = []
         gg = tdat.filter(kinds=i[0], pname=i[1])
-        if i[0] == "审核":
+        # public code
+        pp.append(i[0])
+        pp.append(i[1])
+        if i[0] == "审核" or i[0] == "筛选":
             for j in gg:
                 pnum += j.pnums
                 ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
             pp.append(pnum)
             pp.append(math.floor(pnum / ptm))
-            tps.append(pp)
-        if i[0] == "筛选":
-            for j in gg:
-                pnum += j.pnums
-                ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
-            pp.append(pnum)
-            pp.append(math.floor(pnum / ptm))
-            tps.append(pp)
-        elif i[0] == "标签标注":
+        elif i[0] == "标签标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注":
             for j in gg:
                 pnum += j.pnums
                 knum += int(j.knums)
                 ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
             pp.append(pnum)
             pp.append(knum)
             pp.append(math.floor(knum / ptm))
-            tps.append(pp)
-        elif i[0] == "2.5D点云标注":
-            for j in gg:
-                pnum += j.pnums
-                knum += int(j.knums)
-                ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
-            pp.append(pnum)
-            pp.append(knum)
-            pp.append(math.floor(knum / ptm))
-            tps.append(pp)
-        elif i[0] == "属性标注":
-            for j in gg:
-                pnum += j.pnums
-                knum += int(j.knums)
-                ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
-            pp.append(pnum)
-            pp.append(knum)
-            pp.append(math.floor(knum / ptm))
-            tps.append(pp)
         elif i[0] == "视频标注":
             for j in gg:
                 pnum += j.pnums
                 knum += str2sec(j.knums)
                 ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
             pp.append(pnum)
             pp.append(strftime("%H时%M分%S秒", gmtime(knum)))
             pp.append(strftime("%H时%M分%S秒", gmtime(knum // ptm)))
-            tps.append(pp)
+        tps.append(pp)
     return tps
 
 
@@ -113,74 +75,33 @@ def pppee(begin_time, over_time):
             ptm = 0.0
             pp = []
             gg = tdat.filter(kinds=i[0], pname=i[1], uname=g)
-            if i[0] == "审核":
+            #public code
+            pp.append(g)
+            pp.append(i[0])
+            pp.append(i[1])
+            if i[0] == "审核" or i[0] == "筛选":
                 for j in gg:
                     pnum += j.pnums
                     ptm += j.ptimes
-                pp.append(g)
-                pp.append(i[0])
-                pp.append(i[1])
                 pp.append(pnum)
                 pp.append(math.floor(pnum / ptm))
-                tps.append(pp)
-            if i[0] == "筛选":
-                for j in gg:
-                    pnum += j.pnums
-                    ptm += j.ptimes
-                pp.append(g)
-                pp.append(i[0])
-                pp.append(i[1])
-                pp.append(pnum)
-                pp.append(math.floor(pnum / ptm))
-                tps.append(pp)
-            elif i[0] == "标签标注":
+            elif i[0] == "标签标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注":
                 for j in gg:
                     pnum += j.pnums
                     knum += int(j.knums)
                     ptm += j.ptimes
-                pp.append(g)
-                pp.append(i[0])
-                pp.append(i[1])
                 pp.append(pnum)
                 pp.append(knum)
                 pp.append(math.floor(knum / ptm))
-                tps.append(pp)
-            elif i[0] == "2.5D点云标注":
-                for j in gg:
-                    pnum += j.pnums
-                    knum += int(j.knums)
-                    ptm += j.ptimes
-                pp.append(g)
-                pp.append(i[0])
-                pp.append(i[1])
-                pp.append(pnum)
-                pp.append(knum)
-                pp.append(math.floor(knum / ptm))
-                tps.append(pp)
             elif i[0] == "视频标注":
                 for j in gg:
                     pnum += j.pnums
                     knum += str2sec(j.knums)
                     ptm += j.ptimes
-                pp.append(g)
-                pp.append(i[0])
-                pp.append(i[1])
                 pp.append(pnum)
                 pp.append(strftime("%H时%M分%S秒", gmtime(knum)))
                 pp.append(strftime("%H时%M分%S秒", gmtime(knum // ptm)))
-                tps.append(pp)
-            elif i[0] == "属性标注":
-                for j in gg:
-                    pnum += j.pnums
-                    knum += int(j.knums)
-                    ptm += j.ptimes
-                pp.append(g)
-                pp.append(i[0])
-                pp.append(i[1])
-                pp.append(pnum)
-                pp.append(knum)
-                pp.append(math.floor(knum / ptm))
-                tps.append(pp)
+            tps.append(pp)
         ggg.append(tps)
     return ggg
 
@@ -219,63 +140,29 @@ def performanceq(begin_time, over_time, name):
         ptm = 0.0
         pp = []
         gg = tdat.filter(kinds=i[0], pname=i[1])
-        if i[0] == "审核":
+        #public code
+        pp.append(i[0])
+        pp.append(i[1])
+        if i[0] == "审核" or i[0] == "筛选":
             for j in gg:
                 pnum += j.pnums
                 ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
             pp.append(pnum)
-            tps.append(pp)
-        elif i[0] == "筛选":
-            for j in gg:
-                pnum += j.pnums
-                ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
-            pp.append(pnum)
-            tps.append(pp)
-        elif i[0] == "标签标注":
+        elif i[0] == "标签标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注":
             for j in gg:
                 pnum += j.pnums
                 knum += int(j.knums)
                 ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
             pp.append(pnum)
             pp.append(knum)
-            tps.append(pp)
-        elif i[0] == "2.5D点云标注":
-            for j in gg:
-                pnum += j.pnums
-                knum += int(j.knums)
-                ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
-            pp.append(pnum)
-            pp.append(knum)
-            tps.append(pp)
         elif i[0] == "视频标注":
             for j in gg:
                 pnum += j.pnums
                 knum += str2sec(j.knums)
                 ptm += j.ptimes
-
-            pp.append(i[0])
-            pp.append(i[1])
             pp.append(pnum)
             pp.append(strftime("%H时%M分%S秒", gmtime(knum)))
-            tps.append(pp)
-        elif i[0] == "属性标注":
-            for j in gg:
-                pnum += j.pnums
-                knum += int(j.knums)
-                ptm += j.ptimes
-            pp.append(i[0])
-            pp.append(i[1])
-            pp.append(pnum)
-            pp.append(knum)
-            tps.append(pp)
+        tps.append(pp)
     return tps
 
 

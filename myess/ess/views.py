@@ -224,7 +224,7 @@ def insert(request):
                 row = sheet.row_values(i)
                 name = row[0]
                 if "-" not in row[4]:
-                    if row[5] == "标签标注":
+                    if row[5] == "标签标注" or row[5] == "2.5D点云标注" or row[5] == "属性标注":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
@@ -238,37 +238,6 @@ def insert(request):
                             knums=int(row[7]),
                             ptimes=float(row[8]),
                         )
-                        new_tasks.save()
-                    elif row[5] == "2.5D点云标注":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
-                                "%Y-%m-%d"
-                            ),
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=int(row[7]),
-                            ptimes=float(row[8]),
-                        )
-                        new_tasks.save()
-                    elif row[5] == "属性标注":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
-                                "%Y-%m-%d"
-                            ),
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=int(row[7]),
-                            ptimes=float(row[8]),
-                        )
-                        new_tasks.save()
                     elif row[5] == "视频标注":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
@@ -282,8 +251,7 @@ def insert(request):
                             knums=row[7],
                             ptimes=float(row[8]),
                         )
-                        new_tasks.save()
-                    elif row[5] == "审核":
+                    elif row[5] == "审核" or row[5] == "筛选":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
@@ -296,23 +264,9 @@ def insert(request):
                             pnums=int(row[6]),
                             ptimes=float(row[8]),
                         )
-                        new_tasks.save()
-                    elif row[5] == "筛选":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
-                                "%Y-%m-%d"
-                            ),
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            ptimes=float(row[8]),
-                        )
-                        new_tasks.save()
-                    else:
-                        pass
+                    new_tasks.save()
                 else:
-                    if row[5] == "标签标注":
+                    if row[5] == "标签标注" or row[5] == "2.5D点云标注" or row[5] == "属性标注":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
@@ -324,33 +278,6 @@ def insert(request):
                             knums=int(row[7]),
                             ptimes=float(row[8]),
                         )
-                        new_tasks.save()
-                    elif row[5] == "2.5D点云标注":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=int(row[7]),
-                            ptimes=float(row[8]),
-                        )
-                        new_tasks.save()
-                    elif row[5] == "属性标注":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=int(row[7]),
-                            ptimes=float(row[8]),
-                        )
-                        new_tasks.save()
                     elif row[5] == "视频标注":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
@@ -362,8 +289,7 @@ def insert(request):
                             knums=row[7],
                             ptimes=float(row[8]),
                         )
-                        new_tasks.save()
-                    elif row[5] == "审核":
+                    elif row[5] == "审核" or row[5] == "筛选":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
@@ -374,19 +300,7 @@ def insert(request):
                             pnums=int(row[6]),
                             ptimes=float(row[8]),
                         )
-                        new_tasks.save()
-                    elif row[5] == "筛选":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            ptimes=float(row[8]),
-                        )
-                        new_tasks.save()
-                    else:
-                        pass
+                    new_tasks.save()
             return redirect("/index?name=" + name)
         # 自己填写数据
         uname = request.POST.get("uname").strip()
@@ -399,7 +313,7 @@ def insert(request):
         knums = request.POST.get("knums").strip()
         ptimes = request.POST.get("ptimes").strip()
         try:
-            if kinds == "标签标注":
+            if kinds == "标签标注" or kinds == "2.5D点云标注" or kinds == "属性标注":
                 new_tasks = models.Task(
                     uname=uname,
                     pname=pname,
@@ -411,33 +325,6 @@ def insert(request):
                     knums=int(knums),
                     ptimes=float(ptimes),
                 )
-                new_tasks.save()
-            elif kinds == "2.5D点云标注":
-                new_tasks = models.Task(
-                    uname=uname,
-                    pname=pname,
-                    waibao=waibao,
-                    task_id=int(task_id),
-                    dtime=dtime,
-                    kinds=kinds,
-                    pnums=int(pnums),
-                    knums=int(knums),
-                    ptimes=float(ptimes),
-                )
-                new_tasks.save()
-            elif kinds == "属性标注":
-                new_tasks = models.Task(
-                    uname=uname,
-                    pname=pname,
-                    waibao=waibao,
-                    task_id=int(task_id),
-                    dtime=dtime,
-                    kinds=kinds,
-                    pnums=int(pnums),
-                    knums=int(knums),
-                    ptimes=float(ptimes),
-                )
-                new_tasks.save()
             elif kinds == "视频标注":
                 new_tasks = models.Task(
                     uname=uname,
@@ -449,8 +336,7 @@ def insert(request):
                     knums=knums,
                     ptimes=float(ptimes),
                 )
-                new_tasks.save()
-            elif kinds == "审核":
+            elif kinds == "审核" or kinds == "筛选":
                 new_tasks = models.Task(
                     uname=uname,
                     pname=pname,
@@ -461,19 +347,7 @@ def insert(request):
                     pnums=int(pnums),
                     ptimes=float(ptimes),
                 )
-                new_tasks.save()
-            elif kinds == "筛选":
-                new_tasks = models.Task(
-                    uname=uname,
-                    pname=pname,
-                    dtime=dtime,
-                    kinds=kinds,
-                    pnums=int(pnums),
-                    ptimes=float(ptimes),
-                )
-                new_tasks.save()
-            else:
-                pass
+            new_tasks.save()
             return redirect("/index?name=" + uname)
         except:
             return render(
