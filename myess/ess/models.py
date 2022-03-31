@@ -4,9 +4,10 @@ from django.db import models
 
 
 class User(models.Model):
-    uname = models.CharField(max_length=20, unique=True, primary_key=True)
-    pword = models.CharField(max_length=128)
-    power = models.IntegerField(default=4)
+    uname = models.CharField(max_length=20, unique=True, primary_key=True,verbose_name="用户名")
+    zh_uname = models.CharField(max_length=20,default=None,blank=True,verbose_name="姓名")
+    pword = models.CharField(max_length=128,verbose_name="权限等级")
+    power = models.IntegerField(default=4,verbose_name="密码")
 
     def __str__(self):
         return self.uname
@@ -26,6 +27,7 @@ class Task(models.Model):
         ("50-杂物", "50-杂物"),
         ("50-脏污", "50-脏污"),
         ("50-脚垫", "50-脚垫"),
+        ("50-地灯", "50-地灯"),
         ("50/75-行人扶梯一米栏", "50/75-行人扶梯一米栏"),
         ("50-室内可通行", "50-室内可通行"),
         ("环卫车-红绿灯", "环卫车-红绿灯"),
@@ -83,6 +85,7 @@ class Waibao(models.Model):
         ("50-杂物", "50-杂物"),
         ("50-脏污", "50-脏污"),
         ("50-脚垫", "50-脚垫"),
+        ("50-地灯", "50-地灯"),
         ("50/75-行人扶梯一米栏", "50/75-行人扶梯一米栏"),
         ("50-室内可通行", "50-室内可通行"),
         ("环卫车-红绿灯", "环卫车-红绿灯"),

@@ -36,12 +36,12 @@ class UserForm(forms.Form):
     username = forms.CharField(
         label="用户名",
         max_length=20,
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "中文名字"}),
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "用户名"}),
     )
     password = forms.CharField(
         label="密码",
         max_length=20,
-        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "密码"}),
     )
 
 
@@ -49,17 +49,17 @@ class RegisterForm(forms.Form):
     username = forms.CharField(
         label="用户名",
         max_length=20,
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "中文名字"}),
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "用户名"}),
     )
     password1 = forms.CharField(
         label="密码",
         max_length=20,
-        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "密码"}),
     )
     password2 = forms.CharField(
         label="确认密码",
         max_length=20,
-        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "确认密码"}),
     )
 
 
@@ -152,7 +152,8 @@ def login(request):
                 if user.pword == hash_code(password):
                     request.session["is_login"] = True
                     request.session["user_power"] = user.power
-                    request.session["user_name"] = user.uname
+                    request.session["zh_uname"] = user.zh_uname
+                    request.session["eng_uname"] = user.uname
                     if user.power == 3:
                         return redirect("/waibao/")
                     return redirect("/index?name=" + username)

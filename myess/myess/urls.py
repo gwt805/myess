@@ -14,12 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-
-# from django.urls.conf import include
+from django.urls import path,re_path
+from django.views import static
+from django.conf import settings
 from ess import views
 
 urlpatterns = [
+    
     path("sites/", admin.site.urls),
     path("", views.login),
     path("login/", views.login),
@@ -38,4 +39,5 @@ urlpatterns = [
     path("wb_update/", views.wb_update),
     path("wb_dtdel/", views.wb_dtdel),
     path("wbdata_count/", views.wbdata_count),
+    re_path('^static/(?P<path>.*)$', static.serve, {'document_root': settings.STATIC_ROOT }, name='static'), # if debug is False
 ]
