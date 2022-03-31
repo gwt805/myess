@@ -1,6 +1,6 @@
 # 工作量及效率统计系统设计
 <div align="center">
-    <img src="myess/static/img/favicon.ico" width=150px height=150px>
+    <img src="myess/static/my_conf/img/favicon.ico" width=150px height=150px>
 </div>
 
 项目启动时间
@@ -9,8 +9,8 @@
 ```
 
 环境
-```
-安装mysql并创建数据库，数据库名字为myess
+```Bash
+# 安装mysql并创建数据库，数据库名字为myess
 python >= 3.6
 pip install django
 pip install mysqlclient
@@ -20,10 +20,11 @@ pip install xlrd==1.2.0
 ```
 
 启动项目
-```
+```Bash
 cd myess
 python manage.py makemigrations
 python manage.py migrate
+python manage.py collectstatic # 如果DEBUG为False时
 python manage.py runserver 0.0.0.0:8088
 ```
 权限说明
