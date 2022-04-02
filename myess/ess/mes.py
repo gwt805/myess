@@ -447,16 +447,14 @@ def gsdata_tj(btime, otime):
                 video_flag = True
             else:
                 knums += int(j.knums)
-        one_data.append(i)
-        one_data.append(pnums)
-        if video_flag:
+        one_data.append(i) # 项目名字,图片/视频数量,框数/时长
+        one_data.append(pnums) # 图片/视频数量
+        if video_flag: # 框数/时长
             one_data.append(strftime("%H时%M分%S秒", gmtime(knums)))
         else:
             one_data.append(knums)
         pname_list.append(i)
         pnums_list.append(pnums)
-        if video_flag:
-            knums_list.append(knums)
         knums_list.append(knums)
         data_list.append(one_data)
     return data_list, pname_list, pnums_list, knums_list
