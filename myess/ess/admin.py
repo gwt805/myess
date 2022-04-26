@@ -2,6 +2,11 @@ from django.contrib import admin
 from ess import models
 
 # Register your models here.
+
+admin.site.site_header = '效率系统'
+admin.site.site_title = 'ESS Infor'
+admin.site.index_title = '信息管理'
+
 admin.site.register(models.User)
 
 
