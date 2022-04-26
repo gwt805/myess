@@ -11,7 +11,7 @@
         <ul class="nav navbar-nav">
             <li class="active"><a href="/index?name={{ request.session.user_name }}">首页</a></li>
             <!-- 批量添加 -->
-            <div id="div-execl" style="float: right; margin-top: 10px; margin-left: 600px;">
+            <div id="div-execl" style="float: right; margin-top: 10px; position: relative; margin-left: 600px;">
                 <form action="/waiabo_data_insert/" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <table>
@@ -32,7 +32,7 @@
 
 {% block content %}
     {% if request.session.is_login %}
-    <div style="width:8.5%; height: 100%; position: fixed; float: left; margin-top: -20px; background-color: #bdbdbd;"> <!-- 侧边栏div-->
+    <div style="min-width:3%; height: 100%; position: fixed; float: left; margin-top: -20px; background-color: #bdbdbd;" onselectstart="return false"> <!-- 侧边栏div-->
         <div> <!-- 操作栏 -->
             <ul class="nav nav-pills nav-stacked">
                 <li role="presentation" style="cursor: pointer;" onclick="ginsert()"><a style="color: black;">添加数据</a></li>
@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <div style="float: left; height: 100%; width: 91.5%; margin-top: -20px; position: fixed; margin-left: 164px; background-color: #bdbdbd;"> <!-- 右边主体div-->
+    <div style="float: left; height: 100%; width: 95.45%; margin-top: -20px; position: fixed; margin-left: 87px; background-color: #bdbdbd;"> <!-- 右边主体div-->
         <div style="width: 100%; height: 10%;"> <!-- 右边上面div -->
             <div id="index_right_img" style="overflow: hidden; width: 1877px; height: 90px;">
                 <h3 style="line-height: 60px;">车子有油、手机有电、卡里有钱！这就是安全感！再牛的副驾驶，都不如自己紧握方向盘！</h3>
@@ -111,7 +111,7 @@
             </div>
         </div> <!-- 右边上面div -->
         <!-- show -->
-        <div style="position: fixed; width: 91.5%; height: 83%; overflow-y: scroll;"> <!-- 展示div-->
+        <div style="position: fixed; width: 95.5%; height: 83%; overflow-y: scroll;"> <!-- 展示div-->
             <table class="table table-hover">
                 <thead>
                     <tr>
