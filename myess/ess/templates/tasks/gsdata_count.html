@@ -74,19 +74,19 @@
                 data:['图片/视频数量','框数/属性/时长'],
                 right:'10%'
             },
-        xAxis: {
+        yAxis: {
             data: pname,
             axisLabel: { //X轴文字控制
                         interval: 0,
-                        rotate:-30  //倾斜的程度
+                        // rotate:-30  //倾斜的程度
                     },
         },
         grid: {
-            left:'5%',
-            right:'5%',
-            bottom:'10%'
+            left:'7%',
+            right:'2%',
+            bottom:'3%',
         },
-        yAxis: {},
+        xAxis: {},
         series: [
                     {
                         name: '图片/视频数量',
@@ -97,7 +97,7 @@
                             normal:{
                                 label:{
                                     show:true, //开启显示
-                                    position:'top', //在上方显示
+                                    position:'right', //在上方显示
                                     textStyle:{ //数值样式
                                         color:'black',
                                         fontSize:12
@@ -115,7 +115,7 @@
                             normal:{
                                 label:{
                                     show:true, //开启显示
-                                    position:'top', //在上方显示
+                                    position:'right', //在上方显示
                                     textStyle:{ //数值样式
                                         color:'black',
                                         fontSize:12
