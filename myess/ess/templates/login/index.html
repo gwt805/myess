@@ -10,7 +10,7 @@
     {% if request.session.is_login %}
         <ul class="nav navbar-nav">
             {% if request.session.user_power == 1 %}
-                <li class="active"><a href="/index?name={{ request.session.user_name }}">首页</a></li>
+                <li class="active"><a href="/index?name={{ request.session.zh_uname }}">首页</a></li>
                 <li class="active"><a href="/efficiency">效率查看</a></li>
                 <li class="active"><a href="/performance">绩效</a></li>
                 <li class="active"><a href="/waibao">外包数据</a></li>
