@@ -1,8 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
-
 class User(models.Model):
     uname = models.CharField(max_length=20, unique=True, primary_key=True,verbose_name="用户名")
     zh_uname = models.CharField(max_length=20,default=None,blank=True,verbose_name="姓名")
@@ -11,7 +8,6 @@ class User(models.Model):
 
     def __str__(self):
         return self.uname
-
 
 class Task(models.Model):
     gender = (
@@ -61,26 +57,16 @@ class Task(models.Model):
     )  # 标注框数量
     ptimes = models.FloatField(verbose_name="工时")  # 工时
 
-    def __str__(self):
-        return f"{self.uname} | {self.pname} | {self.waibao} | {self.task_id} | {self.dtime} | {self.kinds} | {self.pnums} | {self.knums} | {self.ptimes}"
-
 
 class Project(models.Model):
     pname = models.CharField(
         max_length=125, unique=True, verbose_name="项目名字", blank=True
     )  # 项目类型
 
-    def __str__(self):
-        return self.pname
-
-
 class Tkinds(models.Model):
     kinds = models.CharField(
         max_length=20, unique=True, verbose_name="任务类型"
     )  # 任务类型：标注，审核，其他
-
-    def __str__(self):
-        return self.kinds
 
 
 class Waibao(models.Model):
@@ -111,12 +97,9 @@ class Waibao(models.Model):
     pnums = models.IntegerField(null=False, verbose_name="图片数量", blank=True)  # 图片数量
     knums = models.IntegerField(null=False, verbose_name="框数", blank=True)  # 标注框数量
     settlement_method = models.CharField(
-        null=False, max_length=128, choices=p_gender, verbose_name="结算方式", blank=True
+        null=False, max_length=128, verbose_name="结算方式", blank=True
     )  # 结算方式
     unit_price = models.FloatField(null=False, verbose_name="单价", blank=True)  # 单价
     wb_name = models.CharField(
-        null=False, max_length=128, choices=p_gender, verbose_name="外包名字", blank=True
+        null=False, max_length=128, verbose_name="外包名字", blank=True
     )  # 外包名字
-
-    def __str__(self):
-        return f"{self.pname} | {self.get_data_time} | {self.pnums} | {self.knums} | {self.settlement_method} | {self.unit_price} | {self.wb_name}"
