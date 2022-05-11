@@ -441,13 +441,12 @@ def gsdata_tj(btime, otime):
         knums = 0
         video_flag = False
         for j in all_data.filter(pname=i):
-            if j.waibao == '否':
-                pnums += j.pnums
-                if j.kinds == "视频标注":
-                    knums += str2sec(j.knums)
-                    video_flag = True
-                else:
-                    knums += int(j.knums)
+            pnums += j.pnums
+            if j.kinds == "视频标注":
+                knums += str2sec(j.knums)
+                video_flag = True
+            else:
+                knums += int(j.knums)
         one_data.append(i) # 项目名字,图片/视频数量,框数/时长
         one_data.append(pnums) # 图片/视频数量
         if video_flag: # 框数/时长
