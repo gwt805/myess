@@ -33,7 +33,7 @@ def tims(begin_time, over_time):
                 ptm += j.ptimes
             pp.append(pnum)
             pp.append(math.floor(pnum / ptm))
-        elif i[0] == "标签标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注":
+        elif i[0] == "2D分割标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注" or i[0] == "2D框标注":
             for j in gg:
                 pnum += j.pnums
                 knum += int(j.knums)
@@ -85,7 +85,7 @@ def pppee(begin_time, over_time):
                     ptm += j.ptimes
                 pp.append(pnum)
                 pp.append(math.floor(pnum / ptm))
-            elif i[0] == "标签标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注":
+            elif i[0] == "2D分割标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注" or i[0] == "2D框标注":
                 for j in gg:
                     pnum += j.pnums
                     knum += int(j.knums)
@@ -208,7 +208,7 @@ def pupdate(id):
 # nupdate
 def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes):
     now_data = models.Task.objects.get(id=id)
-    if kinds == "标签标注" or kinds == "2.5D点云标注" or kinds == "属性标注":
+    if kinds == "2D分割标注" or kinds == "2.5D点云标注" or kinds == "属性标注" or kinds == "2D框标注":
         now_data.uname = uname
         now_data.pname = pname
         now_data.waibao = waibao
@@ -417,7 +417,7 @@ def wbdata_tj(btime, otime):
 def gsdata_tj(btime, otime):
     if btime == otime == "":
         all_data = models.Task.objects.filter(
-            kinds__in=["标签标注", "2.5D点云标注", "视频标注", "属性标注"]
+            kinds__in=["2D分割标注", "2.5D点云标注", "视频标注", "属性标注","2D框标注"]
         )
         pname = []
         for i in all_data:
@@ -425,7 +425,7 @@ def gsdata_tj(btime, otime):
                 pname.append(i.pname)
     elif btime != "" and otime != "":
         all_data = models.Task.objects.filter(
-            dtime__range=[btime, otime], kinds__in=["标签标注", "2.5D点云标注", "视频标注", "属性标注"]
+            dtime__range=[btime, otime], kinds__in=["2D分割标注", "2.5D点云标注", "视频标注", "属性标注","2D框标注"]
         )
         pname = []
         for i in all_data:

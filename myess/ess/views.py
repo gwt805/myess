@@ -225,7 +225,7 @@ def insert(request):
                 row = sheet.row_values(i)
                 name = row[0]
                 if "-" not in row[4]:
-                    if row[5] == "标签标注" or row[5] == "2.5D点云标注" or row[5] == "属性标注":
+                    if row[5] == "2D分割标注" or row[5] == "2.5D点云标注" or row[5] == "属性标注" or row[5] == "2D框标注":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
@@ -278,7 +278,7 @@ def insert(request):
                         )
                     new_tasks.save()
                 else:
-                    if row[5] == "标签标注" or row[5] == "2.5D点云标注" or row[5] == "属性标注":
+                    if row[5] == "2D分割标注" or row[5] == "2.5D点云标注" or row[5] == "属性标注" or row[5] == "2D框标注":
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
@@ -334,7 +334,7 @@ def insert(request):
         knums = request.POST.get("knums").strip()
         ptimes = request.POST.get("ptimes").strip()
         try:
-            if kinds == "标签标注" or kinds == "2.5D点云标注" or kinds == "属性标注":
+            if kinds == "2D分割标注" or kinds == "2.5D点云标注" or kinds == "属性标注" or kinds == "2D框标注":
                 new_tasks = models.Task(
                     uname=uname,
                     pname=pname,
