@@ -7,31 +7,28 @@
     </style>
 {% endblock %}
 {% block navbar %}
-    {% if request.session.is_login %}
-        <ul class="nav navbar-nav">
-            <li class="active"><a href="/index?name={{ request.session.zh_uname }}">首页</a></li>
-            <!-- 批量添加 -->
-            <div id="div-execl" style="float: right; margin-top: 10px; position: relative; margin-left: 600px;">
-                <form action="/waiabo_data_insert/" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <table>
-                        <tr>
-                            <td><input type="file" name="file_obj" style="margin-right: -75px;"></td>
-                            <td><input type="submit" value="批量添加"></td>
-                            <td><span style="color: red">{{ error }}</span></td>
-                            <td>
-                                <a href="/static/files/waibao_insert_template.xlsx" download="waibao_insert_template.xlsx" style="margin-left: 20px;">点击下载外包数据批量添加模板</a>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
-        </ul>
-    {% endif %}
+    <ul class="nav navbar-nav">
+        <li class="active"><a href="/index?name={{ request.session.zh_uname }}">首页</a></li>
+        <!-- 批量添加 -->
+        <div id="div-execl" style="float: right; margin-top: 10px; position: relative; margin-left: 600px;">
+            <form action="/waiabo_data_insert/" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <td><input type="file" name="file_obj" style="margin-right: -75px;"></td>
+                        <td><input type="submit" value="批量添加"></td>
+                        <td><span style="color: red">{{ error }}</span></td>
+                        <td>
+                            <a href="/static/files/waibao_insert_template.xlsx" download="waibao_insert_template.xlsx" style="margin-left: 20px;">点击下载外包数据批量添加模板</a>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </ul>
 {% endblock %}
 
 {% block content %}
-    {% if request.session.is_login %}
     <div style="min-width:3%; height: 100%; position: fixed; float: left; margin-top: -20px; background-color: #bdbdbd;" onselectstart="return false"> <!-- 侧边栏div-->
         <div> <!-- 操作栏 -->
             <ul class="nav nav-pills nav-stacked">
@@ -167,9 +164,7 @@
             </div>
         </div>
     </div>
-    {% else %}
-        <h3>你尚未登录,请先登录！</h3>
-    {% endif %}
+
 <script type="text/javascript">
     // 数据修改
     function test(id,uname){

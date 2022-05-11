@@ -2,7 +2,6 @@
 {% block title %}数据修改{% endblock %}
 
 {% block content %}
-    {% if request.session.is_login %}
     <form class='form-register' action="/wb_update/" method="post">
         {% if message %}
         <div class="alert alert-warning" id="warning">{{ message }}</div>
@@ -33,9 +32,7 @@
             </tr>
         </table>
     </form>
-    {% else %}
-        <h3>你尚未登录,请先登录！</h3>
-    {% endif %}
+
     <script>
         var projects = JSON.parse('{{ projects|safe }}'); // 项目名字 列表
         // 给项目名字 添加下拉框
