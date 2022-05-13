@@ -1,17 +1,23 @@
 from django.db import models
 
+
 class User(models.Model):
-    uname = models.CharField(max_length=20, unique=True, primary_key=True,verbose_name="用户名")
-    zh_uname = models.CharField(max_length=20,default=None,blank=True,verbose_name="姓名")
-    pword = models.CharField(max_length=128,verbose_name="密码")
-    power = models.IntegerField(default=4,verbose_name="权限等级")
+    uname = models.CharField(
+        max_length=20, unique=True, primary_key=True, verbose_name="用户名"
+    )
+    zh_uname = models.CharField(
+        max_length=20, default=None, blank=True, verbose_name="姓名"
+    )
+    pword = models.CharField(max_length=128, verbose_name="密码")
+    power = models.IntegerField(default=4, verbose_name="权限等级")
 
     def __str__(self):
         return self.uname
 
+
 class Task(models.Model):
     gender = (
-        ("2D框标注","2D框标注"),
+        ("2D框标注", "2D框标注"),
         ("2D分割标注", "2D分割标注"),
         ("属性标注", "属性标注"),
         ("视频标注", "视频标注"),
@@ -29,7 +35,7 @@ class Task(models.Model):
         ("50/75-行人扶梯一米栏", "50/75-行人扶梯一米栏"),
         ("50-室内可通行", "50-室内可通行"),
         ("环卫车-红绿灯", "环卫车-红绿灯"),
-        ("环卫车-环视车辆行人","环卫车-环视车辆行人"),
+        ("环卫车-环视车辆行人", "环卫车-环视车辆行人"),
         ("S线-电线", "S线-电线"),
         ("S线-脚垫", "S线-脚垫"),
         ("75-车库漏水", "75-车库漏水"),
@@ -63,6 +69,7 @@ class Project(models.Model):
         max_length=125, unique=True, verbose_name="项目名字", blank=True
     )  # 项目类型
 
+
 class Tkinds(models.Model):
     kinds = models.CharField(
         max_length=20, unique=True, verbose_name="任务类型"
@@ -79,7 +86,7 @@ class Waibao(models.Model):
         ("50/75-行人扶梯一米栏", "50/75-行人扶梯一米栏"),
         ("50-室内可通行", "50-室内可通行"),
         ("环卫车-红绿灯", "环卫车-红绿灯"),
-        ("环卫车-环视车辆行人","环卫车-环视车辆行人"),
+        ("环卫车-环视车辆行人", "环卫车-环视车辆行人"),
         ("S线-电线", "S线-电线"),
         ("S线-脚垫", "S线-脚垫"),
         ("75-车库漏水", "75-车库漏水"),

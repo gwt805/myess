@@ -33,7 +33,9 @@ def tims(begin_time, over_time):
                 ptm += j.ptimes
             pp.append(pnum)
             pp.append(math.floor(pnum / ptm))
-        elif i[0] == "2D分割标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注" or i[0] == "2D框标注":
+        elif (
+            i[0] == "2D分割标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注" or i[0] == "2D框标注"
+        ):
             for j in gg:
                 pnum += j.pnums
                 knum += int(j.knums)
@@ -85,7 +87,12 @@ def pppee(begin_time, over_time):
                     ptm += j.ptimes
                 pp.append(pnum)
                 pp.append(math.floor(pnum / ptm))
-            elif i[0] == "2D分割标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注" or i[0] == "2D框标注":
+            elif (
+                i[0] == "2D分割标注"
+                or i[0] == "2.5D点云标注"
+                or i[0] == "属性标注"
+                or i[0] == "2D框标注"
+            ):
                 for j in gg:
                     pnum += j.pnums
                     knum += int(j.knums)
@@ -417,7 +424,7 @@ def wbdata_tj(btime, otime):
 def gsdata_tj(btime, otime):
     if btime == otime == "":
         all_data = models.Task.objects.filter(
-            kinds__in=["2D分割标注", "2.5D点云标注", "视频标注", "属性标注","2D框标注"]
+            kinds__in=["2D分割标注", "2.5D点云标注", "视频标注", "属性标注", "2D框标注"]
         )
         pname = []
         for i in all_data:
@@ -425,7 +432,8 @@ def gsdata_tj(btime, otime):
                 pname.append(i.pname)
     elif btime != "" and otime != "":
         all_data = models.Task.objects.filter(
-            dtime__range=[btime, otime], kinds__in=["2D分割标注", "2.5D点云标注", "视频标注", "属性标注","2D框标注"]
+            dtime__range=[btime, otime],
+            kinds__in=["2D分割标注", "2.5D点云标注", "视频标注", "属性标注", "2D框标注"],
         )
         pname = []
         for i in all_data:
@@ -447,9 +455,9 @@ def gsdata_tj(btime, otime):
                 video_flag = True
             else:
                 knums += int(j.knums)
-        one_data.append(i) # 项目名字,图片/视频数量,框数/时长
-        one_data.append(pnums) # 图片/视频数量
-        if video_flag: # 框数/时长
+        one_data.append(i)  # 项目名字,图片/视频数量,框数/时长
+        one_data.append(pnums)  # 图片/视频数量
+        if video_flag:  # 框数/时长
             one_data.append(strftime("%H时%M分%S秒", gmtime(knums)))
         else:
             one_data.append(knums)
@@ -465,3 +473,62 @@ def pwd_upd(uname, pwd1):
     usr_data = models.User.objects.get(uname=uname)
     usr_data.pword = pwd1
     usr_data.save()
+
+
+# 钉通知
+def dingtalk(
+    kind,
+    id,
+    uname,
+    pname,
+    waibao,
+    task_id,
+    dtime,
+    kinds,
+    pnums,
+    knums,
+    ptimes,
+    who,
+    wbdata,
+):
+    import time
+    from dingtalkchatbot.chatbot import DingtalkChatbot
+
+    # 引用钉钉群消息通知的Webhook地址：
+    webhook = f"https://oapi.dingtalk.com/robot/send?access_token=ea2826303fe3007af30dd7938d651c0826b8563a92fd26a5ccf5535ac3cb1bef"
+    # 初始化机器人小丁，方式一：通常初始化
+    msgs = DingtalkChatbot(webhook)
+    # text消息@所有人
+    times = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+    if kind == "删除":
+        msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了ID为{id}的{who}数据"
+    else:
+        if wbdata != "":
+            if kind == "修改":
+                tmp = ""
+                for k, v in wbdata.items():
+                    tmp += f"{k} : {v}\r\t"
+                msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t{tmp}"
+            else:
+                tmp = ""
+                for k, v in wbdata.items():
+                    tmp += f"{k} : {v}\r\t"
+                msg_text = (
+                    f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t{tmp}"
+                )
+        else:
+            if kind == "修改":
+                if task_id == "":
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t是否外包 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t 框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
+                elif knums == "":
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t是否外包 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
+                else:
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t是否外包 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
+            else:
+                if task_id == "":
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t是否外包 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t 框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
+                elif knums == "":
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t是否外包 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
+                else:
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t是否外包 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
+    msgs.send_text(msg=(msg_text))

@@ -24,6 +24,7 @@ from .mes import (
     wb_data_del,
     wb_nupdate,
     wbdata_tj,
+    dingtalk,
 )
 import time
 import xlrd
@@ -41,7 +42,9 @@ class UserForm(forms.Form):
     password = forms.CharField(
         label="密码",
         max_length=20,
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "密码"}),
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control", "placeholder": "密码"}
+        ),
     )
 
 
@@ -54,12 +57,16 @@ class RegisterForm(forms.Form):
     password1 = forms.CharField(
         label="密码",
         max_length=20,
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "密码"}),
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control", "placeholder": "密码"}
+        ),
     )
     password2 = forms.CharField(
         label="确认密码",
         max_length=20,
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "确认密码"}),
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control", "placeholder": "确认密码"}
+        ),
     )
 
 
@@ -225,7 +232,12 @@ def insert(request):
                 row = sheet.row_values(i)
                 name = row[0]
                 if "-" not in row[4]:
-                    if row[5] == "2D分割标注" or row[5] == "2.5D点云标注" or row[5] == "属性标注" or row[5] == "2D框标注":
+                    if (
+                        row[5] == "2D分割标注"
+                        or row[5] == "2.5D点云标注"
+                        or row[5] == "属性标注"
+                        or row[5] == "2D框标注"
+                    ):
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
@@ -277,8 +289,28 @@ def insert(request):
                             ptimes=float(row[8]),
                         )
                     new_tasks.save()
+                    dingtalk(
+                        "添加",
+                        "",
+                        uname,
+                        pname,
+                        waibao,
+                        task_id,
+                        dtime,
+                        kinds,
+                        pnums,
+                        knums,
+                        ptimes,
+                        "GS",
+                        "",
+                    )
                 else:
-                    if row[5] == "2D分割标注" or row[5] == "2.5D点云标注" or row[5] == "属性标注" or row[5] == "2D框标注":
+                    if (
+                        row[5] == "2D分割标注"
+                        or row[5] == "2.5D点云标注"
+                        or row[5] == "属性标注"
+                        or row[5] == "2D框标注"
+                    ):
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
@@ -322,6 +354,21 @@ def insert(request):
                             ptimes=float(row[8]),
                         )
                     new_tasks.save()
+                    dingtalk(
+                        "添加",
+                        "",
+                        uname,
+                        pname,
+                        waibao,
+                        task_id,
+                        dtime,
+                        kinds,
+                        pnums,
+                        knums,
+                        ptimes,
+                        "GS",
+                        "",
+                    )
             return redirect("/index?name=" + name)
         # 自己填写数据
         uname = request.POST.get("uname").strip()
@@ -334,7 +381,12 @@ def insert(request):
         knums = request.POST.get("knums").strip()
         ptimes = request.POST.get("ptimes").strip()
         try:
-            if kinds == "2D分割标注" or kinds == "2.5D点云标注" or kinds == "属性标注" or kinds == "2D框标注":
+            if (
+                kinds == "2D分割标注"
+                or kinds == "2.5D点云标注"
+                or kinds == "属性标注"
+                or kinds == "2D框标注"
+            ):
                 new_tasks = models.Task(
                     uname=uname,
                     pname=pname,
@@ -378,6 +430,21 @@ def insert(request):
                     ptimes=float(ptimes),
                 )
             new_tasks.save()
+            dingtalk(
+                "添加",
+                "",
+                uname,
+                pname,
+                waibao,
+                task_id,
+                dtime,
+                kinds,
+                pnums,
+                knums,
+                ptimes,
+                "GS",
+                "",
+            )
             return redirect("/index?name=" + uname)
         except:
             return render(
@@ -403,6 +470,21 @@ def update(request):
         knums = request.POST.get("knums").strip()
         ptimes = request.POST.get("ptimes").strip()
         nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes)
+        dingtalk(
+            "修改",
+            id,
+            uname,
+            pname,
+            waibao,
+            task_id,
+            dtime,
+            kinds,
+            pnums,
+            knums,
+            ptimes,
+            "GS",
+            "",
+        )
         return redirect("/index?name=" + uname)
     stu = pupdate(id)
     projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
@@ -472,7 +554,9 @@ def performance(request):
 # 单条或批量数据删除
 def dtdel(request):
     uname = request.GET.get("n")
-    data_del(request.GET.get("dtid"))
+    ids = request.GET.get("dtid")
+    data_del(ids)
+    dingtalk("删除", ids, uname, "", "", "", "", "", "", "", "", "GS", "")
     return redirect("/index?name=" + uname)
 
 
@@ -594,6 +678,29 @@ def waiabo_data_insert(request):
                         unit_price=float(row[5]),
                         wb_name=row[6],
                     )
+                dingtalk(
+                    "添加",
+                    "",
+                    "郭卫焘",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "外包",
+                    {
+                        "项目名字": pname,
+                        "发送数据时间": get_data_time,
+                        "图片数量": pnums,
+                        "框数": knums,
+                        "结算方式": settlement_method,
+                        "单价": unit_price,
+                        "外包名字": wb_name,
+                    },
+                )
                 waibao_tasks.save()
             return redirect("/waibao/")
         # 单条数据添加
@@ -616,7 +723,29 @@ def waiabo_data_insert(request):
             )
             == "ok"
         ):
-
+            dingtalk(
+                "添加",
+                "",
+                "郭卫焘",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "外包",
+                {
+                    "项目名字": pname,
+                    "发送数据时间": get_data_time,
+                    "图片数量": pnums,
+                    "框数": knums,
+                    "结算方式": settlement_method,
+                    "单价": unit_price,
+                    "外包名字": wb_name,
+                },
+            )
             return redirect("/waibao")
         else:
             return HttpResponse("请检查填写的内容!")
@@ -624,7 +753,9 @@ def waiabo_data_insert(request):
 
 # 外包数据 单条或批量数据删除
 def wb_dtdel(request):
-    wb_data_del(request.GET.get("dtid"))
+    ids = request.GET.get("dtid")
+    wb_data_del(ids)
+    dingtalk("删除", ids, "郭卫焘", "", "", "", "", "", "", "", "", "外包", "")
     return redirect("/waibao/")
 
 
@@ -652,6 +783,29 @@ def wb_update(request):
         )
         return redirect("/waibao/")
     stu = waibao_update(id)
+    dingtalk(
+        "修改",
+        id,
+        "郭卫焘",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "外包",
+        {
+            "项目名字": pname,
+            "发送数据时间": get_data_time,
+            "图片数量": pnums,
+            "框数": knums,
+            "结算方式": settlement_method,
+            "单价": unit_price,
+            "外包名字": wb_name,
+        },
+    )
     projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
 
     return render(

@@ -15,6 +15,7 @@ python >= 3.6
 pip install django
 pip install mysqlclient
 pip install xlrd==1.2.0
+pip install DingtalkChatbot
 
 注：xlrd安装完成后需要找到环境中的xlrd.py，把里面的getiterator改成iter
 ```
@@ -59,3 +60,4 @@ TODO
 - [x] 图表展示页面用按钮控制显示内容
 - [x] 重新命名项目名字
 - [x] 修改页码样式
+- [x] 添加/修改/删除数据时,有钉钉消息通知
