@@ -492,10 +492,21 @@ def dingtalk(
     wbdata,
 ):
     import time
+    import hmac
+    import hashlib
+    import base64
+    import urllib.parse
     from dingtalkchatbot.chatbot import DingtalkChatbot
 
+    timestamp = str(round(time.time() * 1000))
+    secret = 'SEC167e1c4a161483c8f2de6298260661d0c1628df16d7a010f1a6fe108044a73ba' # 替换成你的签
+    secret_enc = secret.encode('utf-8')
+    string_to_sign = '{}\n{}'.format(timestamp, secret)
+    string_to_sign_enc = string_to_sign.encode('utf-8')
+    hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
+    sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
     # 引用钉钉群消息通知的Webhook地址：
-    webhook = f"https://oapi.dingtalk.com/robot/send?access_token=ea2826303fe3007af30dd7938d651c0826b8563a92fd26a5ccf5535ac3cb1bef"
+    webhook = f"https://oapi.dingtalk.com/robot/send?access_token=600138c298051d1b3c769f3466888b1e79146cd956c587e0035729d2015a9bbb&timestamp={timestamp}&sign={sign}"
     # 初始化机器人小丁，方式一：通常初始化
     msgs = DingtalkChatbot(webhook)
     # text消息@所有人
@@ -531,4 +542,4 @@ def dingtalk(
                     msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t是否外包 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
                 else:
                     msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t是否外包 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
-    msgs.send_text(msg=(msg_text))
+    msgs.send_text(msg=(msg_text),is_at_all=True)
