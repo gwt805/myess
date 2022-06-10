@@ -21,7 +21,6 @@ class Task(models.Model):
         ("2D分割标注", "2D分割标注"),
         ("属性标注", "属性标注"),
         ("视频标注", "视频标注"),
-        ("2D框跟踪标注", "2D框跟踪标注"),
         ("2.5D点云标注", "2.5D点云标注"),
         ("审核", "审核"),
         ("筛选", "筛选"),
@@ -75,6 +74,8 @@ class Tkinds(models.Model):
         max_length=20, unique=True, verbose_name="任务类型"
     )  # 任务类型：标注，审核，其他
 
+class Waibaos(models.Model):
+    name = models.CharField(max_length=128,verbose_name="外包名字")
 
 class Waibao(models.Model):
     p_gender = (

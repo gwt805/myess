@@ -155,7 +155,7 @@ def performanceq(begin_time, over_time, name):
                 pnum += j.pnums
                 ptm += j.ptimes
             pp.append(pnum)
-        elif i[0] == "标签标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注":
+        elif i[0] == "2D框标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注" or i[0] == "2D分割标注":
             for j in gg:
                 pnum += j.pnums
                 knum += int(j.knums)
@@ -248,7 +248,7 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
     elif kinds == "筛选":
         now_data.uname = uname
         now_data.pname = pname
-        now_data.waibao = None
+        now_data.waibao = waibao
         now_data.task_id = None
         now_data.dtime = dtime
         now_data.kinds = kinds

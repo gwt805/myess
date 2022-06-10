@@ -97,13 +97,15 @@ def index(request):
     tkinds = json.dumps(
         [i[0] for i in models.Tkinds.objects.values_list("kinds")]
     )  # 数据库里所有的任务类型
-
+    bzf = json.dumps(
+        [i[0] for i in models.Waibaos.objects.values_list("name")]
+    )  # 数据标注方
     if request.GET.get("showp"):  # 展示个人当天数据
         stus = person(request.GET.get("showp"), now_time)
         return render(
             request,
             "login/index.html",
-            {"stus": stus, "projects": projects, "tkinds": tkinds},
+            {"stus": stus, "projects": projects, "tkinds": tkinds, "bzf": bzf},
         )
     if page_id or request.GET.get("showa"):  # 展示所有数据
         stu = models.Task.objects.all().order_by("-dtime")
@@ -129,6 +131,7 @@ def index(request):
                 "sum_page": page.num_pages,
                 "projects": projects,
                 "tkinds": tkinds,
+                "bzf": bzf
             },
         )
     if request.GET.get("showpd"):  # 展示i所有人当天数据
@@ -136,13 +139,13 @@ def index(request):
         return render(
             request,
             "login/index.html",
-            {"stus": stu, "projects": projects, "tkinds": tkinds},
+            {"stus": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf},
         )
     stu = person(request.GET.get("name"), now_time)
     return render(
         request,
         "login/index.html",
-        {"stus": stu, "projects": projects, "tkinds": tkinds},
+        {"stus": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf},
     )
 
 
@@ -281,6 +284,7 @@ def insert(request):
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
+                            waibao=row[2].strip(),
                             dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
                                 "%Y-%m-%d"
                             ),
@@ -348,6 +352,7 @@ def insert(request):
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
+                            waibao=row[2].strip(),
                             dtime=row[4],
                             kinds=row[5].strip(),
                             pnums=int(row[6]),
@@ -424,6 +429,7 @@ def insert(request):
                 new_tasks = models.Task(
                     uname=uname,
                     pname=pname,
+                    waibao=waibao,
                     dtime=dtime,
                     kinds=kinds,
                     pnums=int(pnums),
@@ -489,11 +495,13 @@ def update(request):
     stu = pupdate(id)
     projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
     tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list("kinds")])
-
+    bzf = json.dumps(
+        [i[0] for i in models.Waibaos.objects.values_list("name")]
+    )  # 数据标注方
     return render(
         request,
         "tasks/update.html",
-        {"stu": stu, "projects": projects, "tkinds": tkinds},
+        {"stu": stu, "projects": projects, "tkinds": tkinds, "bzf":bzf},
     )
 
 

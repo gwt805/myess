@@ -51,3 +51,7 @@ class ControlWaibao(admin.ModelAdmin):
         "wb_name",
     )
     ordering = ("-get_data_time",)
+
+@admin.register(models.Waibaos)
+class ControlWaibaos(admin.ModelAdmin):
+    list_display = ("name",)
