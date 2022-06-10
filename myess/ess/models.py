@@ -43,13 +43,13 @@ class Task(models.Model):
         ("AIOT-清洁行为", "AIOT-清洁行为"),
         ("X线-行人", "X线-行人"),
     )
-    wb_gender = (("是", "是"), ("否", "否"))
+    wb_gender = (("高仙","高仙"),("倍赛","倍赛"),("龙猫","龙猫"))
     uname = models.CharField(max_length=20, verbose_name="用户名")  # 用户名
     pname = models.CharField(
         max_length=100, choices=p_gender, null=True, verbose_name="项目类型", blank=True
     )  # 项目类型
     waibao = models.CharField(
-        max_length=10, choices=wb_gender, null=True, verbose_name="是否外包任务", blank=True
+        max_length=10, choices=wb_gender, null=True, verbose_name="数据标注方", blank=True
     )
     task_id = models.BigIntegerField(null=True, verbose_name="任务ID", blank=True)  # 任务ID
     dtime = models.CharField(max_length=20, verbose_name="当天日期")  # 当天日期
