@@ -146,7 +146,7 @@
                         <tr>
                             <th><span style="margin-right: 10px;" onclick="qx_all()"><input type="checkbox" name="fbs" id="fbs"> 全选</span>用户名</th>
                             <th>项目名字</th>
-                            <th>数据标注方</th>
+                            <th>标注方</th>
                             <th>任务ID</th>
                             <th>日期</th>
                             <th>任务类型</th>
@@ -162,15 +162,7 @@
                                 <td><span style="margin-right: 45px;"><input type="checkbox" name="fb" value="{{ tasks.id }}"></span>{{ tasks.uname }}</td>
                                 <td>{{ tasks.pname }}</td>
                                 <td>{{ tasks.waibao }}</td>
-                                {% if tasks.waibao == '高仙' %}
-                                    {% if tasks.kinds != '视频标注' %}
-                                        <td>#{{ tasks.task_id }}</td>
-                                    {% else %}
-                                        <td>{{ tasks.task_id }}</td>
-                                    {% endif %}
-                                {% else %}
-                                    <td>{{ tasks.task_id }}</td>
-                                {% endif %}
+                                <td>{{ tasks.task_id }}</td>
                                 <td>{{ tasks.dtime }}</td>
                                 <td>{{ tasks.kinds }}</td>
                                 <td>{{ tasks.pnums }}</td>
