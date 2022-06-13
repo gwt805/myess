@@ -131,7 +131,7 @@ def index(request):
                 "sum_page": page.num_pages,
                 "projects": projects,
                 "tkinds": tkinds,
-                "bzf": bzf
+                "bzf": bzf,
             },
         )
     if request.GET.get("showpd"):  # 展示i所有人当天数据
@@ -501,7 +501,7 @@ def update(request):
     return render(
         request,
         "tasks/update.html",
-        {"stu": stu, "projects": projects, "tkinds": tkinds, "bzf":bzf},
+        {"stu": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf},
     )
 
 
@@ -789,31 +789,32 @@ def wb_update(request):
             unit_price,
             wb_name,
         )
+        dingtalk(
+            "修改",
+            id,
+            "郭卫焘",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "外包",
+            {
+                "项目名字": pname,
+                "发送数据时间": get_data_time,
+                "图片数量": pnums,
+                "框数": knums,
+                "结算方式": settlement_method,
+                "单价": unit_price,
+                "外包名字": wb_name,
+            },
+        )
         return redirect("/waibao/")
     stu = waibao_update(id)
-    dingtalk(
-        "修改",
-        id,
-        "郭卫焘",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "外包",
-        {
-            "项目名字": pname,
-            "发送数据时间": get_data_time,
-            "图片数量": pnums,
-            "框数": knums,
-            "结算方式": settlement_method,
-            "单价": unit_price,
-            "外包名字": wb_name,
-        },
-    )
+
     projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
 
     return render(
