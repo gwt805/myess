@@ -28,9 +28,7 @@ class User(models.Model):
     uname = models.CharField(
         max_length=20, unique=True, primary_key=True, verbose_name="用户名"
     )
-    zh_uname = models.CharField(
-        max_length=20, null=True, blank=True, verbose_name="姓名"
-    )
+    zh_uname = models.CharField(max_length=20, null=True, blank=True, verbose_name="姓名")
     pword = models.CharField(max_length=128, verbose_name="密码")
     power = models.IntegerField(default=4, verbose_name="权限等级")
 
