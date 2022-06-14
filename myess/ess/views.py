@@ -235,12 +235,7 @@ def insert(request):
                 row = sheet.row_values(i)
                 name = row[0]
                 if "-" not in row[4]:
-                    if (
-                        row[5] == "2D分割标注"
-                        or row[5] == "2.5D点云标注"
-                        or row[5] == "属性标注"
-                        or row[5] == "2D框标注"
-                    ):
+                    if (row[5] == "2D分割标注"or row[5] == "2.5D点云标注"or row[5] == "属性标注"or row[5] == "2D框标注"):
                         new_tasks = models.Task(
                             uname=row[0].strip(),
                             pname=row[1].strip(),
@@ -281,99 +276,22 @@ def insert(request):
                             ptimes=float(row[8]),
                         )
                     elif row[5] == "筛选":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
-                                "%Y-%m-%d"
-                            ),
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            ptimes=float(row[8]),
-                        )
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),dtime=xlrd.xldate_as_datetime(row[4], 0).strftime("%Y-%m-%d"),kinds=row[5].strip(),pnums=int(row[6]),ptimes=float(row[8]),)
                     new_tasks.save()
-                    dingtalk(
-                        "添加",
-                        "",
-                        uname,
-                        pname,
-                        waibao,
-                        task_id,
-                        dtime,
-                        kinds,
-                        pnums,
-                        knums,
-                        ptimes,
-                        "GS",
-                        "",
-                    )
+                    dingtalk("添加","",row[0].strip(),row[1].strip(),row[2].strip(),int(row[3]),xlrd.xldate_as_datetime(row[4], 0).strftime("%Y-%m-%d"),row[5].strip(),int(row[6]),int(row[7]),float(row[8]),"GS","",)
                 else:
-                    if (
-                        row[5] == "2D分割标注"
-                        or row[5] == "2.5D点云标注"
-                        or row[5] == "属性标注"
-                        or row[5] == "2D框标注"
-                    ):
+                    if (row[5] == "2D分割标注"or row[5] == "2.5D点云标注"or row[5] == "属性标注"or row[5] == "2D框标注"):
                         new_tasks = models.Task(
                             uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=int(row[7]),
-                            ptimes=float(row[8]),
-                        )
+                            pname=row[1].strip(),waibao=row[2].strip(),task_id=int(row[3]),dtime=row[4],kinds=row[5].strip(),pnums=int(row[6]),knums=int(row[7]),ptimes=float(row[8]),)
                     elif row[5] == "视频标注":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=row[7],
-                            ptimes=float(row[8]),
-                        )
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),dtime=row[4],kinds=row[5].strip(),pnums=int(row[6]),knums=row[7],ptimes=float(row[8]),)
                     elif row[5] == "审核":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            ptimes=float(row[8]),
-                        )
+                        new_tasks = models.Task(uname=row[0].strip(),waibao=row[2].strip(),task_id=int(row[3]),dtime=row[4],kinds=row[5].strip(),pnums=int(row[6]),ptimes=float(row[8]),)
                     elif row[5] == "筛选":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            ptimes=float(row[8]),
-                        )
+                        new_tasks = models.Task(uname=row[0].strip(),pname=row[1].strip(),waibao=row[2].strip(),dtime=row[4],kinds=row[5].strip(),pnums=int(row[6]),ptimes=float(row[8]),)
                     new_tasks.save()
-                    dingtalk(
-                        "添加",
-                        "",
-                        uname,
-                        pname,
-                        waibao,
-                        task_id,
-                        dtime,
-                        kinds,
-                        pnums,
-                        knums,
-                        ptimes,
-                        "GS",
-                        "",
-                    )
+                    dingtalk("添加","",row[0].strip(),row[1].strip(),row[2].strip(),int(row[3]),row[4],row[5].strip(),int(row[6]),int(row[7]),float(row[8]),"GS","",)
             return redirect("/index?name=" + name)
         # 自己填写数据
         uname = request.POST.get("uname").strip()
