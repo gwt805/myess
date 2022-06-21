@@ -25,6 +25,7 @@ from .mes import (
     wb_nupdate,
     wbdata_tj,
     dingtalk,
+    gs_data_add,
 )
 import time
 import xlrd
@@ -75,6 +76,32 @@ def hash_code(s):  # 加点盐
     h = hashlib.sha256()
     h.update(s.encode())  # update方法只接收bytes类型
     return h.hexdigest()
+
+# 登录
+def login(request):
+    if request.method == "POST":
+        login_form = UserForm(request.POST)
+        message = "请检查填写的内容！"
+        if login_form.is_valid():
+            username = request.POST.get("username", None).strip()
+            password = request.POST.get("password", None).strip()
+            try:
+                user = models.User.objects.get(uname=username)
+                if user.pword == hash_code(password):
+                    request.session["is_login"] = True
+                    request.session["user_power"] = user.power
+                    request.session["zh_uname"] = user.zh_uname
+                    request.session["eng_uname"] = user.uname
+                    if user.power == 3:
+                        return redirect("/waibao/")
+                    return redirect("/index?name=" + username)
+                else:
+                    message = "密码不正确！"
+            except:
+                message = "用户不存在"
+        return render(request, "login/login.html", locals())
+    login_form = UserForm()
+    return render(request, "login/login.html", locals())
 
 
 # 首页
@@ -149,31 +176,6 @@ def index(request):
     )
 
 
-# 登录
-def login(request):
-    if request.method == "POST":
-        login_form = UserForm(request.POST)
-        message = "请检查填写的内容！"
-        if login_form.is_valid():
-            username = request.POST.get("username", None).strip()
-            password = request.POST.get("password", None).strip()
-            try:
-                user = models.User.objects.get(uname=username)
-                if user.pword == hash_code(password):
-                    request.session["is_login"] = True
-                    request.session["user_power"] = user.power
-                    request.session["zh_uname"] = user.zh_uname
-                    request.session["eng_uname"] = user.uname
-                    if user.power == 3:
-                        return redirect("/waibao/")
-                    return redirect("/index?name=" + username)
-                else:
-                    message = "密码不正确！"
-            except:
-                message = "用户不存在"
-        return render(request, "login/login.html", locals())
-    login_form = UserForm()
-    return render(request, "login/login.html", locals())
 
 
 # 注册
@@ -235,180 +237,25 @@ def insert(request):
                 row = sheet.row_values(i)
                 name = row[0]
                 if "-" not in row[4]:
-                    if (
-                        row[5] == "2D分割标注"
-                        or row[5] == "2.5D点云标注"
-                        or row[5] == "属性标注"
-                        or row[5] == "2D框标注"
-                    ):
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
-                                "%Y-%m-%d"
-                            ),
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=int(row[7]),
-                            ptimes=float(row[8]),
-                        )
-                    elif row[5] == "视频标注":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
-                                "%Y-%m-%d"
-                            ),
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=row[7],
-                            ptimes=float(row[8]),
-                        )
-                    elif row[5] == "审核":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
-                                "%Y-%m-%d"
-                            ),
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            ptimes=float(row[8]),
-                        )
-                    elif row[5] == "筛选":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            dtime=xlrd.xldate_as_datetime(row[4], 0).strftime(
-                                "%Y-%m-%d"
-                            ),
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            ptimes=float(row[8]),
-                        )
-
-                    if row[3] == "":
-                        dingtalk(
-                            "添加",
-                            "",
-                            row[0].strip(),
-                            row[1].strip(),
-                            row[2].strip(),
-                            "",
-                            row[4],
-                            row[5].strip(),
-                            int(row[6]),
-                            row[7],
-                            float(row[8]),
-                            "GS",
-                            "",
-                        )
-                    else:
-                        dingtalk(
-                            "添加",
-                            "",
-                            row[0].strip(),
-                            row[1].strip(),
-                            row[2].strip(),
-                            int(row[3]),
-                            row[4],
-                            row[5].strip(),
-                            int(row[6]),
-                            row[7],
-                            float(row[8]),
-                            "GS",
-                            "",
-                        )
-                    new_tasks.save()
+                    ddtime = xlrd.xldate_as_datetime(row[4], 0).strftime("%Y-%m-%d")
                 else:
-                    if (
-                        row[5] == "2D分割标注"
-                        or row[5] == "2.5D点云标注"
-                        or row[5] == "属性标注"
-                        or row[5] == "2D框标注"
-                    ):
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=int(row[7]),
-                            ptimes=float(row[8]),
-                        )
-                    elif row[5] == "视频标注":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            knums=row[7],
-                            ptimes=float(row[8]),
-                        )
-                    elif row[5] == "审核":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            waibao=row[2].strip(),
-                            task_id=int(row[3]),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            ptimes=float(row[8]),
-                        )
-                    elif row[5] == "筛选":
-                        new_tasks = models.Task(
-                            uname=row[0].strip(),
-                            pname=row[1].strip(),
-                            waibao=row[2].strip(),
-                            dtime=row[4],
-                            kinds=row[5].strip(),
-                            pnums=int(row[6]),
-                            ptimes=float(row[8]),
-                        )
-
-                    if row[3] == "":
-                        dingtalk(
-                            "添加",
-                            "",
-                            row[0].strip(),
-                            row[1].strip(),
-                            row[2].strip(),
-                            "",
-                            row[4],
-                            row[5].strip(),
-                            int(row[6]),
-                            row[7],
-                            float(row[8]),
-                            "GS",
-                            "",
-                        )
-                    else:
-                        dingtalk(
-                            "添加",
-                            "",
-                            row[0].strip(),
-                            row[1].strip(),
-                            row[2].strip(),
-                            int(row[3]),
-                            row[4],
-                            row[5].strip(),
-                            int(row[6]),
-                            row[7],
-                            float(row[8]),
-                            "GS",
-                            "",
-                        )
-                    new_tasks.save()
+                    ddtime = row[4]
+                gs_data_add(row[0].strip(),row[1].strip(),row[2].strip(),row[3],ddtime,row[5].strip(),int(row[6]),row[7],float(row[8]))
+                dingtalk(
+                    "添加",
+                    "",
+                    row[0].strip(),
+                    row[1].strip(),
+                    row[2].strip(),
+                    "" if row[3] == "" else int(row[3]),
+                    row[4],
+                    row[5].strip(),
+                    int(row[6]),
+                    row[7],
+                    float(row[8]),
+                    "GS",
+                    "",
+                )
             return redirect("/index?name=" + name)
         # 自己填写数据
         uname = request.POST.get("uname").strip()
@@ -417,75 +264,12 @@ def insert(request):
         task_id = request.POST.get("task_id").strip()
         dtime = request.POST.get("dtime").strip()
         kinds = request.POST.get("kinds").strip()
-        pnums = request.POST.get("pnums").strip()
+        pnums = int(request.POST.get("pnums").strip())
         knums = request.POST.get("knums").strip()
-        ptimes = request.POST.get("ptimes").strip()
+        ptimes = float(request.POST.get("ptimes").strip())
         try:
-            if (
-                kinds == "2D分割标注"
-                or kinds == "2.5D点云标注"
-                or kinds == "属性标注"
-                or kinds == "2D框标注"
-            ):
-                new_tasks = models.Task(
-                    uname=uname,
-                    pname=pname,
-                    waibao=waibao,
-                    task_id=int(task_id),
-                    dtime=dtime,
-                    kinds=kinds,
-                    pnums=int(pnums),
-                    knums=int(knums),
-                    ptimes=float(ptimes),
-                )
-            elif kinds == "视频标注":
-                new_tasks = models.Task(
-                    uname=uname,
-                    pname=pname,
-                    waibao=waibao,
-                    dtime=dtime,
-                    kinds=kinds,
-                    pnums=int(pnums),
-                    knums=knums,
-                    ptimes=float(ptimes),
-                )
-            elif kinds == "审核":
-                new_tasks = models.Task(
-                    uname=uname,
-                    pname=pname,
-                    waibao=waibao,
-                    task_id=int(task_id),
-                    dtime=dtime,
-                    kinds=kinds,
-                    pnums=int(pnums),
-                    ptimes=float(ptimes),
-                )
-            elif kinds == "筛选":
-                new_tasks = models.Task(
-                    uname=uname,
-                    pname=pname,
-                    waibao=waibao,
-                    dtime=dtime,
-                    kinds=kinds,
-                    pnums=int(pnums),
-                    ptimes=float(ptimes),
-                )
-            new_tasks.save()
-            dingtalk(
-                "添加",
-                "",
-                uname,
-                pname,
-                waibao,
-                task_id,
-                dtime,
-                kinds,
-                pnums,
-                knums,
-                ptimes,
-                "GS",
-                "",
-            )
+            gs_data_add(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes)
+            dingtalk( "添加","",uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes,"GS","")
             return redirect("/index?name=" + uname)
         except:
             return render(
@@ -511,21 +295,7 @@ def update(request):
         knums = request.POST.get("knums").strip()
         ptimes = request.POST.get("ptimes").strip()
         nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes)
-        dingtalk(
-            "修改",
-            id,
-            uname,
-            pname,
-            waibao,
-            task_id,
-            dtime,
-            kinds,
-            pnums,
-            knums,
-            ptimes,
-            "GS",
-            "",
-        )
+        dingtalk("修改",id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes,"GS","")
         return redirect("/index?name=" + uname)
     stu = pupdate(id)
     projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
@@ -700,27 +470,17 @@ def waiabo_data_insert(request):
             for i in range(1, sheet.nrows):
                 row = sheet.row_values(i)
                 if "-" not in row[1]:
-                    waibao_tasks = models.Waibao(
-                        pname=row[0].strip(),
-                        get_data_time=xlrd.xldate_as_datetime(row[1], 0).strftime(
-                            "%Y-%m-%d"
-                        ),
-                        pnums=int(row[2]),
-                        knums=int(row[3]),
-                        settlement_method=row[4].strip(),
-                        unit_price=float(row[5]),
-                        wb_name=row[6],
-                    )
+                    getdatatime=xlrd.xldate_as_datetime(row[1], 0).strftime("%Y-%m-%d")
                 else:
-                    waibao_tasks = models.Waibao(
-                        pname=row[0].strip(),
-                        get_data_time=row[1],
-                        pnums=int(row[2]),
-                        knums=int(row[3]),
-                        settlement_method=row[4].strip(),
-                        unit_price=float(row[5]),
-                        wb_name=row[6],
-                    )
+                    getdatatime=row[1]
+                waibao_tasks = models.Waibao()
+                waibao_tasks.pname = row[0]
+                waibao_tasks.get_data_time = getdatatime
+                waibao_tasks.pnums = int(row[2])
+                waibao_tasks.knums = int(row[3])
+                waibao_tasks.settlement_method = row[4].strip()
+                waibao_tasks.unit_price = float(row[5])
+                waibao_tasks.wb_name = row[6].strip()
                 dingtalk(
                     "添加",
                     "",
@@ -735,13 +495,13 @@ def waiabo_data_insert(request):
                     "",
                     "外包",
                     {
-                        "项目名字": pname,
-                        "发送数据时间": get_data_time,
-                        "图片数量": pnums,
-                        "框数": knums,
-                        "结算方式": settlement_method,
-                        "单价": unit_price,
-                        "外包名字": wb_name,
+                        "项目名字": row[0],
+                        "发送数据时间": getdatatime,
+                        "图片数量": int(row[2]),
+                        "框数": int(row[3]),
+                        "结算方式": row[4].strip(),
+                        "单价": float(row[5]),
+                        "外包名字": row[6].strip(),
                     },
                 )
                 waibao_tasks.save()
@@ -754,18 +514,7 @@ def waiabo_data_insert(request):
         settlement_method = request.POST.get("settlement_method")
         unit_price = request.POST.get("unit_price")
         wb_name = request.POST.get("wb_name")
-        if (
-            waibao_insert(
-                pname,
-                get_data_time,
-                pnums,
-                knums,
-                settlement_method,
-                unit_price,
-                wb_name,
-            )
-            == "ok"
-        ):
+        if waibao_insert(pname,get_data_time,pnums,knums,settlement_method,unit_price,wb_name,)== "ok":
             dingtalk(
                 "添加",
                 "",

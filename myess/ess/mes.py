@@ -174,6 +174,24 @@ def performanceq(begin_time, over_time, name):
         tps.append(pp)
     return tps
 
+# GS 数据添加
+def gs_data_add(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
+    new_task = models.Task()
+    new_task.uname = uname
+    new_task.pname = pname
+    new_task.waibao = waibao
+    new_task.dtime = dtime
+    new_task.kinds = kinds
+    new_task.pnums = pnums
+    new_task.ptimes = ptimes
+    if kinds == "2D分割标注" or kinds == "2.5D点云标注" or kinds == "属性标注" or kinds == "2D框标注":
+        new_task.task_id=int(task_id)
+        new_task.knums=int(knums)
+    elif kinds == "视频标注":
+        new_task.knums=knums
+    elif kinds == "审核":
+        new_task.task_id=int(task_id)
+    new_task.save()
 
 # search
 def search(uname, pname, dtime):
@@ -201,12 +219,10 @@ def search(uname, pname, dtime):
     else:
         pass
 
-
 # person
 def person(uname, dtime):
     stu = models.Task.objects.filter(uname=uname, dtime=dtime)
     return stu
-
 
 # update
 def pupdate(id):
@@ -217,46 +233,25 @@ def pupdate(id):
 # nupdate
 def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes):
     now_data = models.Task.objects.get(id=id)
+    now_data.uname = uname
+    now_data.pname = pname
+    now_data.waibao = waibao
+    now_data.dtime = dtime
+    now_data.pnums = pnums
+    now_data.kinds = kinds
+    now_data.ptimes = float(ptimes)
     if kinds == "2D分割标注" or kinds == "2.5D点云标注" or kinds == "属性标注" or kinds == "2D框标注":
-        now_data.uname = uname
-        now_data.pname = pname
-        now_data.waibao = waibao
         now_data.task_id = int(task_id)
-        now_data.dtime = dtime
-        now_data.kinds = kinds
-        now_data.pnums = int(pnums)
         now_data.knums = knums
-        now_data.ptimes = float(ptimes)
     elif kinds == "视频标注":
-        now_data.uname = uname
-        now_data.pname = pname
-        now_data.waibao = waibao
         now_data.task_id = None
-        now_data.dtime = dtime
-        now_data.kinds = kinds
-        now_data.pnums = pnums
         now_data.knums = knums
-        now_data.ptimes = float(ptimes)
     elif kinds == "审核":
-        now_data.uname = uname
-        now_data.pname = pname
-        now_data.waibao = waibao
         now_data.task_id = int(task_id)
-        now_data.dtime = dtime
-        now_data.kinds = kinds
-        now_data.pnums = int(pnums)
         now_data.knums = None
-        now_data.ptimes = float(ptimes)
-    elif kinds == "筛选":
-        now_data.uname = uname
-        now_data.pname = pname
-        now_data.waibao = waibao
+    elif kinds == "筛选":   
         now_data.task_id = None
-        now_data.dtime = dtime
-        now_data.kinds = kinds
-        now_data.pnums = int(pnums)
         now_data.knums = None
-        now_data.ptimes = float(ptimes)
     now_data.save()
 
 
@@ -518,34 +513,34 @@ def dingtalk(
     # text消息@所有人
     times = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
     if kind == "删除":
-        msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了ID为{id}的{who}数据"
+        msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了ID为{id}的{who}数据\r"
     else:
         if wbdata != "":
             if kind == "修改":
                 tmp = ""
                 for k, v in wbdata.items():
                     tmp += f"{k} : {v}\r\t"
-                msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t{tmp}"
+                msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t{tmp}\r"
             else:
                 tmp = ""
                 for k, v in wbdata.items():
                     tmp += f"{k} : {v}\r\t"
                 msg_text = (
-                    f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t{tmp}"
+                    f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t{tmp}\r"
                 )
         else:
             if kind == "修改":
-                if task_id == "":
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t 框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
-                elif knums == "":
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
+                if task_id == "" or task_id == None:
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}\r"
+                elif knums == "" or knums == None:
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}\r"
                 else:
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}\r"
             else:
-                if task_id == "":
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t 框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
-                elif knums == "":
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
+                if task_id == "" or task_id == None:
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}\r"
+                elif knums == "" or task_id == None:
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}\r"
                 else:
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
+                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}\r"
     msgs.send_text(msg=(msg_text), is_at_all=True)
