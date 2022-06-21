@@ -174,8 +174,9 @@ def performanceq(begin_time, over_time, name):
         tps.append(pp)
     return tps
 
+
 # GS 数据添加
-def gs_data_add(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
+def gs_data_add(uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes):
     new_task = models.Task()
     new_task.uname = uname
     new_task.pname = pname
@@ -185,13 +186,14 @@ def gs_data_add(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
     new_task.pnums = pnums
     new_task.ptimes = ptimes
     if kinds == "2D分割标注" or kinds == "2.5D点云标注" or kinds == "属性标注" or kinds == "2D框标注":
-        new_task.task_id=int(task_id)
-        new_task.knums=int(knums)
+        new_task.task_id = int(task_id)
+        new_task.knums = int(knums)
     elif kinds == "视频标注":
-        new_task.knums=knums
+        new_task.knums = knums
     elif kinds == "审核":
-        new_task.task_id=int(task_id)
+        new_task.task_id = int(task_id)
     new_task.save()
+
 
 # search
 def search(uname, pname, dtime):
@@ -219,10 +221,12 @@ def search(uname, pname, dtime):
     else:
         pass
 
+
 # person
 def person(uname, dtime):
     stu = models.Task.objects.filter(uname=uname, dtime=dtime)
     return stu
+
 
 # update
 def pupdate(id):
@@ -249,7 +253,7 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
     elif kinds == "审核":
         now_data.task_id = int(task_id)
         now_data.knums = None
-    elif kinds == "筛选":   
+    elif kinds == "筛选":
         now_data.task_id = None
         now_data.knums = None
     now_data.save()
@@ -525,9 +529,7 @@ def dingtalk(
                 tmp = ""
                 for k, v in wbdata.items():
                     tmp += f"{k} : {v}\r\t"
-                msg_text = (
-                    f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t{tmp}\r"
-                )
+                msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t{tmp}\r"
         else:
             if kind == "修改":
                 if task_id == "" or task_id == None:

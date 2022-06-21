@@ -77,6 +77,7 @@ def hash_code(s):  # 加点盐
     h.update(s.encode())  # update方法只接收bytes类型
     return h.hexdigest()
 
+
 # 登录
 def login(request):
     if request.method == "POST":
@@ -176,8 +177,6 @@ def index(request):
     )
 
 
-
-
 # 注册
 def register(request):
     if request.session.get("is_login", None):
@@ -240,7 +239,17 @@ def insert(request):
                     ddtime = xlrd.xldate_as_datetime(row[4], 0).strftime("%Y-%m-%d")
                 else:
                     ddtime = row[4]
-                gs_data_add(row[0].strip(),row[1].strip(),row[2].strip(),row[3],ddtime,row[5].strip(),int(row[6]),row[7],float(row[8]))
+                gs_data_add(
+                    row[0].strip(),
+                    row[1].strip(),
+                    row[2].strip(),
+                    row[3],
+                    ddtime,
+                    row[5].strip(),
+                    int(row[6]),
+                    row[7],
+                    float(row[8]),
+                )
                 dingtalk(
                     "添加",
                     "",
@@ -268,8 +277,24 @@ def insert(request):
         knums = request.POST.get("knums").strip()
         ptimes = float(request.POST.get("ptimes").strip())
         try:
-            gs_data_add(uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes)
-            dingtalk( "添加","",uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes,"GS","")
+            gs_data_add(
+                uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes
+            )
+            dingtalk(
+                "添加",
+                "",
+                uname,
+                pname,
+                waibao,
+                task_id,
+                dtime,
+                kinds,
+                pnums,
+                knums,
+                ptimes,
+                "GS",
+                "",
+            )
             return redirect("/index?name=" + uname)
         except:
             return render(
@@ -295,7 +320,21 @@ def update(request):
         knums = request.POST.get("knums").strip()
         ptimes = request.POST.get("ptimes").strip()
         nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes)
-        dingtalk("修改",id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes,"GS","")
+        dingtalk(
+            "修改",
+            id,
+            uname,
+            pname,
+            waibao,
+            task_id,
+            dtime,
+            kinds,
+            pnums,
+            knums,
+            ptimes,
+            "GS",
+            "",
+        )
         return redirect("/index?name=" + uname)
     stu = pupdate(id)
     projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
@@ -470,9 +509,11 @@ def waiabo_data_insert(request):
             for i in range(1, sheet.nrows):
                 row = sheet.row_values(i)
                 if "-" not in row[1]:
-                    getdatatime=xlrd.xldate_as_datetime(row[1], 0).strftime("%Y-%m-%d")
+                    getdatatime = xlrd.xldate_as_datetime(row[1], 0).strftime(
+                        "%Y-%m-%d"
+                    )
                 else:
-                    getdatatime=row[1]
+                    getdatatime = row[1]
                 waibao_tasks = models.Waibao()
                 waibao_tasks.pname = row[0]
                 waibao_tasks.get_data_time = getdatatime
@@ -514,7 +555,18 @@ def waiabo_data_insert(request):
         settlement_method = request.POST.get("settlement_method")
         unit_price = request.POST.get("unit_price")
         wb_name = request.POST.get("wb_name")
-        if waibao_insert(pname,get_data_time,pnums,knums,settlement_method,unit_price,wb_name,)== "ok":
+        if (
+            waibao_insert(
+                pname,
+                get_data_time,
+                pnums,
+                knums,
+                settlement_method,
+                unit_price,
+                wb_name,
+            )
+            == "ok"
+        ):
             dingtalk(
                 "添加",
                 "",
