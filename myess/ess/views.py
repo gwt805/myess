@@ -1,7 +1,7 @@
 from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
 from ess import models
-from django.views.decorators.cache import cache_page
+# from django.views.decorators.cache import cache_page
 from django import forms
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import hashlib
@@ -108,7 +108,7 @@ def login(request):
 
 # 首页
 
-@cache_page(60 * 60) # 1h
+# @cache_page(60 * 60) # 1h
 def index(request):
     if request.method == "POST":  # 这里是 搜索
         uname = request.POST.get("uname").strip()
@@ -353,7 +353,7 @@ def update(request):
 
 
 # 效率
-@cache_page(60 * 60)
+# @cache_page(60 * 60)
 def efficiency(request):
     if request.method == "POST":
         now_begin_time = request.POST.get("now-begin-time").strip()
@@ -385,7 +385,7 @@ def efficiency(request):
 
 
 # 绩效
-@cache_page(60 * 60)
+# @cache_page(60 * 60)
 def performance(request):
     if request.method == "POST":
         now_begin_time = request.POST.get("now-begin-time").strip()
@@ -418,7 +418,7 @@ def dtdel(request):
 
 
 # GS数据统计
-@cache_page(60 * 60)
+# @cache_page(60 * 60)
 def gsdata_count(request):
     if request.method == "POST":
         btime = request.POST.get("btime")
@@ -460,7 +460,7 @@ def gsdata_count(request):
 
 
 # 外包数据记录
-@cache_page(60 * 60)
+# @cache_page(60 * 60)
 def waibao(request):
     projects = json.dumps(
         [i[0] for i in models.Project.objects.values_list("pname")]
@@ -666,7 +666,7 @@ def wb_update(request):
 
 
 # 外包数据统计
-@cache_page(60 * 60)
+# @cache_page(60 * 60)
 def wbdata_count(request):
     if request.method == "POST":
         btime = request.POST.get("btime")
