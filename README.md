@@ -25,6 +25,7 @@ pip install DingtalkChatbot
 cd myess
 python manage.py makemigrations
 python manage.py migrate
+python manage.py createcachetable ess_cache_table # cache
 python manage.py collectstatic # 如果DEBUG为False时
 python manage.py runserver 0.0.0.0:8088
 ```
@@ -61,3 +62,4 @@ TODO
 - [x] 重新命名项目名字
 - [x] 修改页码样式
 - [x] 添加/修改/删除数据时,有钉钉消息通知
+- [x] 部分功能添加缓存
