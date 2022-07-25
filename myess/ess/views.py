@@ -30,6 +30,7 @@ from .mes import (
 import time
 import xlrd
 import json
+import requests
 
 # Create your views here.
 
@@ -110,6 +111,10 @@ def login(request):
 
 # @cache_page(60 * 60) # 1h
 def index(request):
+    try:
+        every_day_say_api = requests.get("https://v1.hitokoto.cn/").json()["hitokoto"]
+    except:
+        every_day_say_api = "车子有油、手机有电、卡里有钱！这就是安全感！再牛的副驾驶，都不如自己紧握方向盘"
     if request.method == "POST":  # 这里是 搜索
         uname = request.POST.get("uname").strip()
         pname = request.POST.get("pname").strip()
@@ -118,7 +123,7 @@ def index(request):
             [i[0] for i in models.Project.objects.values_list("pname")]
         )  # 数据库里所有的项目名字
         stu = search(uname, pname, dtime)
-        return render(request, "login/index.html", {"stus": stu, "projects": projects})
+        return render(request, "login/index.html", {"stus": stu, "projects": projects, "every_day_say_api": every_day_say_api})
 
     page_id = request.GET.get("page_id")  # 获取当前的页码数，默认为1
     now_time = time.strftime("%Y-%m-%d", time.localtime())  # 格式化成2016-03-20形式
@@ -136,7 +141,7 @@ def index(request):
         return render(
             request,
             "login/index.html",
-            {"stus": stus, "projects": projects, "tkinds": tkinds, "bzf": bzf},
+            {"stus": stus, "projects": projects, "tkinds": tkinds, "bzf": bzf, "every_day_say_api": every_day_say_api},
         )
     if page_id or request.GET.get("showa"):  # 展示所有数据
         stu = models.Task.objects.all().order_by("-dtime")
@@ -163,20 +168,29 @@ def index(request):
                 "projects": projects,
                 "tkinds": tkinds,
                 "bzf": bzf,
+                "every_day_say_api": every_day_say_api
             },
         )
-    if request.GET.get("showpd"):  # 展示i所有人当天数据
+    if request.GET.get("showpd"):  # 展示所有人当天数据
         stu = models.Task.objects.filter(dtime=now_time).order_by("-uname")
         return render(
             request,
             "login/index.html",
-            {"stus": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf},
+            {"stus": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf, "every_day_say_api": every_day_say_api},
+        )
+    if request.GET.get("showpall"): # 展示个人所有数据
+        # showpall
+        stu = models.Task.objects.filter(uname=request.GET.get("showpall")).order_by("-dtime")
+        return render(
+            request,
+            "login/index.html",
+            {"stus": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf, "every_day_say_api": every_day_say_api},
         )
     stu = person(request.GET.get("name"), now_time)
     return render(
         request,
         "login/index.html",
-        {"stus": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf},
+        {"stus": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf, "every_day_say_api": every_day_say_api},
     )
 
 

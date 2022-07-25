@@ -12,6 +12,7 @@
 ```Bash
 # 安装mysql并创建数据库，数据库名字为myess
 python >= 3.6
+pip install requests
 pip install django
 pip install mysqlclient
 pip install xlrd==1.2.0

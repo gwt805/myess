@@ -4,6 +4,12 @@
     <style>
         h3 {text-align: center;}
         button:hover{color: blue;}
+        table {table-layout: fixed;}
+        thead tr th {
+            position:sticky;
+            background-color: #bdbdbd;
+            top:0;
+        }
     </style>
 {% endblock %}
 {% block navbar %}
@@ -60,6 +66,7 @@
                 <ul class="nav nav-pills nav-stacked">
                     <li role="presentation" style="cursor: pointer;"><a onclick="ginsert()" style="color: black;">添加数据</a></li>
                     <li role="presentation" style="cursor: pointer;"><a onclick="showp(window)" style="color: black;">展示个人当天数据</a></li>
+                    <li role="presentation" style="cursor: pointer;"><a onclick="showpall(window)" style="color: black;">展示个人所有数据</a></li>
                     <li role="presentation" style="cursor: pointer;"><a onclick="showpd(window)" style="color: black;">展示所有人当天数据</a></li>
                     <li role="presentation" style="cursor: pointer;"><a onclick="showa(window)" style="color: black;">展示所有数据</a></li>
                     <li role="presentation" style="cursor: pointer;" onclick="search()"><a style="color: black;">搜索</a></li>
@@ -71,10 +78,10 @@
             </div>
         </div>
 
-        <div style="float: left; height: 100%; width: 91.7%; margin-top: -20px; position: fixed; margin-left: 157px; background-color: #bdbdbd;"> <!-- 右边主体div-->
+        <div style="float: left; height: 100%; width: 91.8%; margin-top: -20px; position: fixed; margin-left: 157px; background-color: #bdbdbd;"> <!-- 右边主体div-->
             <div style="width: 100%; height: 10%;"> <!-- 右边上面div -->
-                <div id="index_right_img" style="overflow: hidden; width: 1877px; height: 90px;">
-                    <h3 style="line-height: 60px;">车子有油、手机有电、卡里有钱！这就是安全感！再牛的副驾驶，都不如自己紧握方向盘！</h3>
+                <div id="index_right_img" style="overflow: hidden; width: 1877px; height: 90px;border-bottom: 1px solid white;">
+                    <h3 style="line-height: 60px;">{{ every_day_say_api }}</h3>
                 </div>
                 <!-- insert -->
                 <div id="ginsert" style="display: none;">
@@ -312,6 +319,10 @@
     //showp
     function showp(windows){
         windows.location.href="/index?showp=" + $('#id_name').text();
+    };
+    //showpall
+    function showpall(windows){
+        windows.location.href="/index?showpall=" + $('#id_name').text();
     };
     //showa
     function showa(windows){
