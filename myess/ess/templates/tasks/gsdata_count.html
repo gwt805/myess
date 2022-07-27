@@ -1,6 +1,15 @@
 {% extends 'login/base.html' %}
 {% block title %}GS各项目数据统计{% endblock %}
-
+{% block css %}
+    <style>
+        .stb {table-layout: fixed;}
+        .stb thead tr th {
+            position:sticky;
+            background-color: #bdbdbd;
+            top:0;
+        }
+    </style>
+{% endblock %}
 {% block navbar %}
     {% if request.session.is_login %}
         <ul class="nav navbar-nav">
@@ -30,7 +39,7 @@
     </div>
     <!-- 表格 -->
     <div id="show_bg" style="position: fixed; width: 100%; height: 80%; overflow-y: scroll; background-color: #bdbdbd; margin-top: -20px; display: none;">
-        <table class="table table-hover">
+        <table class="table table-hover stb">
             <thead>
                 <tr>
                     <th>项目名字</th>
