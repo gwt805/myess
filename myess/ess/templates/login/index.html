@@ -107,7 +107,7 @@
                                 <td><input type="text" name="uname" value="{{ request.session.zh_uname }}" class="form-control" readonly="readonly"></td>
                                 <td><select class="form-control" name="pname" id="pname"> </select></td>
                                 <td><select class="form-control" name="waibao" id="waibao"></select> </td>
-                                <td><input type="text" name="task_id" class="form-control"></td>
+                                <td><input type="number" name="task_id" class="form-control"></td>
                                 <td><input type="date" name="dtime" class="form-control" id="riqi"></td>
                                 <td><select class="form-control" name="kinds" id="kinds"></select></td>
                                 <td><input type="text" name="pnums" class="form-control"></td>
@@ -126,7 +126,11 @@
                             <tr>
                                 <th>用户名</th>
                                 <th>项目名字</th>
-                                <th>时间</th>
+                                <th>标注方</th>
+                                <th>任务ID</th>
+                                <th>任务类型</th>
+                                <th>开始时间</th>
+                                <th>结束时间</th>
                                 <th style="text-align: center;">按钮</th>
                             </tr>
                             <tr>
@@ -136,7 +140,19 @@
                                         <option value ="---">---</option>
                                     </select>
                                 </td>
+                                <td>
+                                    <select class="form-control" name="bzf" id="bzf">
+                                        <option value ="---">---</option>
+                                    </select>
+                                </td>
+                                <td><input type="number" class="form-control" name="taskid"></td>
+                                <td>
+                                    <select class="form-control" name="taskkind" id="taskkind">
+                                        <option value ="---">---</option>
+                                    </select>
+                                </td>
                                 <td><input type="date" name="dtime" class="form-control" id="sriqi"></td>
+                                <td><input type="date" name="lasttime" class="form-control" id="lasttime"></td>
                                 <td>
                                     <input type="reset" class="btn btn-default pull-left" value="重置">
                                     <input type="submit" class="btn btn-primary pull-right" value="搜索">
@@ -304,6 +320,30 @@
                         objOption.value = projects[i];
                         objOption.text =projects[i];
                         p_s.add(objOption);
+                    };
+                };
+            };
+            // 给标注方 添加下拉框
+            var bzf_s = document.getElementById('bzf');
+            for (var i=0;i<projects.length;i++){
+                if (bzf_s.length < bzf.length+1){ // 这里不判断的话会一直添加
+                    if (bzf[i] != document.getElementById("bzf").value){
+                        var objOption = document.createElement("option");
+                        objOption.value = bzf[i];
+                        objOption.text = bzf[i];
+                        bzf_s.add(objOption);
+                    };
+                };
+            };
+            // 给任务类型 添加下拉框
+            var taskkind_s = document.getElementById('taskkind');
+            for (var i=0;i<projects.length;i++){
+                if (taskkind_s.length < tkinds.length+1){ // 这里不判断的话会一直添加
+                    if (tkinds[i] != document.getElementById("taskkind").value){
+                        var objOption = document.createElement("option");
+                        objOption.value = tkinds[i];
+                        objOption.text = tkinds[i];
+                        taskkind_s.add(objOption);
                     };
                 };
             };

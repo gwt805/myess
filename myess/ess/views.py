@@ -109,7 +109,6 @@ def login(request):
 
 # 首页
 
-# @cache_page(60 * 60) # 1h
 def index(request):
     try:
         every_day_say_api = requests.get("https://v1.hitokoto.cn/").json()["hitokoto"]
@@ -118,12 +117,22 @@ def index(request):
     if request.method == "POST":  # 这里是 搜索
         uname = request.POST.get("uname").strip()
         pname = request.POST.get("pname").strip()
+        waibao = request.POST.get("bzf").strip()
+        task_id = request.POST.get("taskid").strip()
+        taskkind = request.POST.get("taskkind").strip()
         dtime = request.POST.get("dtime").strip()
+        lasttime = request.POST.get("lasttime").strip()
         projects = json.dumps(
             [i[0] for i in models.Project.objects.values_list("pname")]
         )  # 数据库里所有的项目名字
-        stu = search(uname, pname, dtime)
-        return render(request, "login/index.html", {"stus": stu, "projects": projects, "every_day_say_api": every_day_say_api})
+        bzf = json.dumps(
+            [i[0] for i in models.Waibaos.objects.values_list("name")]
+        )  # 数据库里所有的项目名字
+        tkinds = json.dumps(
+            [i[0] for i in models.Tkinds.objects.values_list("kinds")]
+        )  # 数据库里所有的项目名字
+        stu = search(uname, pname, waibao, task_id, taskkind, dtime, lasttime)
+        return render(request, "login/index.html", {"stus": stu, "projects": projects,"bzf": bzf,"tkinds": tkinds, "every_day_say_api": every_day_say_api})
 
     page_id = request.GET.get("page_id")  # 获取当前的页码数，默认为1
     now_time = time.strftime("%Y-%m-%d", time.localtime())  # 格式化成2016-03-20形式
@@ -367,7 +376,6 @@ def update(request):
 
 
 # 效率
-# @cache_page(60 * 60)
 def efficiency(request):
     if request.method == "POST":
         now_begin_time = request.POST.get("now-begin-time").strip()
@@ -399,7 +407,6 @@ def efficiency(request):
 
 
 # 绩效
-# @cache_page(60 * 60)
 def performance(request):
     if request.method == "POST":
         now_begin_time = request.POST.get("now-begin-time").strip()
@@ -432,7 +439,6 @@ def dtdel(request):
 
 
 # GS数据统计
-# @cache_page(60 * 60)
 def gsdata_count(request):
     if request.method == "POST":
         btime = request.POST.get("btime")
@@ -474,8 +480,11 @@ def gsdata_count(request):
 
 
 # 外包数据记录
-# @cache_page(60 * 60)
 def waibao(request):
+    try:
+        every_day_say_api = requests.get("https://v1.hitokoto.cn/").json()["hitokoto"]
+    except:
+        every_day_say_api = "车子有油、手机有电、卡里有钱！这就是安全感！再牛的副驾驶，都不如自己紧握方向盘"
     projects = json.dumps(
         [i[0] for i in models.Project.objects.values_list("pname")]
     )  # 数据库里所有的项目名字
@@ -486,7 +495,7 @@ def waibao(request):
         over_time = request.POST.get("over_time")
         wb_search = waibao_search(pname, begin_time, over_time)
         return render(
-            request, "tasks/waibao.html", {"stus": wb_search, "projects": projects}
+            request, "tasks/waibao.html", {"stus": wb_search, "projects": projects, "every_day_say_api": every_day_say_api}
         )
     page_id = request.GET.get("page_id")  # 获取当前的页码数，默认为1
 
@@ -513,6 +522,7 @@ def waibao(request):
             "first_page": now_page,
             "sum_page": page.num_pages,
             "projects": projects,
+            "every_day_say_api": every_day_say_api
         },
     )
 
