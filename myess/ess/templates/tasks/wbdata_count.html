@@ -67,9 +67,9 @@
     </div>
     <script type="text/javascript">
         var pname = JSON.parse('{{ pname_list_json|safe }}'); // 项目名字 列表
-        var pnums = JSON.parse('{{ pnums_list_json|safe }}'); // 项目名字 列表
-        var knums = JSON.parse('{{ knums_list_json|safe }}'); // 项目名字 列表
-        var money = JSON.parse('{{ money_list_json|safe }}'); // 项目名字 列表
+        var pnums = JSON.parse('{{ pnums_list_json|safe }}'); // 图片数量 列表
+        var knums = JSON.parse('{{ knums_list_json|safe }}'); // 框数 列表
+        var money = JSON.parse('{{ money_list_json|safe }}'); // 金额 列表
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById('main'));
         // 指定图表的配置项和数据
