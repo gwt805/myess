@@ -37,121 +37,232 @@
             </table>
         </form>
     </div>
-    <div id="show_bg" style="position: fixed; width: 100%; height: 80%; overflow-y: scroll; background-color: #bdbdbd; margin-top: -20px; display: none;">
-        <table class="table table-hover stb">
-            <thead>
-                <tr>
-                    <th>项目名字</th>
-                    <th>图片数量</th>
-                    <th>框数</th>
-                    <th>金额</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for i in tj %} <!-- 本周工作量 -->
+    <div id="show_bg" style="position: fixed; width: 100%; height: 80%; overflow-y: auto; background-color: #bdbdbd; margin-top: -20px; display: none; border-top: 1px solid white;">
+        <div id="beisai_table" style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white; overflow-y: auto;">
+            <table class="table table-hover stb">
+                <thead>
                     <tr>
-                        <td>{{ i.0 }}</td>
-                        <td>{{ i.1 }}</td>
-                        <td>{{ i.2 }}</td>
-                        <td>{{ i.3 }}</td>
+                        <th>项目名字</th>
+                        <th>图片数量</th>
+                        <th>框数</th>
+                        <th>金额</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for k,v in bzf_total_list.items %}
+                    {% if k == "倍赛" %}
+                        {% for j in v %}
+                            <tr>
+                                <td>{{ j.0 }}</td>
+                                <td>{{ j.1 }}</td>
+                                <td>{{ j.2 }}</td>
+                                <td>{{ j.3 }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="longmao_table" style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white; overflow-y: auto;">
+            <table class="table table-hover stb">
+                <thead>
+                    <tr>
+                        <th>项目名字</th>
+                        <th>图片数量</th>
+                        <th>框数</th>
+                        <th>金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for k,v in bzf_total_list.items %}
+                    {% if k == "龙猫" %}
+                        {% for j in v %}
+                            <tr>
+                                <td>{{ j.0 }}</td>
+                                <td>{{ j.1 }}</td>
+                                <td>{{ j.2 }}</td>
+                                <td>{{ j.3 }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="曼孚_table" style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white; overflow-y: auto;">
+            <table class="table table-hover stb">
+                <thead>
+                    <tr>
+                        <th>项目名字</th>
+                        <th>图片数量</th>
+                        <th>框数</th>
+                        <th>金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for k,v in bzf_total_list.items %}
+                    {% if k == "曼孚" %}
+                        {% for j in v %}
+                            <tr>
+                                <td>{{ j.0 }}</td>
+                                <td>{{ j.1 }}</td>
+                                <td>{{ j.2 }}</td>
+                                <td>{{ j.3 }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div id="main" style="position: fixed; width: 100%; height:80%; margin-top: -20px; background-color: #bdbdbd;"></div>
+    <div id="main" style="position: fixed; width: 100%; height:80%; margin-top: -20px; background-color: #bdbdbd; overflow-y: auto; border-top: 1px solid white;">
+        {% for i in bzf %}
+            <div id="{{ i }}" style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white;"></div>
+        {% endfor %}
+    </div>
     <!-- 切换按钮 -->
     <div style="width: 100%; height: 4.5%; position: fixed; bottom: 0px; background-color: #bdbdbd;">
         <button onclick="show_bg()" class="btn btn-default pull-left" style="margin-left: 30%; margin-top: 0.2%;">表格展示</button>
         <button onclick="show_pt()" class="btn btn-default pull-left" style="margin-left: 30%; margin-top: 0.2%;">图形展示</button>
     </div>
     <script type="text/javascript">
-        var pname = JSON.parse('{{ pname_list_json|safe }}'); // 项目名字 列表
-        var pnums = JSON.parse('{{ pnums_list_json|safe }}'); // 图片数量 列表
-        var knums = JSON.parse('{{ knums_list_json|safe }}'); // 框数 列表
-        var money = JSON.parse('{{ money_list_json|safe }}'); // 金额 列表
-        // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('main'));
-        // 指定图表的配置项和数据
-        var option = {
-            title: {text: '各项目外包数据统计图'},
-            tooltip: {},
-            legend: {
-                data:['图片数量','框数','金额'],
-                right:'10%'
-            },
-        yAxis: {
-            data: pname,
-            axisLabel: { //X轴文字控制
-                        interval: 0,
-                        // rotate:-30  //倾斜的程度
-                    },
-        },
-        grid: { // 画布位置
-            left:'7%',
-            right:'2%',
-            bottom:'3%'
-        },
-        xAxis: {},
-        series: [
-                    {
-                        name: '图片数量',
-                        type: 'bar',
-                        stack:'图片数',
-                        data: pnums,
-                        itemStyle:{
-                            normal:{
-                                label:{
-                                    show:true, //开启显示
-                                    position:'right', //在上方显示
-                                    textStyle:{ //数值样式
-                                        color:'black',
-                                        fontSize:12
-                                    }
-                                }
-                            }
-                        },
-                    },
-                    {
-                        name: '框数',
-                        type: 'bar',
-                        stack:'框数',
-                        data: knums,
-                        itemStyle:{
-                            normal:{
-                                label:{
-                                    show:true, //开启显示
-                                    position:'right', //在上方显示
-                                    textStyle:{ //数值样式
-                                        color:'black',
-                                        fontSize:12
-                                    }
-                                }
-                            }
-                        },
-                    },
-                    {
-                        name: '金额',
-                        type: 'bar',
-                        stack:'金额',
-                        data: money,
-                        itemStyle:{
-                            normal:{
-                                label:{
-                                    show:true, //开启显示
-                                    position:'right', //在上方显示
-                                    textStyle:{ //数值样式
-                                        color:'black',
-                                        fontSize:12
-                                    }
-                                }
-                            }
-                        },
-                    },
-            ]
+        // let bzf_total_list = JSON.parse('{{ bzf_total_list|safe }}'); // 表格数据 ==> 字典形式
+        let pname = JSON.parse('{{ pname_list_json|safe }}'); // 项目名字 列表 ==> 字典形式
+        let pnums = JSON.parse('{{ pnums_list_json|safe }}'); // 图片数量 列表 ==> 字典形式
+        let knums = JSON.parse('{{ knums_list_json|safe }}'); // 框数 列表 ==> 字典形式
+        let money = JSON.parse('{{ money_list_json|safe }}'); // 金额 列表 ==> 字典形式
+        let pid = JSON.parse('{{ bzf_json|safe }}'); // 标注方 列表
+        
+        // let mapObj_table = new Map();
+        // for (let j = 0; j < pid.length; j++) {
+        //     mapObj_table.set(pid[j],pid[j]+"_table");
+        // };
+        
+        // mapObj_table.forEach(function(value,key){
+        //     var table = document.getElementById(value);
+        //     var tbody=document.createElement("tbody");//创建tbody元素
+        //     for(var i=0;i< (bzf_total_list[key].length); i++){
+        //         //创建tr
+        //         var tr=document.createElement("tr");
+        //         bzf_total_list["倍赛"].forEach(function(value1,key1){
+        //             for (var gg in value1){
+        //                 var td=document.createElement("td");
+        //                 console.log(value1[gg]);
+        //                 td.innerHTML=value1[gg];
+        //                 tr.appendChild(td);
+        //             };
+        //         })
+                
+        //         }
+        //     //将table添加到id为data的div下
+        //     document.getElementById(value).appendChild(tbody);
+        // });
+
+
+        let mapObj = new Map();
+        for (let i = 0; i < pid.length; i++) {
+            mapObj.set(pid[i],pid[i]);
         };
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
+        mapObj.forEach(function(value,key){
+            var key1 = echarts.init(document.getElementById(value));
+            key1.setOption({
+                toolbox: {
+                        show: true,
+                        feature: {
+                            dataZoom: {
+                                yAxisIndex: 'none'
+                            },
+                            dataView: { readOnly: false },
+                            magicType: { type: ['line', 'bar'] },
+                            restore: {},
+                            saveAsImage: {}
+                        }
+                    },
+                title: {text: value + ' 各项目数据统计图'},
+                tooltip: {},
+                legend: {
+                    data:['图片数量','框数','金额'],
+                    // right:'10%'
+                    textStyle: {
+                        fontSize: 14,
+                        // color: "#333",
+                        // padding: [0, 0, 0, -8], // 修改文字和图标距离
+                    },
+                },
+                xAxis: {
+                    data: pname[value],
+                    axisLabel: { //X轴文字控制
+                                interval: 0,
+                                rotate:-30  //倾斜的程度
+                            },
+                },
+                grid: { // 画布位置
+                    left:'7%',
+                    // right:'2%',
+                    // bottom:'10%'
+                },
+                yAxis: {},
+                series: [
+                            {
+                                name: '图片数量',
+                                type: 'bar',
+                                stack:'图片数',
+                                data: pnums[value],
+                                itemStyle:{
+                                    normal:{
+                                        label:{
+                                            // show:true, //开启显示
+                                            position:'top', //在上方显示
+                                            textStyle:{ //数值样式
+                                                color:'black',
+                                                fontSize:12
+                                            }
+                                        }
+                                    }
+                                },
+                            },
+                            {
+                                name: '框数',
+                                type: 'bar',
+                                stack:'框数',
+                                data: knums[value],
+                                itemStyle:{
+                                    normal:{
+                                        label:{
+                                            // show:true, //开启显示
+                                            position:'top', //在上方显示
+                                            textStyle:{ //数值样式
+                                                color:'black',
+                                                fontSize:12
+                                            }
+                                        }
+                                    }
+                                },
+                            },
+                            {
+                                name: '金额',
+                                type: 'bar',
+                                stack:'金额',
+                                data: money[value],
+                                itemStyle:{
+                                    normal:{
+                                        label:{
+                                            // show:true, //开启显示
+                                            position:'top', //在上方显示
+                                            textStyle:{ //数值样式
+                                                color:'black',
+                                                fontSize:12
+                                            }
+                                        }
+                                    }
+                                },
+                            },
+                    ]
+            });
+        });
+        
         // 表格和图形按钮显示操作
         function show_bg(){
             if ($('#main').css('display') == 'block'){

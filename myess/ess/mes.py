@@ -650,55 +650,67 @@ def wb_nupdate(
 # 外包数据统计
 def wbdata_tj(btime, otime):
     from decimal import Decimal
+    bzf = [i["name"] for i in models.Waibaos.objects.values("name")]
+    bzf.remove("高仙") # ['高仙', '倍赛', '龙猫', '曼孚']
+    bzf_total_list = {}
+    bzf_pnames_list = {}
+    bzf_pnums_list = {}
+    bzf_knums_list = {}
+    bzf_money_list = {}
+    for wb in bzf:
+        if btime == otime == "":
+            all_data = models.Waibao.objects.filter(wb_name=wb)
+            pname = []
+            for i in all_data:
+                if i.pname not in pname:
+                    pname.append(i.pname)
+        elif btime != "" and otime != "":
+            all_data = models.Waibao.objects.filter(wb_name=wb,get_data_time__range=[btime, otime])
+            pname = []
+            for i in all_data:
+                if i.pname not in pname:
+                    pname.append(i.pname)
+        data_list = []
+        pname_list = []
+        pnums_list = []
+        knums_list = []
+        money_list = []
+        for i in pname:
+            one_data = []
+            pnums = 0
+            knums = 0
+            money = 0.0
+            date_list = []  # 日期列表
+            for j in all_data.filter(pname=i):
+                if j.get_data_time not in date_list:
+                    date_list.append(j.get_data_time)
+            pnum_list = []  # 图片数量列表
 
-    if btime == otime == "":
-        all_data = models.Waibao.objects.all()
-        pname = []
-        for i in all_data:
-            if i.pname not in pname:
-                pname.append(i.pname)
-    elif btime != "" and otime != "":
-        all_data = models.Waibao.objects.filter(get_data_time__range=[btime, otime])
-        pname = []
-        for i in all_data:
-            if i.pname not in pname:
-                pname.append(i.pname)
-    data_list = []
-    pname_list = []
-    pnums_list = []
-    knums_list = []
-    money_list = []
-    for i in pname:
-        one_data = []
-        pnums = 0
-        knums = 0
-        money = 0.0
-        date_list = []  # 日期列表
-        for j in all_data.filter(pname=i):
-            if j.get_data_time not in date_list:
-                date_list.append(j.get_data_time)
-        pnum_list = []  # 图片数量列表
+            for dt in date_list:  # 算图片数量
+                for k in all_data.filter(pname=i, get_data_time=dt):
+                    if k.pnums not in pnum_list:
+                        pnum_list.append(k.pnums)
+            pnums = sum(pnum_list)
 
-        for dt in date_list:  # 算图片数量
-            for k in all_data.filter(pname=i, get_data_time=dt):
-                if k.pnums not in pnum_list:
-                    pnum_list.append(k.pnums)
-        pnums = sum(pnum_list)
-
-        for kk in all_data.filter(pname=i):  # 算框数和金额
-            knums += kk.knums
-            money += kk.knums * kk.unit_price
-
-        one_data.append(i)
-        one_data.append(pnums)
-        one_data.append(knums)
-        one_data.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
-        pname_list.append(i)
-        pnums_list.append(pnums)
-        knums_list.append(knums)
-        money_list.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
-        data_list.append(one_data)
-    return data_list, pname_list, pnums_list, knums_list, money_list
+            for kk in all_data.filter(pname=i):  # 算框数和金额
+                knums += kk.knums
+                money += kk.knums * kk.unit_price
+        
+            one_data.append(i)
+            one_data.append(pnums)
+            one_data.append(knums)
+            one_data.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
+            pname_list.append(i)
+            pnums_list.append(pnums)
+            knums_list.append(knums)
+            money_list.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
+            data_list.append(one_data)
+        bzf_total_list[wb] = data_list
+        bzf_pnames_list[wb] = pname_list
+        bzf_pnums_list[wb] = pnums_list
+        bzf_knums_list[wb] = knums_list
+        bzf_money_list[wb] = money_list
+    return bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf
 
 
 # GS 数据统计

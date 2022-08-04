@@ -695,38 +695,31 @@ def wbdata_count(request):
     if request.method == "POST":
         btime = request.POST.get("btime")
         otime = request.POST.get("otime")
-        tj, pname_list, pnums_list, knums_list, money_list = wbdata_tj(btime, otime)
-        pname_list_json, pnums_list_json, knums_list_json, money_list_json = (
-            json.dumps(pname_list),
-            json.dumps(pnums_list),
-            json.dumps(knums_list),
-            json.dumps(money_list),
-        )
+        bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf = wbdata_tj(btime, otime)
+        pname_list_json, pnums_list_json, knums_list_json, money_list_json, bzf_json = json.dumps(bzf_pnames_list),json.dumps(bzf_pnums_list),json.dumps(bzf_knums_list),json.dumps(bzf_money_list),json.dumps(bzf)
         return render(
-            request,
-            "tasks/wbdata_count.html",
-            {
-                "tj": tj,
-                "btime": btime,
-                "otime": otime,
-                "pname_list_json": pname_list_json,
-                "pnums_list_json": pnums_list_json,
-                "knums_list_json": knums_list_json,
-                "money_list_json": money_list_json,
-            },
-        )
-    tj, pname_list, pnums_list, knums_list, money_list = wbdata_tj("", "")
-    pname_list_json, pnums_list_json, knums_list_json, money_list_json = (
-        json.dumps(pname_list),
-        json.dumps(pnums_list),
-        json.dumps(knums_list),
-        json.dumps(money_list),
+        request,
+        "tasks/wbdata_count.html",
+        {
+            "bzf_total_list": bzf_total_list,
+            "bzf": bzf,
+            "bzf_json":bzf_json,
+            "pname_list_json": pname_list_json,
+            "pnums_list_json": pnums_list_json,
+            "knums_list_json": knums_list_json,
+            "money_list_json": money_list_json,
+        },
     )
+    bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf = wbdata_tj("", "")
+    pname_list_json, pnums_list_json, knums_list_json, money_list_json, bzf_json = json.dumps(bzf_pnames_list),json.dumps(bzf_pnums_list),json.dumps(bzf_knums_list),json.dumps(bzf_money_list),json.dumps(bzf)
+    print(bzf_total_list)
     return render(
         request,
         "tasks/wbdata_count.html",
         {
-            "tj": tj,
+            "bzf_total_list": bzf_total_list,
+            "bzf": bzf,
+            "bzf_json":bzf_json,
             "pname_list_json": pname_list_json,
             "pnums_list_json": pnums_list_json,
             "knums_list_json": knums_list_json,
