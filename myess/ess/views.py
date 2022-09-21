@@ -71,6 +71,13 @@ class RegisterForm(forms.Form):
         ),
     )
 
+# 每请求一次彩虹屁
+def caihongpi():
+    res = requests.get("https://api.shadiao.pro/chp").json()["data"]["text"]
+    if len(res) > 76: # 76为实际测试长度，超过这个长度的字会看不到
+        return caihongpi()
+    else:
+        return res
 
 # 密码加密
 def hash_code(s):  # 加点盐
@@ -111,7 +118,7 @@ def login(request):
 
 def index(request):
     try:
-        every_day_say_api = requests.get("https://api.shadiao.pro/chp").json()["data"]["text"]
+        every_day_say_api = caihongpi()
     except:
         every_day_say_api = "车子有油、手机有电、卡里有钱！这就是安全感！再牛的副驾驶，都不如自己紧握方向盘"
     if request.method == "POST":  # 这里是 搜索
@@ -482,7 +489,7 @@ def gsdata_count(request):
 # 外包数据记录
 def waibao(request):
     try:
-        every_day_say_api = requests.get("https://api.shadiao.pro/chp").json()["data"]["text"]
+        every_day_say_api = caihongpi()
     except:
         every_day_say_api = "车子有油、手机有电、卡里有钱！这就是安全感！再牛的副驾驶，都不如自己紧握方向盘"
     projects = json.dumps(
