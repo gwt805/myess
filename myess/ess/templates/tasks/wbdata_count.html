@@ -40,7 +40,7 @@
     <div id="show_bg" style="position: fixed; width: 100%; height: 80%; overflow-y: auto; background-color: #bdbdbd; margin-top: -20px; display: none; border-top: 1px solid white;">
         {% for k,v in bzf_total_list.items %}
             <div id="beisai_table" style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white; overflow-y: auto;">
-                <b><p style="font-size: 18px; text-align: center; color: rgb(38, 150, 255); margin-top: 20px;">{{ k }} 各项目数据统计表</p></b>
+                <b><p style="font-size: 18px; text-align: center; color: rgb(38, 150, 255); margin-top: 20px; border-bottom: 1px solid white;">{{ k }} 各项目数据统计表</p></b>
                 <table class="table table-hover stb">
                     <thead>
                         <tr>
@@ -63,6 +63,27 @@
                 </table>
             </div>
         {% endfor %}
+        <div id="beisai_table" style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white; overflow-y: auto;">
+            <b><p style="font-size: 18px; text-align: center; color: rgb(38, 150, 255); margin-top: 20px; border-bottom: 1px solid white;">各供应商总统计表</p></b>
+            <table class="table table-hover stb">
+                <thead>
+                    <tr>
+                        <th>标注商</th>
+                        <th>图片数量</th>
+                        <th>金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in bzf_price_and_pnum_total %}
+                    <tr>
+                        <td>{{ p.0 }}</td>
+                        <td>{{ p.1 }}</td>
+                        <td>{{ p.2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     <div id="main" style="position: fixed; width: 100%; height:80%; margin-top: -20px; background-color: #bdbdbd; overflow-y: auto; border-top: 1px solid white;">
         {% for i in bzf %}

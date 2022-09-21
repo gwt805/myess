@@ -657,6 +657,7 @@ def wbdata_tj(btime, otime):
     bzf_pnums_list = {}
     bzf_knums_list = {}
     bzf_money_list = {}
+    bzf_price_and_pnum_total = []# 这里预留统计每家供应商的图片数量和金额
     for wb in bzf:
         if btime == otime == "":
             all_data = models.Waibao.objects.filter(wb_name=wb)
@@ -675,8 +676,9 @@ def wbdata_tj(btime, otime):
         pnums_list = []
         knums_list = []
         money_list = []
-        # 这里预留统计每家供应商的图片数量和金额
-        # todo
+        tmp = []# 这里预留统计每家供应商的图片数量和金额
+        tmp.append(wb)
+        
         for i in pname:
             one_data = []
             pnums = 0
@@ -707,12 +709,15 @@ def wbdata_tj(btime, otime):
             knums_list.append(knums)
             money_list.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
             data_list.append(one_data)
+        tmp.append(sum(pnums_list))
+        tmp.append(round(sum(money_list),3))
+        bzf_price_and_pnum_total.append(tmp)
         bzf_total_list[wb] = data_list
         bzf_pnames_list[wb] = pname_list
         bzf_pnums_list[wb] = pnums_list
         bzf_knums_list[wb] = knums_list
         bzf_money_list[wb] = money_list
-    return bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf
+    return bzf_price_and_pnum_total, bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf
 
 
 # GS 数据统计

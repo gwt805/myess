@@ -702,12 +702,13 @@ def wbdata_count(request):
     if request.method == "POST":
         btime = request.POST.get("btime")
         otime = request.POST.get("otime")
-        bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf = wbdata_tj(btime, otime)
+        bzf_price_and_pnum_total, bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf = wbdata_tj(btime, otime)
         pname_list_json, pnums_list_json, knums_list_json, money_list_json, bzf_json = json.dumps(bzf_pnames_list),json.dumps(bzf_pnums_list),json.dumps(bzf_knums_list),json.dumps(bzf_money_list),json.dumps(bzf)
         return render(
         request,
         "tasks/wbdata_count.html",
         {
+            "bzf_price_and_pnum_total": bzf_price_and_pnum_total,
             "bzf_total_list": bzf_total_list,
             "bzf": bzf,
             "bzf_json":bzf_json,
@@ -717,13 +718,13 @@ def wbdata_count(request):
             "money_list_json": money_list_json,
         },
     )
-    bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf = wbdata_tj("", "")
+    bzf_price_and_pnum_total, bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf = wbdata_tj("", "")
     pname_list_json, pnums_list_json, knums_list_json, money_list_json, bzf_json = json.dumps(bzf_pnames_list),json.dumps(bzf_pnums_list),json.dumps(bzf_knums_list),json.dumps(bzf_money_list),json.dumps(bzf)
-    print(bzf_total_list)
     return render(
         request,
         "tasks/wbdata_count.html",
         {
+            "bzf_price_and_pnum_total": bzf_price_and_pnum_total,
             "bzf_total_list": bzf_total_list,
             "bzf": bzf,
             "bzf_json":bzf_json,
