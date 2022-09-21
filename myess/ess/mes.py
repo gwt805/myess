@@ -675,6 +675,8 @@ def wbdata_tj(btime, otime):
         pnums_list = []
         knums_list = []
         money_list = []
+        # 这里预留统计每家供应商的图片数量和金额
+        # todo
         for i in pname:
             one_data = []
             pnums = 0

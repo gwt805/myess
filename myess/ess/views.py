@@ -111,7 +111,7 @@ def login(request):
 
 def index(request):
     try:
-        every_day_say_api = requests.get("https://v1.hitokoto.cn/").json()["hitokoto"]
+        every_day_say_api = requests.get("https://api.shadiao.pro/chp").json()["data"]["text"]
     except:
         every_day_say_api = "车子有油、手机有电、卡里有钱！这就是安全感！再牛的副驾驶，都不如自己紧握方向盘"
     if request.method == "POST":  # 这里是 搜索
@@ -482,7 +482,7 @@ def gsdata_count(request):
 # 外包数据记录
 def waibao(request):
     try:
-        every_day_say_api = requests.get("https://v1.hitokoto.cn/").json()["hitokoto"]
+        every_day_say_api = requests.get("https://api.shadiao.pro/chp").json()["data"]["text"]
     except:
         every_day_say_api = "车子有油、手机有电、卡里有钱！这就是安全感！再牛的副驾驶，都不如自己紧握方向盘"
     projects = json.dumps(
