@@ -498,9 +498,10 @@ def waibao(request):
     # 搜索
     if request.method == "POST":
         pname = request.POST.get("pname")
+        bzf = request.POST.get("bzf").strip()
         begin_time = request.POST.get("begin_time")
         over_time = request.POST.get("over_time")
-        wb_search = waibao_search(pname, begin_time, over_time)
+        wb_search = waibao_search(pname, bzf, begin_time, over_time)
         return render(
             request, "tasks/waibao.html", {"stus": wb_search, "projects": projects, "every_day_say_api": every_day_say_api}
         )

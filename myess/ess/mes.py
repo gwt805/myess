@@ -571,45 +571,52 @@ def waibao_insert(
 
 
 # waibao_search
-def waibao_search(pname, begin_time, over_time):
-    if (
-        pname != "---" and begin_time != "" and over_time != ""
-    ):  # 项目名-不为空 , 开始时间-不为空 , 结束时间-不为空
-        tdat = models.Waibao.objects.filter(
-            pname=pname, get_data_time__range=[begin_time, over_time]
-        )
+def waibao_search(pname, bzf,begin_time, over_time):
+    # wb_name
+    if (pname != "---" and bzf != "" and begin_time != "" and over_time != ""):  # 项目名-不为空 , 标注方-不为空 , 开始时间-不为空 , 结束时间-不为空
+        tdat = models.Waibao.objects.filter(pname=pname, wb_name=bzf, get_data_time__range=[begin_time, over_time])
         return tdat
-    elif (
-        pname == "---" and begin_time != "" and over_time != ""
-    ):  # 项目名-为空 , 开始时间-不为空 , 结束时间-不为空
-        tdat = models.Waibao.objects.filter(
-            get_data_time__range=[begin_time, over_time]
-        )
+    elif (pname == "---" and bzf != "" and begin_time != "" and over_time != ""):  # 项目名-为空 , 标注方-不为空 ，开始时间-不为空 , 结束时间-不为空
+        tdat = models.Waibao.objects.filter(wb_name=bzf, get_data_time__range=[begin_time, over_time])
         return tdat
-    elif (
-        pname != "---" and begin_time == "" and over_time != ""
-    ):  # 项目名-不为空 , 开始时间-为空 , 结束时间-不为空
-        tdat = models.Waibao.objects.filter(pname=pname, completes_time=over_time)
+    elif(pname != "---" and bzf == "" and begin_time != "" and over_time != ""): # 项目名-不为空 , 标注方-为空 ，开始时间-不为空 , 结束时间-不为空
+        tdat = models.Waibao.objects.filter(pname=pname, get_data_time__range=[begin_time, over_time])
         return tdat
-    elif (
-        pname == "---" and begin_time == "" and over_time != ""
-    ):  # 项目名-为空 , 开始时间-为空 , 结束时间-不为空
-        tdat = models.Waibao.objects.filter(completes_time=over_time)
+    elif (pname != "---" and bzf != "" and begin_time == "" and over_time != ""):  # 项目名-不为空 , 标注方-不为空 ，开始时间-为空 , 结束时间-不为空
+        tdat = models.Waibao.objects.filter(pname=pname, wb_name=bzf, get_data_time=over_time)
         return tdat
-    elif (
-        pname != "---" and begin_time != "" and over_time == ""
-    ):  # 项目名-不为空 , 开始时间-不为空 , 结束时间-为空
+    elif (pname != "---" and bzf != "" and begin_time != "" and over_time == ""):  # 项目名-不为空 , 标注方-不为空 ，开始时间-不为空 , 结束时间-为空
+        tdat = models.Waibao.objects.filter(pname=pname, wb_name=bzf, get_data_time=begin_time)
+        return tdat
+    elif (pname == "---" and bzf == "" and begin_time != "" and over_time != ""):  # 项目名字-为空 ， 标注方-为空 ， 开始时间-不为空 ， 结束时间-不为空
+        tdat = models.Waibao.objects.filter(get_data_time__range=[begin_time, over_time])
+        return tdat
+    elif (pname == "---" and bzf != "" and begin_time == "" and over_time != ""):  # 项目名字-为空 ， 标注方-不为空 ， 开始时间-为空 ， 结束时间-不为空
+        tdat = models.Waibao.objects.filter(wb_name=bzf, get_data_time=over_time)
+        return tdat
+    elif (pname == "---" and bzf != "" and begin_time != "" and over_time == ""):  # 项目名字-为空 ， 标注方-不为空 ， 开始时间-不为空 ， 结束时间-为空
+        tdat = models.Waibao.objects.filter(wb_name=bzf, get_data_time=begin_time)
+        return tdat
+    elif (pname != "---" and bzf == "" and begin_time == "" and over_time != ""):  # 项目名字-不为空 ， 标注方-为空 ，开始时间-为空 ， 结束时间-不为空
+        tdat = models.Waibao.objects.filter(pname=pname, get_data_time=over_time)
+        return tdat
+    elif (pname != "---" and bzf == "" and begin_time != "" and over_time == ""):  # 项目名字-不为空 ， 标注方-为空 ， 开始时间-不为空 ， 结束时间-为空
         tdat = models.Waibao.objects.filter(pname=pname, get_data_time=begin_time)
         return tdat
-    elif (
-        pname != "---" and begin_time == "" and over_time == ""
-    ):  # 项目名-不为空 , 开始时间-为空 , 结束时间-为空
-        tdat = models.Waibao.objects.filter(pname=pname)
+    elif (pname != "---" and bzf != "" and begin_time == "" and over_time == ""):  # 项目名字-不为空 ， 标注方-不为空 ，开始时间-为空 ，结束时间-为空
+        tdat = models.Waibao.objects.filter(pname=pname, wb_name=bzf)
         return tdat
-    elif (
-        pname == "---" and begin_time != "" and over_time == ""
-    ):  # 项目名-为空 , 开始时间-不为空 , 结束时间-为空
+    elif (pname == "---" and bzf == "" and begin_time == "" and over_time != ""):  # 项目名字-为空 ， 标注方-为空 ， 开始时间-为空 ， 结束时间-不为空
+        tdat = models.Waibao.objects.filter(get_data_time=over_time)
+        return tdat
+    elif (pname == "---" and bzf == "" and begin_time != "" and over_time == ""):  # 项目名字-为空 ， 标注方-为空 ， 开始时间-不为空 ， 结束时间-为空
         tdat = models.Waibao.objects.filter(get_data_time=begin_time)
+        return tdat
+    elif (pname == "---" and bzf != "" and begin_time == "" and over_time == ""):  # 项目名字-为空 ，标注方-不为空 ， 开始时间-为空 ， 结束时间-为空
+        tdat = models.Waibao.objects.filter(wb_name=bzf)
+        return tdat
+    elif (pname != "---" and bzf == "" and begin_time == "" and over_time == ""):  # 项目名字-不为空 ， 标注方-为空 ， 开始时间-为空 ， 结束时间-为空
+        tdat = models.Waibao.objects.filter(pname=pname)
         return tdat
     else:
         pass
