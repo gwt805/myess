@@ -602,7 +602,7 @@ def waibao_search(pname, bzf,begin_time, over_time):
     elif (pname == "---" and bzf != "" and begin_time == "" and over_time == ""):  # 项目名字-为空 ，标注方-不为空 ， 开始时间-为空 ， 结束时间-为空
         tdat = models.Waibao.objects.filter(wb_name=bzf).order_by("get_data_time")
     elif (pname != "---" and bzf == "" and begin_time == "" and over_time == ""):  # 项目名字-不为空 ， 标注方-为空 ， 开始时间-为空 ， 结束时间-为空
-        tdat = models.Waibao.objects.filter(pname=pname)
+        tdat = models.Waibao.objects.filter(pname=pname).order_by("get_data_time")
     else:
         pass
     return tdat
