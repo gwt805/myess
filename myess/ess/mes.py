@@ -534,7 +534,10 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
         now_data.task_id = int(task_id)
         now_data.knums = None
     elif kinds == "筛选":
-        now_data.task_id = None
+        if task_id == "" or task_id == None:
+            now_data.task_id = None
+        else:
+            now_data.task_id = int(task_id)
         now_data.knums = None
     now_data.save()
 
