@@ -1,6 +1,6 @@
 # 工作量及效率统计系统设计
 <div align="center">
-    <img src="myess/static/img/favicon.png" width=150px height=150px>
+    <img src="myess/static/img/logo_ess.png">
 </div>
 
 项目启动时间
