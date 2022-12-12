@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" rel="external nofollow" href="/static/img/favicon.ico" />
+    <link rel="stylesheet" href="/static/lib/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/index1.css">
+    <script src="/static/lib/jquery/2.1.4/jquery.min.js"></script>
+    <script src="/static/lib/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="/static/lib/echarts.min.js"></script>
+    <title>外包各项目数据统计</title>
+    <style>
+        .stb {
+            table-layout: fixed;
+        }
+
+        .stb thead tr th {
+            position: sticky;
+            background-color: #bdbdbd;
+            top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top" onselectstart="return false">
+        <!--onselectstrat 禁止选中-->
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#my-nav"
+                    aria-expanded="false">
+                    <span class="sr-only">切换导航条</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- <a class="navbar-brand" style="cursor:default;"> -->
+                <img src="/static/img/logo_ess.png" alt="ESS" draggable="false">
+                <!-- </a> -->
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="my-nav">
+                <ul class="nav navbar-nav">
+                    <li class="active" onclick="navswitch('index')"><a>首页</a>
+                    </li>
+                    <li class="active" onclick="navswitch('efficiency')"><a>标注效率</a></li>
+                    <li class="active" onclick="navswitch('performance')"><a>个人绩效</a></li>
+                    <li class="active"><a href="/waibao"
+                            style="color: #fff; background-color: rgb(68, 147, 199);">外包数据</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li style="border-right: 1px solid #bdbdbd; margin-right: 20px; cursor: pointer;"><a
+                            onclick="help()">
+                            <i class="fa fa-hand-o-right" style="margin-right: 5px; font-size: 18px;"></i>
+                            <span style="font-size: 18px;">Help</span></a>
+                    </li>
+                    <li role="presentation" class="dropdown" style="width: 139px;">
+                        <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                            style="text-align: center;">
+                            <i class="fa fa-user" style="margin-right: 20px; font-size: 18px;"></i>
+                            <span style="font-size: 18px;" id="name"></span><span class="caret"
+                                style="margin-left: 10px;"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li style="border-bottom: 1px solid gray;"><a href="/sites/" target="black"><i
+                                        class="fa fa-gear"></i><span style="margin-left: 10px;">设置</span></a></li>
+                            <li style="border-bottom: 1px solid gray;"><a href="#" onclick="pwd_upd()"><i
+                                        class="fa fa-compass"></i><span style="margin-left: 10px;">修改密码</span></a></li>
+                            <li onclick="logout()"><a><i class="fa fa-sign-out"></i><span
+                                        style="margin-left: 10px;">注销</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div id="search" style="background-color: #bdbdbd; margin-top: 55px;">
+        <form class='form-register' action="/wbdata_count/" method="post">
+            {% csrf_token %}
+            <table class="table">
+                <tr>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th colspan="2" style="text-align: center;">按钮</th>
+                </tr>
+                <tr>
+                    <td><input type="date" name="btime" id="btime" class="form-control" value="{{ btime }}"></td>
+                    <td><input type="date" name="otime" id="otime" class="form-control" value="{{ otime }}"></td>
+                    <td><input type="reset" class="btn btn-default pull-left" value="重置"></td>
+                    <td><input type="submit" class="btn btn-primary pull-right" value="查看"></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div id="show_bg"
+        style="position: fixed; width: 100%; height: 80%; overflow-y: auto; background-color: #bdbdbd; margin-top: -20px; display: none; border-top: 1px solid white;">
+        {% for k,v in bzf_total_list.items %}
+        <div id="beisai_table"
+            style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white; overflow-y: auto;">
+            <b>
+                <p
+                    style="font-size: 18px; text-align: center; color: rgb(38, 150, 255); margin-top: 20px; border-bottom: 1px solid white;">
+                    {{ k }} 各项目数据统计表
+                </p>
+            </b>
+            <table class="table table-hover stb">
+                <thead>
+                    <tr>
+                        <th>项目名字</th>
+                        <th>图片数量</th>
+                        <th>框数</th>
+                        <th>金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for j in v %}
+                    <tr>
+                        <td>{{ j.0 }}</td>
+                        <td>{{ j.1 }}</td>
+                        <td>{{ j.2 }}</td>
+                        <td>{{ j.3 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        <div id="beisai_table"
+            style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white; overflow-y: auto;">
+            <b>
+                <p
+                    style="font-size: 18px; text-align: center; color: rgb(38, 150, 255); margin-top: 20px; border-bottom: 1px solid white;">
+                    各供应商总统计表
+                </p>
+            </b>
+            <table class="table table-hover stb">
+                <thead>
+                    <tr>
+                        <th>标注商</th>
+                        <th>图片数量</th>
+                        <th>金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in bzf_price_and_pnum_total %}
+                    <tr>
+                        <td>{{ p.0 }}</td>
+                        <td>{{ p.1 }}</td>
+                        <td>{{ p.2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="main"
+        style="position: fixed; width: 100%; height:80%; margin-top: -20px; background-color: #bdbdbd; overflow-y: auto; border-top: 1px solid white;">
+        {% for i in bzf %}
+        <div id="{{ i }}"
+            style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white;">
+        </div>
+        {% endfor %}
+    </div>
+    <!-- 弹窗之密码修改 -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="pwd_update">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h3 class="modal-title">修改密码</h3>
+                </div>
+                <div class="modal-body">
+                    <form class='form-register' action="/pwd_update/" method="post">
+                        {% csrf_token %}
+                        <div class="alert alert-warning" id="err_msg" style="display: none;"></div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">用户名:</label>
+                            <input type="text" class="form-control zh_uname" name="uname" readonly="readonly">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">请输入新密码:</label>
+                            <input type="password" class="form-control" name="new_pwd1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">再次输入新密码:</label>
+                            <input type="password" class="form-control" name="new_pwd2" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">确认</button>
+                        </div>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- 切换按钮 -->
+    <div style="width: 100%; height: 4.5%; position: fixed; bottom: 0px; background-color: #bdbdbd;">
+        <button onclick="show_bg()" class="btn btn-default pull-left"
+            style="margin-left: 30%; margin-top: 0.2%;">表格展示</button>
+        <button onclick="show_pt()" class="btn btn-default pull-left"
+            style="margin-left: 30%; margin-top: 0.2%;">图形展示</button>
+    </div>
+</body>
+<script src="/static/js/disable.js"></script>
+<script type="text/javascript">
+    function help() {
+        alert('请联系卫龙');
+    };
+
+    function pwd_upd() {
+        $('#pwd_update').modal('show');
+        $(".zh_uname").val($("#name").text());
+    };
+
+    function logout() {
+        sessionStorage.setItem("isLogin", "");
+        sessionStorage.setItem("zhuname", "");
+        sessionStorage.setItem("power", "");
+        window.location.href = '/login'
+    }
+
+    let pname = JSON.parse('{{ pname_list_json|safe }}'); // 项目名字 列表 ==> 字典形式
+    let pnums = JSON.parse('{{ pnums_list_json|safe }}'); // 图片数量 列表 ==> 字典形式
+    let knums = JSON.parse('{{ knums_list_json|safe }}'); // 框数 列表 ==> 字典形式
+    let money = JSON.parse('{{ money_list_json|safe }}'); // 金额 列表 ==> 字典形式
+    let pid = JSON.parse('{{ bzf_json|safe }}'); // 标注方 列表
+
+    let mapObj = new Map();
+    for (let i = 0; i < pid.length; i++) {
+        mapObj.set(pid[i], pid[i]);
+    };
+    mapObj.forEach(function (value, key) {
+        var key1 = echarts.init(document.getElementById(value));
+        key1.setOption({
+            toolbox: {
+                show: true,
+                feature: {
+                    dataZoom: {
+                        yAxisIndex: 'none'
+                    },
+                    dataView: { readOnly: false },
+                    magicType: { type: ['line', 'bar'] },
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            title: { text: value + ' 各项目数据统计图' },
+            tooltip: {},
+            legend: {
+                data: ['图片数量', '框数', '金额'],
+                // right:'10%'
+                textStyle: {
+                    fontSize: 14,
+                    // color: "#333",
+                    // padding: [0, 0, 0, -8], // 修改文字和图标距离
+                },
+            },
+            xAxis: {
+                data: pname[value],
+                axisLabel: { //X轴文字控制
+                    interval: 0,
+                    rotate: -30  //倾斜的程度
+                },
+            },
+            grid: { // 画布位置
+                left: '7%',
+                // right:'2%',
+                // bottom:'10%'
+            },
+            yAxis: {},
+            series: [
+                {
+                    name: '图片数量',
+                    type: 'bar',
+                    stack: '图片数',
+                    data: pnums[value],
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                // show:true, //开启显示
+                                position: 'top', //在上方显示
+                                textStyle: { //数值样式
+                                    color: 'black',
+                                    fontSize: 12
+                                }
+                            }
+                        }
+                    },
+                },
+                {
+                    name: '框数',
+                    type: 'bar',
+                    stack: '框数',
+                    data: knums[value],
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                // show:true, //开启显示
+                                position: 'top', //在上方显示
+                                textStyle: { //数值样式
+                                    color: 'black',
+                                    fontSize: 12
+                                }
+                            }
+                        }
+                    },
+                },
+                {
+                    name: '金额',
+                    type: 'bar',
+                    stack: '金额',
+                    data: money[value],
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                // show:true, //开启显示
+                                position: 'top', //在上方显示
+                                textStyle: { //数值样式
+                                    color: 'black',
+                                    fontSize: 12
+                                }
+                            }
+                        }
+                    },
+                },
+            ]
+        });
+    });
+
+    // 表格和图形按钮显示操作
+    function show_bg() {
+        if ($('#main').css('display') == 'block') {
+            $('#main').css("display", "none");
+            $('#show_bg').css("display", "block");
+        };
+    };
+
+    function show_pt() {
+        if ($('#show_bg').css('display') == 'block') {
+            $('#show_bg').css("display", "none");
+            $('#main').css("display", "block");
+
+        };
+    };
+
+    // 导航栏
+    function navswitch(flag){
+        if (sessionStorage.getItem("power") == '3') {
+            alert("您没有权限查看!");
+        } else {
+            window.location.href = '/'+flag;
+        }
+    }
+</script>
+
+</html>

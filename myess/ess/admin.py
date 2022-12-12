@@ -1,3 +1,4 @@
+from django.contrib.auth.admin import UserAdmin
 from django.contrib import admin
 from ess import models
 
@@ -9,9 +10,9 @@ admin.site.index_title = "信息管理"
 
 
 @admin.register(models.User)
-class ControlUser(admin.ModelAdmin):
-    list_display = ("uname", "zh_uname", "pword", "power")
-
+class ControlUser(UserAdmin):
+    list_display = ("username", "zh_uname", "email", "password", "power")
+    list_editable = ["zh_uname", "power"]
 
 @admin.register(models.Task)
 class ControlTASK(admin.ModelAdmin):

@@ -1,0 +1,11 @@
+{
+    "mysql_host": "",
+    "mysql_user": "",
+    "mysql_pwd": "",
+    "mysql_port": "",
+    "mysql_db": "",
+    "ding_access_token": "",
+    "ding_secret": "",
+    "send_qqEmail": "",
+    "send_qqEmail_pwd": ""
+}

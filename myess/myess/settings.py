@@ -10,12 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
-import os
+
 from pathlib import Path
+import os, json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+CONFIG = json.load(open(os.path.join(BASE_DIR, 'config.json')))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -24,7 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-661!haye3@qj*hwfg%6zd*11b5l%sh!$5w6yi-v7=km#p0ytqa"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
+
+AUTH_USER_MODEL = 'ess.User'
 
 ALLOWED_HOSTS = ["*"]
 
@@ -56,7 +59,7 @@ ROOT_URLCONF = "myess.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "ess/templates")],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -78,11 +81,11 @@ WSGI_APPLICATION = "myess.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "myess",
-        "USER": "root",
-        "PASSWORD": "200805",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
+        "NAME": CONFIG["mysql_db"],
+        "USER": CONFIG["mysql_user"],
+        "PASSWORD": CONFIG["mysql_pwd"],
+        "HOST": CONFIG["mysql_host"],
+        "PORT": CONFIG["mysql_port"],
     }
 }
 

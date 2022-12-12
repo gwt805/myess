@@ -1,6 +1,10 @@
-from ess import models
-import math
 from time import strftime, gmtime
+from myess.settings import CONFIG
+from loguru import logger
+from ess import models
+import threading
+import math
+
 
 
 def str2sec(x):
@@ -528,8 +532,11 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
         now_data.task_id = int(task_id)
         now_data.knums = knums
     elif kinds == "视频标注":
-        now_data.task_id = None
         now_data.knums = knums
+        if task_id == "" or task_id == None:
+            now_data.task_id = None
+        else:
+            now_data.task_id = int(task_id)
     elif kinds == "审核":
         now_data.task_id = int(task_id)
         now_data.knums = None
@@ -763,82 +770,64 @@ def gsdata_tj(btime, otime):
     return data_list, pname_list, pnums_list, knums_list
 
 
-# 密码修改
-def pwd_upd(uname, pwd1):
-    usr_data = models.User.objects.get(uname=uname)
-    usr_data.pword = pwd1
-    usr_data.save()
-
-
 # 钉通知
-def dingtalk(
-    kind,
-    id,
-    uname,
-    pname,
-    waibao,
-    task_id,
-    dtime,
-    kinds,
-    pnums,
-    knums,
-    ptimes,
-    who,
-    wbdata,
-):
+def dingtalk(kind,id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes,who,wbdata):
     import time
     import hmac
     import hashlib
     import base64
     import urllib.parse
     from dingtalkchatbot.chatbot import DingtalkChatbot
+    def ding_mes():
+        timestamp = str(round(time.time() * 1000))
 
-    timestamp = str(round(time.time() * 1000))
-    secret = (
-        "SEC167e1c4a161483c8f2de6298260661d0c1628df16d7a010f1a6fe108044a73ba"  # 替换成你的签
-    )
-    secret_enc = secret.encode("utf-8")
-    string_to_sign = "{}\n{}".format(timestamp, secret)
-    string_to_sign_enc = string_to_sign.encode("utf-8")
-    hmac_code = hmac.new(
-        secret_enc, string_to_sign_enc, digestmod=hashlib.sha256
-    ).digest()
-    sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
-    # 引用钉钉群消息通知的Webhook地址：
-    webhook = f"https://oapi.dingtalk.com/robot/send?access_token=600138c298051d1b3c769f3466888b1e79146cd956c587e0035729d2015a9bbb&timestamp={timestamp}&sign={sign}"
-    # 初始化机器人小丁,方式一：通常初始化
-    msgs = DingtalkChatbot(webhook)
-    # text消息@所有人
-    times = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-    if kind == "删除":
-        msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了ID为{id}的{who}数据\r"
-    else:
-        if wbdata != "":
-            if kind == "修改":
-                tmp = ""
-                for k, v in wbdata.items():
-                    tmp += f"{k} : {v}\r\t"
-                msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t{tmp}\r"
-            else:
-                tmp = ""
-                for k, v in wbdata.items():
-                    tmp += f"{k} : {v}\r\t"
-                msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t{tmp}\r"
+        secret = CONFIG["ding_secret"]  # 替换成你的签
+
+        secret_enc = secret.encode("utf-8")
+        string_to_sign = "{}\n{}".format(timestamp, secret)
+        string_to_sign_enc = string_to_sign.encode("utf-8")
+        hmac_code = hmac.new(
+            secret_enc, string_to_sign_enc, digestmod=hashlib.sha256
+        ).digest()
+        sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
+        # 引用钉钉群消息通知的Webhook地址：
+        webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
+        # 初始化机器人小丁,方式一：通常初始化
+        msgs = DingtalkChatbot(webhook)
+        # text消息@所有人
+        if kind == "删除":
+            msg_text = f"{uname} {kind} 了ID为{id}的{who}数据"
         else:
-            if kind == "修改":
-                if task_id == "" or task_id == None:
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}\r"
-                elif knums == "" or knums == None:
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}\r"
+            if wbdata != "":
+                if kind == "修改":
+                    tmp = ""
+                    for k, v in wbdata.items():
+                        tmp += f"{k} : {v}\r\t"
+                    msg_text = f"{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t{tmp}"
                 else:
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}\r"
+                    tmp = ""
+                    for k, v in wbdata.items():
+                        tmp += f"{k} : {v}\r\t"
+                    msg_text = f"{uname} {kind} 了一条{who}数据,具体内容如下:\r\t{tmp}"
             else:
-                if task_id == "" or task_id == None:
-                    if kinds != "视频标注":
-                        msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}\r"
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}\r"
-                elif knums == "" or task_id == None:
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}\r"
+                if kind == "修改":
+                    if task_id == "" or task_id == None:
+                        msg_text = f"{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
+                    elif knums == "" or knums == None:
+                        msg_text = f"{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}\r"
+                    else:
+                        msg_text = f"{uname} {kind} 了一条ID为{id}的{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
                 else:
-                    msg_text = f"ESS系统通知:\r时间:{times}\r{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}\r"
-    msgs.send_text(msg=(msg_text), is_at_all=False)
+                    if task_id == "" or task_id == None:
+                        if kinds != "视频标注":
+                            msg_text = f"{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
+                        msg_text = f"{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
+                    elif knums == "" or task_id == None:
+                        msg_text = f"{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
+                    else:
+                        msg_text = f"{uname} {kind} 了一条{who}数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
+        states = msgs.send_text(msg=(msg_text), is_at_all=False)
+        logger.info(states)
+
+    task = threading.Thread(target=ding_mes)
+    task.start()

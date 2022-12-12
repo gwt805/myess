@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 p_gender = (
@@ -39,16 +40,15 @@ p_gender = (
 )
 
 
-class User(models.Model):
-    uname = models.CharField(
+class User(AbstractUser):
+    powerGender = (('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'))
+    username = models.CharField(
         max_length=20, unique=True, primary_key=True, verbose_name="用户名"
     )
-    zh_uname = models.CharField(max_length=20, null=True, blank=True, verbose_name="姓名")
-    pword = models.CharField(max_length=128, verbose_name="密码")
-    power = models.IntegerField(default=4, verbose_name="权限等级")
-
-    def __str__(self):
-        return self.uname
+    zh_uname = models.CharField(max_length=20, null=False, blank=True, verbose_name="姓名")
+    email = models.EmailField(max_length=256, null=False, verbose_name="邮箱", blank=True)
+    password = models.CharField(max_length=128, verbose_name="密码")
+    power = models.CharField(max_length=1, choices=powerGender, default=4, verbose_name="权限", blank=True)
 
 
 class Task(models.Model):

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon" />
+  <link href="/static/css/login.css" rel="stylesheet" type="text/css">
+  <title>注册</title>
+</head>
+
+<body oncontextmenu="return false" onselectstart="return false" oncopy="return false">
+  <div class="login-box" id="demo">
+    <div class="input-content">
+      <div class="login_tit">
+        <div>
+          <i class="tit-bg left"></i>
+          Everyday · 效率系统
+          <i class="tit-bg right"></i>
+        </div>
+        <p>ESS&nbsp;&nbsp;&nbsp;&nbsp;Everyday</p>
+      </div>
+      <p class="p user_icon">
+        <input type="text" placeholder="账号" autocomplete="off" class="login_txtbx" id="user">
+      </p>
+      <p class="p user_icon">
+        <input type="text" placeholder="姓名" autocomplete="off" class="login_txtbx" id="zhuser">
+      </p>
+      <p class="p email_icon">
+        <input type="email" placeholder="邮箱" autocomplete="off" class="login_txtbx" id="email">
+      </p>
+      <p class="p pwd_icon">
+        <input type="password" placeholder="密码" autocomplete="off" class="login_txtbx" id="pwd">
+      </p>
+      <p class="p pwd_icon">
+        <input type="password" placeholder="确认密码" autocomplete="off" class="login_txtbx" id="pwd2">
+        <span id="error"></span>
+      </p>
+      <div class="signup">
+        <a class="gv" onclick="regist()">注&nbsp;&nbsp;册</a>
+        <a class="gv" onclick="clears()">返&nbsp;&nbsp;回</a>
+      </div>
+    </div>
+    <div class="canvaszz"> </div>
+    <canvas id="canvas"></canvas>
+  </div>
+  <script type="text/javascript" src="/static/lib/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/static/js/login_canvas.js"></script>
+  <script src="/static/js/disable_login.js"></script>
+  <script>
+    function regist() {
+      let reg = /[\u4e00-\u9fa5]+/g;
+      let reg_name = reg.exec($("#zhuser").val());
+      let reg_email = /^[a-zA-Z0-9]+([-_.][A-Za-zd]+)*@([a-zA-Z0-9]+[-.])+[A-Za-zd]{2,5}$/;
+      let reg_email_res = reg_email.test($("#email").val());
+
+      if (reg_name == null || reg_name[0].length != $("#zhuser").val().length) {
+        $("#error").html("姓名需要写自己中文名字喔!");
+      } else if (reg_email_res == false) {
+        $("#error").html("请填写正确的邮箱,否则将不能正常给您发送相关信息!");
+      } else if ($("#pwd").val() != $("#pwd2").val()) {
+        $("#error").html("两个密码填写的不一样喔!");
+      } else if ($("#user").val() == "" || $("#pwd").val() == "" || $("#zhuser").val() == "" || $("#emal").val() == "" || $("#pwd2").val() == "") {
+        $("#error").html("不允许有空值喔!");
+      } else {
+        $.ajaxSetup({
+          data: { csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+        $.ajax("/regist/", {
+          method: "POST",
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          data: {
+            user: $("#user").val(),
+            zhuname: $("#zhuser").val(),
+            email: $("#email").val(),
+            pwd: $("#pwd").val(),
+          },
+        }).done(function (res) {
+          if (res && res.data == "successful") {
+            window.location.href = "/login";
+          } else {
+            $("#error").html(res.data);
+          }
+        });
+      }
+    }
+
+    function clears() {
+      // $("#user").val("");
+      // $("#zhuser").val("");
+      // $("#email").val("");
+      // $("#pwd").val("");
+      // $("#pwd2").val("");
+      window.location.href = "/login"
+    }
+
+  </script>
+</body>
+
+</html>

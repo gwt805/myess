@@ -10,15 +10,12 @@
 
 环境
 ```Bash
-# 安装mysql并创建数据库，数据库名字为myess
+安装mysql并创建数据库，数据库名字为myess
 python >= 3.6
 pip install requests
 pip install django
-pip install mysqlclient
-pip install xlrd==1.2.0
+pip install mysqlclient or pip install pymysql
 pip install DingtalkChatbot
-
-注：xlrd安装完成后需要找到环境中的xlrd.py，把里面的getiterator改成iter
 ```
 
 启动项目
@@ -26,7 +23,6 @@ pip install DingtalkChatbot
 cd myess
 python manage.py makemigrations
 python manage.py migrate
-# python manage.py createcachetable ess_cache_table # cache
 python manage.py collectstatic # 如果DEBUG为False时
 python manage.py runserver 0.0.0.0:8088
 ```

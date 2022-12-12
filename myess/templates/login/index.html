@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" rel="external nofollow" href="/static/img/favicon.ico" />
+    <link rel="stylesheet" href="/static/lib/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/index1.css">
+    <script src="/static/lib/jquery/2.1.4/jquery.min.js"></script>
+    <script src="/static/lib/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>首页</title>
+    <style>
+        h3 {
+            text-align: center;
+        }
+
+        table {
+            table-layout: fixed;
+        }
+
+        thead tr th {
+            position: sticky;
+            background-color: #fff;
+            top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top" onselectstart="return false">
+        <!--onselectstrat 禁止选中-->
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#my-nav"
+                    aria-expanded="false">
+                    <span class="sr-only">切换导航条</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- <a class="navbar-brand" style="cursor:default;"> -->
+                <img src="/static/img/logo_ess.png" alt="ESS" draggable="false">
+                <!-- </a> -->
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="my-nav">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/index" style="color: #fff; background-color: rgb(68, 147, 199);">首页</a>
+                    </li>
+                    <li class="active"><a href="/efficiency">标注效率</a></li>
+                    <li class="active"><a href="/performance">个人绩效</a></li>
+                    <li class="active" onclick="navswitch('waibao')"><a>外包数据</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li style="border-right: 1px solid #bdbdbd; margin-right: 20px; cursor: pointer;"><a
+                            onclick="help()">
+                            <i class="fa fa-hand-o-right" style="margin-right: 5px; font-size: 18px;"></i>
+                            <span style="font-size: 18px;">Help</span></a>
+                    </li>
+                    <li role="presentation" class="dropdown" style="width: 139px;">
+                        <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                            style="text-align: center;">
+                            <i class="fa fa-user" style="margin-right: 20px; font-size: 18px;"></i>
+                            <span style="font-size: 18px;" id="name"></span><span class="caret"
+                                style="margin-left: 10px;"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li style="border-bottom: 1px solid gray;"><a href="/sites/" target="black"><i
+                                        class="fa fa-gear"></i><span style="margin-left: 10px;">设置</span></a></li>
+                            <li style="border-bottom: 1px solid gray;"><a href="#" onclick="pwd_upd()"><i
+                                        class="fa fa-compass"></i><span style="margin-left: 10px;">修改密码</span></a></li>
+                            <li onclick="logout()"><a><i class="fa fa-sign-out"></i><span
+                                        style="margin-left: 10px;">注销</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div id="body-div">
+        <div id="left">
+            <label onclick="add_data()">
+                <i class="fa fa-plus-square" aria-hidden="true"></i>
+                <span>添加数据</span>
+            </label>
+            <label onclick="search()">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <span>搜索数据</span>
+            </label>
+            <label onclick="showData('p')">
+                <i class="fa fa-leaf" aria-hidden="true"></i>
+                <span>个人当天数据</span>
+            </label>
+            <label onclick="showData('pall')">
+                <i class="fa fa-handshake-o" aria-hidden="true"></i>
+                <span>个人所有数据</span>
+            </label>
+            <label onclick="showData('pd')">
+                <i class="fa fa-paw" aria-hidden="true"></i>
+                <span>所有人当天数据</span>
+            </label>
+            <label onclick="showData('a')">
+                <i class="fa fa-diamond" aria-hidden="true"></i>
+                <span>所有数据</span>
+            </label>
+            <label onclick="pl_dl()">
+                <i class="fa fa-window-close" aria-hidden="true"></i>
+                <span>批量删除</span>
+            </label>
+            <label onclick="showData('gsdata_count')">
+                <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                <span>图表展示</span>
+            </label>
+            <p>© weilong 2021.12.18</p>
+        </div>
+        <div id="right">
+            <!-- 右边主体div-->
+            <div style="width: 100%; height: 10%;border-bottom: 1px solid white;"> <!-- 右边上面div -->
+                <div style="width: 100%; height: 10%;"> <!-- 右边上面div -->
+                    <div id="index_right_img"
+                        style="overflow: hidden; width: 1877px; height: 90px;border-bottom: 1px solid white;">
+                        <marquee direction="left" scrollamount="15" id="h3" style="line-height: 60px; font-size: 30px;">
+                            {{ every_day_say_api }}</marquee>
+                    </div>
+                    <!-- insert -->
+                    <div id="ginsert" style="display: none;">
+                        <form class='form-register' action="/insert/" method="post">
+                            {% csrf_token %}
+                            <table class="table">
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>项目名字</th>
+                                    <th>标注方</th>
+                                    <th>任务ID</th>
+                                    <th>日期</th>
+                                    <th>任务类型</th>
+                                    <th>图片/视频数量</th>
+                                    <th>框数/属性/时长</th>
+                                    <th>工时</th>
+                                    <th>按钮</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="text" name="uname" class="form-control zh_uname"
+                                            readonly="readonly"></td>
+                                    <td><select class="form-control" name="pname" id="pname"> </select></td>
+                                    <td><select class="form-control" name="waibao" id="waibao"></select> </td>
+                                    <td><input type="number" name="task_id" class="form-control"></td>
+                                    <td><input type="date" name="dtime" class="form-control" id="riqi"></td>
+                                    <td><select class="form-control" name="kinds" id="kinds"></select></td>
+                                    <td><input type="number" name="pnums" class="form-control"></td>
+                                    <td><input type="text" name="knums" class="form-control" placeholder="123/00:00:00">
+                                    </td>
+                                    <td><input type="text" name="ptimes" class="form-control" required='required'></td>
+                                    <td><input type="submit" class="btn btn-primary" value="添加"></td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                    <!-- searcch -->
+                    <div id="search" style="display: none;">
+                        <form class='form-register' action="/index/" method="post">
+                            {% csrf_token %}
+                            <table class="table">
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>项目名字</th>
+                                    <th>标注方</th>
+                                    <th>任务ID</th>
+                                    <th>任务类型</th>
+                                    <th>开始时间</th>
+                                    <th>结束时间</th>
+                                    <th style="text-align: center;">按钮</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="text" class="form-control" name="uname"></td>
+                                    <td>
+                                        <select class="form-control" name="pname" id="spname">
+                                            <option value="---">---</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-control" name="bzf" id="bzf">
+                                            <option value="---">---</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" class="form-control" name="taskid"></td>
+                                    <td>
+                                        <select class="form-control" name="taskkind" id="taskkind">
+                                            <option value="---">---</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="date" name="dtime" class="form-control" id="sriqi"></td>
+                                    <td><input type="date" name="lasttime" class="form-control" id="lasttime"></td>
+                                    <td>
+                                        <input type="reset" class="btn btn-default pull-left" value="重置">
+                                        <input type="submit" class="btn btn-primary pull-right" value="搜索">
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div> <!-- 右边上面div -->
+            </div> <!-- 右边上面div -->
+            <!-- show -->
+            <div
+                style="position: fixed; width: 89.5%; height: 83%; overflow: auto; overflow-x: hidden; border-top: 1px solid gray;">
+                <!-- 展示div-->
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th><span style="margin-right: 10px;" onclick="qx_all()"><input type="checkbox" name="fbs"
+                                        id="fbs"> 全选</span>用户名</th>
+                            <th>项目名字</th>
+                            <th>标注方</th>
+                            <th>任务ID</th>
+                            <th>日期</th>
+                            <th>任务类型</th>
+                            <th>图片/视频数量</th>
+                            <th>框数/属性/时长</th>
+                            <th>工时</th>
+                            <th>修改</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tasks in stus %}
+                        <tr>
+                            <td><span style="margin-right: 45px;"><input type="checkbox" name="fb"
+                                        value="{{ tasks.id }}"></span>{{ tasks.uname }}</td>
+                            <td>{{ tasks.pname }}</td>
+                            <td>{{ tasks.waibao }}</td>
+                            <td>{{ tasks.task_id }}</td>
+                            <td>{{ tasks.dtime }}</td>
+                            <td>{{ tasks.kinds }}</td>
+                            <td>{{ tasks.pnums }}</td>
+                            <td>{{ tasks.knums }}</td>
+                            <td>{{ tasks.ptimes }}</td>
+                            <td>
+                                <button class="btn btn-warning"
+                                    onclick='test("{{ tasks.id }}","{{ tasks.uname }}")'>修改</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="container" style="margin-left: 32.5%;"> <!-- 底部页数 -->
+                    {% if stus.has_previous %}
+                    <a href="/index?page_id={{stus.previous_page_number}}">
+                        <button class="btn btn-default">上一页</button>
+                    </a>
+                    {% endif %}
+
+                    {% if sum_page %}
+                    <span> {{ first_page }} / {{ sum_page }}</span>
+                    {% endif %}
+
+                    {% if stus.has_next %}
+                    <a href="/index?page_id={{stus.next_page_number}}">
+                        <button class="btn btn-default">下一页</button>
+                    </a>
+                    {% endif %}
+
+                    {% if sum_page %}
+                    <span style="margin-left: 10px;">共<span id="total_page">{{ sum_page }}</span>页</span>
+                    <span>
+                        到第 <input type="text" class="form-control" style="width: 60px; display: inline;" id="now_page">
+                        页
+                        <button class="btn btn-default" style="margin-left: 10px;" onclick="page_switch()">确定</button>
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- 弹窗之密码修改 -->
+            <div class="modal fade" tabindex="-1" role="dialog" id="pwd_update">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h3 class="modal-title">修改密码</h3>
+                        </div>
+                        <div class="modal-body">
+                            <form class='form-register' action="/pwd_update/" method="post">
+                                {% csrf_token %}
+                                <div class="alert alert-warning" id="err_msg" style="display: none;"></div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="control-label">用户名:</label>
+                                    <input type="text" class="form-control zh_uname" name="uname" readonly="readonly">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="control-label">请输入新密码:</label>
+                                    <input type="password" class="form-control" name="new_pwd1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="message-text" class="control-label">再次输入新密码:</label>
+                                    <input type="password" class="form-control" name="new_pwd2" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                                    <button type="submit" class="btn btn-primary">确认</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+        </div><!-- /.modal -->
+    </div>
+</body>
+<script src="/static/js/index.js"></script>
+<script src="/static/js/disable.js"></script>
+<script>
+    // 切换一言的颜色
+    function color_random() {
+        var color = "#";
+        var randomArr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];//这是颜色构成的所有情况
+        for (var i = 0; i < 6; i++) {
+            color += randomArr[parseInt(Math.random() * 15)];
+        }
+        return color;
+    };
+    document.getElementById("h3").style.color = color_random();
+
+    const projects = JSON.parse('{{ projects|safe }}'); // 项目名字
+    const tkinds = JSON.parse('{{ tkinds|safe }}'); // 任务类型 列表
+    const bzf = JSON.parse('{{ bzf|safe }}'); // 数据标注方
+
+    function help() {
+        alert('请联系卫龙');
+    };
+
+    function pwd_upd() {
+        $('#pwd_update').modal('show');
+        $(".zh_uname").val($("#name").text());
+    };
+
+    function logout() {
+        sessionStorage.setItem("isLogin", "");
+        sessionStorage.setItem("zhuname", "");
+        sessionStorage.setItem("power", "");
+        window.location.href = '/login'
+    }
+
+    // 更细密码
+    function update_pwd() {
+        const new_pwd1 = $(".new_pwd1").val();
+        const new_pwd2 = $(".new_pwd2").val();
+
+        if (new_pwd1 != new_pwd2) return false;
+        else return true;
+    }
+
+    // 添加数据
+    function add_data() {
+        $(".zh_uname").val($("#name").text());
+        if ($('#ginsert').css('display') == 'none') {
+            $('#ginsert').css("display", "block");
+            $('#index_right_img').css("display", "none");
+            // 添加数据之 日期组件默认为当天日期
+            var mydateInput = document.getElementById("riqi");
+            var now = new Date();
+            var day = ('0' + now.getDate()).slice(-2);
+            var month = ('0' + (now.getMonth() + 1)).slice(-2);
+            var today = now.getFullYear() + '-' + (month) + '-' + (day);
+            mydateInput.value = today;
+
+            // 给数据标注方 赋值
+            var bzfs = document.getElementById('waibao');
+            for (var i = 0; i < bzf.length; i++) {
+                if (bzfs.length < bzf.length) { // 这里不判断的话会一直添加
+                    if (bzf[i] != document.getElementById("waibao").value) {
+                        var objOption = document.createElement("option");
+                        objOption.value = bzf[i];
+                        objOption.text = bzf[i];
+                        bzfs.add(objOption);
+                    };
+                };
+            };
+
+            // 给项目名字 添加下拉框
+            var p_s = document.getElementById('pname');
+            for (var i = 0; i < projects.length; i++) {
+                if (p_s.length < projects.length) { // 这里不判断的话会一直添加
+                    if (projects[i] != document.getElementById("pname").value) {
+                        var objOption = document.createElement("option");
+                        objOption.value = projects[i];
+                        objOption.text = projects[i];
+                        p_s.add(objOption);
+                    };
+                };
+            };
+
+            // 给任务类型 赋值
+            var tk_s = document.getElementById('kinds');
+            for (var i = 0; i < tkinds.length; i++) {
+                if (tk_s.length < tkinds.length) { // 这里不判断的话会一直添加
+                    if (tkinds[i] != document.getElementById("kinds").value) {
+                        var objOption = document.createElement("option");
+                        objOption.value = tkinds[i];
+                        objOption.text = tkinds[i];
+                        tk_s.add(objOption);
+                    };
+                };
+            };
+        } else {
+            $('#ginsert').css("display", "none");
+            $('#index_right_img').css("display", "block");
+        };
+        if ($('#search').css('display') == 'block') {
+            $('#search').css("display", "none");
+        };
+    };
+
+    // 搜索
+    function search() {
+        if ($('#search').css('display') == 'none') {
+            $('#index_right_img').css("display", "none");
+            $('#search').css("display", "block");
+
+            var mydateInput = document.getElementById("sriqi");
+            var now = new Date();
+            var day = ('0' + now.getDate()).slice(-2);
+            var month = ('0' + (now.getMonth() + 1)).slice(-2);
+            var today = now.getFullYear() + '-' + (month) + '-' + (day);
+            mydateInput.value = today;
+
+            // 给项目名字 添加下拉框
+            var p_s = document.getElementById('spname');
+            for (var i = 0; i < projects.length; i++) {
+                if (p_s.length < projects.length + 1) { // 这里不判断的话会一直添加
+                    if (projects[i] != document.getElementById("pname").value) {
+                        var objOption = document.createElement("option");
+                        objOption.value = projects[i];
+                        objOption.text = projects[i];
+                        p_s.add(objOption);
+                    };
+                };
+            };
+            // 给标注方 添加下拉框
+            var bzf_s = document.getElementById('bzf');
+            for (var i = 0; i < projects.length; i++) {
+                if (bzf_s.length < bzf.length + 1) { // 这里不判断的话会一直添加
+                    if (bzf[i] != document.getElementById("bzf").value) {
+                        var objOption = document.createElement("option");
+                        objOption.value = bzf[i];
+                        objOption.text = bzf[i];
+                        bzf_s.add(objOption);
+                    };
+                };
+            };
+            // 给任务类型 添加下拉框
+            var taskkind_s = document.getElementById('taskkind');
+            for (var i = 0; i < projects.length; i++) {
+                if (taskkind_s.length < tkinds.length + 1) { // 这里不判断的话会一直添加
+                    if (tkinds[i] != document.getElementById("taskkind").value) {
+                        var objOption = document.createElement("option");
+                        objOption.value = tkinds[i];
+                        objOption.text = tkinds[i];
+                        taskkind_s.add(objOption);
+                    };
+                };
+            };
+        } else {
+            $('#search').css("display", "none");
+            $('#index_right_img').css("display", "block");
+        };
+        if ($('#ginsert').css('display') == 'block') {
+            $('#ginsert').css("display", "none");
+        };
+    };
+
+    // 数据修改
+    function test(id, uname) {
+        if (uname != $('#name').text()) {
+            alert('无权限修改');
+        } else {
+            document.location.href = "/update?id=" + id;
+        };
+    };
+
+    // 整合
+    function showData(flag) {
+        if (flag == 'a') {
+            window.location.href = "/index?showa=all";
+        } else if (flag == 'pd') {
+            window.location.href = "/index?showpd=pd";
+        } else if (flag == 'p') {
+            window.location.href = "/index?showp=" + $('#name').text();
+        } else if (flag == 'pall') {
+            window.location.href = "/index?showpall=" + $('#name').text();
+        } else if (flag == 'gsdata_count') {
+            window.location.href = '/gsdata_count'
+        }
+    }
+
+    // 页数跳转
+    function page_switch() {
+        var total_id = parseInt($('#total_page').text()); // 总页数
+        var input_id = parseInt($('#now_page').val()); // 输入的页数
+        if (input_id <= 0 | input_id > total_id) {
+            alert('请输入正确的页数!');
+        } else {
+            window.location.href = '/index?page_id=' + input_id;
+        };
+    };
+
+    // 全选/全不选
+    function qx_all() {
+        var fall = document.getElementById("fbs");
+        var alls = document.getElementsByName("fb");
+        if (fall.checked == false) {
+            for (var i = 0; i < alls.length; i++) {
+                alls[i].checked = false;
+            };
+        } else {
+            for (var i = 0; i < alls.length; i++) {
+                alls[i].checked = true;
+            };
+        };
+    };
+
+    //批量删除
+    function pl_dl() {
+        const power = sessionStorage.getItem("power")
+        if (power != '1') {
+            alert('您没有权限删除数据!')
+        } else {
+            var alls = document.getElementsByName("fb");
+            var fb_flag = false
+            var id_list = '';
+            for (var i = 0; i < alls.length; i++) {
+                if (alls[i].checked) {
+                    fb_flag = true;
+                };
+            };
+            if (fb_flag == false) {
+                alert('请选择要删除的数据!');
+                window.location.href;
+            } else {
+                if (confirm('确定要删除吗?')) { //删除时的确认提示，如果点击取消则不删除
+                    for (var i = 0; i < alls.length; i++) {
+                        if (alls[i].checked) {
+                            if (i + 1 == alls.length) {
+                                id_list = id_list + alls[i].value;
+                            } else {
+                                id_list = id_list + alls[i].value + ',';
+                            };
+                        };
+                    };
+                    window.location.href = "/dtdel?dtid=" + id_list + '&n=' + $('#name').text();
+                } else {
+                    window.location.href;
+                };
+            };
+        }
+    };
+
+    // 导航栏
+    function navswitch(flag) {
+        if (sessionStorage.getItem("power") == '2') {
+            alert("您没有权限查看!");
+        } else {
+            window.location.href = '/' + flag;
+        }
+    }
+</script>
+
+</html>

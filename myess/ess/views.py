@@ -1,10 +1,11 @@
+from django.contrib.auth.hashers import make_password, check_password
 from django.http.response import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from ess import models
-# from django.views.decorators.cache import cache_page
-from django import forms
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-import hashlib
+from django.views.decorators.csrf import csrf_exempt
+from django.http import QueryDict
 from .mes import (
     data_del,
     gsdata_tj,
@@ -16,7 +17,6 @@ from .mes import (
     plw,
     pnw,
     pupdate,
-    pwd_upd,
     search,
     waibao_insert,
     waibao_search,
@@ -28,90 +28,141 @@ from .mes import (
     gs_data_add,
 )
 import time
-import xlrd
 import json
 import requests
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
+import threading
+from loguru import logger
+from myess.settings import CONFIG
+from pprint import pprint
+
 
 # Create your views here.
-
-
-class UserForm(forms.Form):
-    username = forms.CharField(
-        label="用户名",
-        max_length=20,
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "用户名"}),
-    )
-    password = forms.CharField(
-        label="密码",
-        max_length=20,
-        widget=forms.PasswordInput(
-            attrs={"class": "form-control", "placeholder": "密码"}
-        ),
-    )
-
-
-class RegisterForm(forms.Form):
-    username = forms.CharField(
-        label="用户名",
-        max_length=20,
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "用户名"}),
-    )
-    password1 = forms.CharField(
-        label="密码",
-        max_length=20,
-        widget=forms.PasswordInput(
-            attrs={"class": "form-control", "placeholder": "密码"}
-        ),
-    )
-    password2 = forms.CharField(
-        label="确认密码",
-        max_length=20,
-        widget=forms.PasswordInput(
-            attrs={"class": "form-control", "placeholder": "确认密码"}
-        ),
-    )
 
 # 每请求一次彩虹屁
 def caihongpi():
     res = requests.get("https://api.shadiao.pro/chp").json()["data"]["text"]
-    if len(res) > 76: # 76为实际测试长度，超过这个长度的字会看不到
+    if len(res) > 76:  # 76为实际测试长度，超过这个长度的字会看不到
         return caihongpi()
     else:
         return res
 
-# 密码加密
-def hash_code(s):  # 加点盐
-    h = hashlib.sha256()
-    h.update(s.encode())  # update方法只接收bytes类型
-    return h.hexdigest()
+
+'''
+two background tasks:
+    1. sendEmail , 创建用户及修改密码是会发邮件到用户邮箱
+    2. 添加/删除/修改 数据, 会有钉消息发出
+'''
 
 
-# 登录
+def sendEmail(username: str, password: str, email: str):
+    def thread_task():
+        try:
+            config = CONFIG
+            smtp_server = 'smtp.qq.com'
+            message = f"尊敬的小主您好，\
+                您的ESS系统账号是 {username}, 密码是 {password}, \
+                您也可以用本邮箱作为账号登录。请一定保管好您的账号密码，切勿告知于他人！"
+            msg = MIMEText(message, 'plain', 'utf-8')
+            msg['From'] = Header("ESS系统")
+            msg['To'] = Header(username)
+            msg['Subject'] = Header("ESS 系统")
 
+            server = smtplib.SMTP_SSL(smtp_server)
+            server.connect(smtp_server, 465)
+            server.login(config["send_qqEmail"], config["send_qqEmail_pwd"])
+            server.sendmail(config["send_qqEmail"], email, msg.as_string())
+            server.quit()
+
+            logger.info(f"用户名和密码已发送到用户 {username} 邮箱")
+        except:
+            logger.error(f"用户 {username} 的邮箱可能不是真的!")
+    task = threading.Thread(target=thread_task)
+    task.start()
+
+# 密码修改
+
+
+def pwd_update(request):
+    if request.method == "POST":
+        uname = request.POST.get("uname")
+        new_pwd = request.POST.get("new_pwd1").strip()
+        user_fliter = models.User.objects.get(zh_uname=uname)
+        user_fliter.set_password(new_pwd)
+        logger.info(f"用户 {uname} 密码修改成功!")
+        username = user_fliter.username
+        email = user_fliter.email
+        sendEmail(username, new_pwd, email)
+        return redirect("/login")
+
+
+@csrf_exempt
+def regist(request):
+    if request.method == "POST":
+        data = QueryDict(request.body)
+        username = data.get("user")
+        zhuname = data.get("zhuname")
+        email = data.get("email")
+        password = data.get("pwd")
+        username_list = [u[0]
+                         for u in models.User.objects.values_list("username")]
+        email_list = [e['email'] for e in models.User.objects.values("email")]
+        zhuname_list = [zhn[0]
+                        for zhn in models.User.objects.values_list("zh_uname")]
+
+        if username in username_list and email in email_list and zhuname in zhuname_list:
+            return JsonResponse({'data': '用户名和邮箱和姓名都已占用!'})
+        elif username in username_list:
+            return JsonResponse({'data': '用户名已占用!'})
+        elif email in email_list:
+            return JsonResponse({'data': '邮箱已占用!'})
+        elif zhuname in zhuname_list:
+            return JsonResponse({'data': '姓名已占用'})
+        else:
+            user_table = models.User()
+            user_table.username = username
+            user_table.zh_uname = zhuname
+            user_table.set_password(password)
+            user_table.email = email
+            user_table.save()
+            logger.info(f"用户 {username}&{zhuname} 注册成功!")
+            sendEmail(username, password, email)
+            return JsonResponse({'data': 'successful'})
+    return render(request, "login/regist.html")
+
+
+@csrf_exempt
 def login(request):
     if request.method == "POST":
-        login_form = UserForm(request.POST)
-        message = "请检查填写的内容！"
-        if login_form.is_valid():
-            username = request.POST.get("username", None).strip()
-            password = request.POST.get("password", None).strip()
-            try:
-                user = models.User.objects.get(uname=username)
-                if user.pword == hash_code(password):
-                    request.session["is_login"] = True
-                    request.session["user_power"] = user.power
-                    request.session["zh_uname"] = user.zh_uname
-                    request.session["eng_uname"] = user.uname
-                    if user.power == 3:
-                        return redirect("/waibao/")
-                    return redirect("/index?name=" + username)
+        data = QueryDict(request.body)
+        username = data.get("user")
+        password = data.get("pwd")
+        if len(models.User.objects.filter(username=username)) == True:
+            pwd_flag = check_password(password, make_password(password))
+            if pwd_flag:
+                zhuname = models.User.objects.get(username=username).zh_uname
+                power = models.User.objects.get(username=username).power
+                if power == '4':
+                    return JsonResponse({'data': '请联系管理员激活账号!'})
                 else:
-                    message = "密码不正确！"
-            except:
-                message = "用户不存在"
-        return render(request, "login/login.html", locals())
-    login_form = UserForm()
-    return render(request, "login/login.html", locals())
+                    logger.info(f"用户 {username}&{zhuname} 登录成功!")
+                    return JsonResponse({'data': 'successful', 'zhuname': zhuname, 'power': power})
+        elif len(models.User.objects.filter(email=username)) == True:
+            pwd_flag = check_password(password, make_password(password))
+            if pwd_flag:
+                zhuname = models.User.objects.get(email=username).zh_uname
+                power = models.User.objects.get(email=username).power
+                if power == '4':
+                    return JsonResponse({'data': '请联系管理员激活账号!'})
+                else:
+                    logger.info(f"用户 {username}&{zhuname} 登录成功!")
+                    return JsonResponse({'data': 'successful', 'zhuname': zhuname, 'power': power})
+        else:
+            return JsonResponse({'data': '账号或密码错误!'})
+
+    return render(request, "login/login.html")
 
 
 # 首页
@@ -139,7 +190,7 @@ def index(request):
             [i[0] for i in models.Tkinds.objects.values_list("kinds")]
         )  # 数据库里所有的项目名字
         stu = search(uname, pname, waibao, task_id, taskkind, dtime, lasttime)
-        return render(request, "login/index.html", {"stus": stu, "projects": projects,"bzf": bzf,"tkinds": tkinds, "every_day_say_api": every_day_say_api})
+        return render(request, "login/index.html", {"stus": stu, "projects": projects, "bzf": bzf, "tkinds": tkinds, "every_day_say_api": every_day_say_api})
 
     page_id = request.GET.get("page_id")  # 获取当前的页码数，默认为1
     now_time = time.strftime("%Y-%m-%d", time.localtime())  # 格式化成2016-03-20形式
@@ -157,11 +208,12 @@ def index(request):
         return render(
             request,
             "login/index.html",
-            {"stus": stus, "projects": projects, "tkinds": tkinds, "bzf": bzf, "every_day_say_api": every_day_say_api},
+            {"stus": stus, "projects": projects, "tkinds": tkinds,
+                "bzf": bzf, "every_day_say_api": every_day_say_api},
         )
     if page_id or request.GET.get("showa"):  # 展示所有数据
         stu = models.Task.objects.all().order_by("-dtime")
-        page = Paginator(stu, 16)
+        page = Paginator(stu, 13)
         now_page = 1
         if page_id:
             try:
@@ -192,113 +244,31 @@ def index(request):
         return render(
             request,
             "login/index.html",
-            {"stus": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf, "every_day_say_api": every_day_say_api},
+            {"stus": stu, "projects": projects, "tkinds": tkinds,
+                "bzf": bzf, "every_day_say_api": every_day_say_api},
         )
-    if request.GET.get("showpall"): # 展示个人所有数据
+    if request.GET.get("showpall"):  # 展示个人所有数据
         # showpall
-        stu = models.Task.objects.filter(uname=request.GET.get("showpall")).order_by("-dtime")
+        stu = models.Task.objects.filter(
+            uname=request.GET.get("showpall")).order_by("-dtime")
         return render(
             request,
             "login/index.html",
-            {"stus": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf, "every_day_say_api": every_day_say_api},
+            {"stus": stu, "projects": projects, "tkinds": tkinds,
+                "bzf": bzf, "every_day_say_api": every_day_say_api},
         )
     stu = person(request.GET.get("name"), now_time)
     return render(
         request,
         "login/index.html",
-        {"stus": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf, "every_day_say_api": every_day_say_api},
+        {"stus": stu, "projects": projects, "tkinds": tkinds,
+            "bzf": bzf, "every_day_say_api": every_day_say_api},
     )
-
-
-# 注册
-def register(request):
-    if request.session.get("is_login", None):
-        return redirect("/login")
-    if request.method == "POST":
-        register_form = RegisterForm(request.POST)
-        message = "请检查填写的内容！"
-        if register_form.is_valid():  # 获取数据
-            username = register_form.cleaned_data["username"]
-            password1 = register_form.cleaned_data["password1"]
-            password2 = register_form.cleaned_data["password2"]
-            if password1 != password2:  # 判断两次密码是否相同
-                message = "两次输入的密码不同！"
-                return render(request, "login/register.html", locals())
-            else:
-                same_name_user = models.User.objects.filter(uname=username)
-                if same_name_user:  # 用户名唯一
-                    message = "用户已经存在，请重新选择用户名！"
-                    return render(request, "login/register.html", locals())
-
-                new_user = models.User(uname=username, pword=hash_code(password1))
-                new_user.save()
-                return redirect("/login")  # 自动跳转到登录页面
-    register_form = RegisterForm()
-    return render(request, "login/register.html", locals())
-
-
-# 密码修改
-def pwd_update(request):
-    if request.session.get("is_login"):
-        if request.method == "POST":
-            uname = request.POST.get("uname")
-            new_pwd1 = request.POST.get("new_pwd1").strip()
-            new_pwd2 = request.POST.get("new_pwd2").strip()
-            if new_pwd1 == new_pwd2:
-                pwd_upd(uname, hash_code(new_pwd1))
-                request.session.flush()
-                return redirect("/login")
-            else:
-                return HttpResponse("两次密码输入不同!")
-    else:
-        return redirect("/login")
 
 
 # 添加数据
 def insert(request):
     if request.method == "POST":
-        # 上传文件-批量添加
-        if request.FILES.get("file_obj"):
-            excel = request.FILES.get("file_obj")
-            if excel.name.split(".")[-1] not in ["xlsx", "xls"]:
-                return HttpResponse("请上传以 xslx 或 xls 结尾的文件!")
-            data = xlrd.open_workbook(filename=None, file_contents=excel.read())
-            sheet = data.sheet_by_index(0)
-            name = ""
-            for i in range(1, sheet.nrows):
-                row = sheet.row_values(i)
-                name = row[0]
-                if "-" not in row[4]:
-                    ddtime = xlrd.xldate_as_datetime(row[4], 0).strftime("%Y-%m-%d")
-                else:
-                    ddtime = row[4]
-                gs_data_add(
-                    row[0].strip(),
-                    row[1].strip(),
-                    row[2].strip(),
-                    row[3],
-                    ddtime,
-                    row[5].strip(),
-                    int(row[6]),
-                    row[7],
-                    float(row[8]),
-                )
-                dingtalk(
-                    "添加",
-                    "",
-                    row[0].strip(),
-                    row[1].strip(),
-                    row[2].strip(),
-                    "" if row[3] == "" else int(row[3]),
-                    row[4],
-                    row[5].strip(),
-                    int(row[6]),
-                    row[7],
-                    float(row[8]),
-                    "GS",
-                    "",
-                )
-            return redirect("/index?name=" + name)
         # 自己填写数据
         uname = request.POST.get("uname").strip()
         pname = request.POST.get("pname").strip()
@@ -331,10 +301,13 @@ def insert(request):
             return redirect("/index?name=" + uname)
         except:
             return render(
-                request, "login/index.html?name=" + uname, {"message": "请检查内容！"}
+                request, "login/index.html?name=" +
+                uname, {"message": "请检查内容！"}
             )
-    projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
-    tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list("kinds")])
+    projects = json.dumps(
+        [i[0] for i in models.Project.objects.values_list("pname")])
+    tkinds = json.dumps([i[0]
+                        for i in models.Tkinds.objects.values_list("kinds")])
     return render(request, "login/index.html", {"projects": projects, "tkinds": tkinds})
 
 
@@ -352,7 +325,8 @@ def update(request):
         pnums = request.POST.get("pnums").strip()
         knums = request.POST.get("knums").strip()
         ptimes = request.POST.get("ptimes").strip()
-        nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes)
+        nupdate(id, uname, pname, waibao, task_id,
+                dtime, kinds, pnums, knums, ptimes)
         dingtalk(
             "修改",
             id,
@@ -370,8 +344,10 @@ def update(request):
         )
         return redirect("/index?name=" + uname)
     stu = pupdate(id)
-    projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
-    tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list("kinds")])
+    projects = json.dumps(
+        [i[0] for i in models.Project.objects.values_list("pname")])
+    tkinds = json.dumps([i[0]
+                        for i in models.Tkinds.objects.values_list("kinds")])
     bzf = json.dumps(
         [i[0] for i in models.Waibaos.objects.values_list("name")]
     )  # 数据标注方
@@ -503,13 +479,14 @@ def waibao(request):
         over_time = request.POST.get("over_time")
         wb_search = waibao_search(pname, bzf, begin_time, over_time)
         return render(
-            request, "tasks/waibao.html", {"stus": wb_search, "projects": projects, "every_day_say_api": every_day_say_api}
+            request, "tasks/waibao.html", {"stus": wb_search,
+                                           "projects": projects, "every_day_say_api": every_day_say_api}
         )
     page_id = request.GET.get("page_id")  # 获取当前的页码数，默认为1
 
     # 分页
     stu = models.Waibao.objects.all().order_by("-get_data_time")
-    page = Paginator(stu, 16)
+    page = Paginator(stu, 13)
     now_page = 1
     if page_id:
         try:
@@ -538,54 +515,6 @@ def waibao(request):
 # 外包数据添加
 def waiabo_data_insert(request):
     if request.method == "POST":
-        # 上传文件-批量添加
-        if request.FILES.get("file_obj"):
-            excel = request.FILES.get("file_obj")
-            if excel.name.split(".")[-1] not in ["xlsx", "xls"]:
-                return HttpResponse("请上传以 xslx 或 xls 结尾的文件!")
-            data = xlrd.open_workbook(filename=None, file_contents=excel.read())
-            sheet = data.sheet_by_index(0)
-            for i in range(1, sheet.nrows):
-                row = sheet.row_values(i)
-                if "-" not in row[1]:
-                    getdatatime = xlrd.xldate_as_datetime(row[1], 0).strftime(
-                        "%Y-%m-%d"
-                    )
-                else:
-                    getdatatime = row[1]
-                waibao_tasks = models.Waibao()
-                waibao_tasks.pname = row[0]
-                waibao_tasks.get_data_time = getdatatime
-                waibao_tasks.pnums = int(row[2])
-                waibao_tasks.knums = int(row[3])
-                waibao_tasks.settlement_method = row[4].strip()
-                waibao_tasks.unit_price = float(row[5])
-                waibao_tasks.wb_name = row[6].strip()
-                dingtalk(
-                    "添加",
-                    "",
-                    "郭卫焘",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "外包",
-                    {
-                        "项目名字": row[0],
-                        "发送数据时间": getdatatime,
-                        "图片数量": int(row[2]),
-                        "框数": int(row[3]),
-                        "结算方式": row[4].strip(),
-                        "单价": float(row[5]),
-                        "外包名字": row[6].strip(),
-                    },
-                )
-                waibao_tasks.save()
-            return redirect("/waibao/")
         # 单条数据添加
         pname = request.POST.get("pname")
         get_data_time = request.POST.get("get_data_time")
@@ -690,7 +619,8 @@ def wb_update(request):
         return redirect("/waibao/")
     stu = waibao_update(id)
 
-    projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
+    projects = json.dumps(
+        [i[0] for i in models.Project.objects.values_list("pname")])
 
     return render(
         request, "tasks/waibao_update.html", {"stu": stu, "projects": projects}
@@ -698,29 +628,32 @@ def wb_update(request):
 
 
 # 外包数据统计
-# @cache_page(60 * 60)
 def wbdata_count(request):
     if request.method == "POST":
         btime = request.POST.get("btime")
         otime = request.POST.get("otime")
-        bzf_price_and_pnum_total, bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf = wbdata_tj(btime, otime)
-        pname_list_json, pnums_list_json, knums_list_json, money_list_json, bzf_json = json.dumps(bzf_pnames_list),json.dumps(bzf_pnums_list),json.dumps(bzf_knums_list),json.dumps(bzf_money_list),json.dumps(bzf)
+        bzf_price_and_pnum_total, bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf = wbdata_tj(
+            btime, otime)
+        pname_list_json, pnums_list_json, knums_list_json, money_list_json, bzf_json = json.dumps(
+            bzf_pnames_list), json.dumps(bzf_pnums_list), json.dumps(bzf_knums_list), json.dumps(bzf_money_list), json.dumps(bzf)
         return render(
-        request,
-        "tasks/wbdata_count.html",
-        {
-            "bzf_price_and_pnum_total": bzf_price_and_pnum_total,
-            "bzf_total_list": bzf_total_list,
-            "bzf": bzf,
-            "bzf_json":bzf_json,
-            "pname_list_json": pname_list_json,
-            "pnums_list_json": pnums_list_json,
-            "knums_list_json": knums_list_json,
-            "money_list_json": money_list_json,
-        },
-    )
-    bzf_price_and_pnum_total, bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf = wbdata_tj("", "")
-    pname_list_json, pnums_list_json, knums_list_json, money_list_json, bzf_json = json.dumps(bzf_pnames_list),json.dumps(bzf_pnums_list),json.dumps(bzf_knums_list),json.dumps(bzf_money_list),json.dumps(bzf)
+            request,
+            "tasks/wbdata_count.html",
+            {
+                "bzf_price_and_pnum_total": bzf_price_and_pnum_total,
+                "bzf_total_list": bzf_total_list,
+                "bzf": bzf,
+                "bzf_json": bzf_json,
+                "pname_list_json": pname_list_json,
+                "pnums_list_json": pnums_list_json,
+                "knums_list_json": knums_list_json,
+                "money_list_json": money_list_json,
+            },
+        )
+    bzf_price_and_pnum_total, bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf = wbdata_tj(
+        "", "")
+    pname_list_json, pnums_list_json, knums_list_json, money_list_json, bzf_json = json.dumps(
+        bzf_pnames_list), json.dumps(bzf_pnums_list), json.dumps(bzf_knums_list), json.dumps(bzf_money_list), json.dumps(bzf)
     return render(
         request,
         "tasks/wbdata_count.html",
@@ -728,18 +661,10 @@ def wbdata_count(request):
             "bzf_price_and_pnum_total": bzf_price_and_pnum_total,
             "bzf_total_list": bzf_total_list,
             "bzf": bzf,
-            "bzf_json":bzf_json,
+            "bzf_json": bzf_json,
             "pname_list_json": pname_list_json,
             "pnums_list_json": pnums_list_json,
             "knums_list_json": knums_list_json,
             "money_list_json": money_list_json,
         },
     )
-
-
-# 注销
-def logout(request):
-    if not request.session.get("is_login", None):
-        return redirect("/index")
-    request.session.flush()
-    return redirect("/index")
