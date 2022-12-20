@@ -201,308 +201,25 @@ def gs_data_add(uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
 
 # search
 def search(uname, pname, waibao, task_id, kinds, dtime, lasttime):
-    if task_id != "":
-        task_id = int(task_id)
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 一 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    if uname != "" and pname == "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname)
-        return tdat
-    elif uname == "" and pname != "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname = pname)
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(waibao = waibao)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(task_id = task_id)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(kinds = kinds)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(dtime = dtime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(dtime = lasttime)
-        return tdat
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 二 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    elif uname != "" and pname!= "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname = uname,pname = pname)
-        return tdat
-    elif uname != "" and pname== "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname = uname,waibao = waibao)
-        return tdat
-    elif uname != "" and pname== "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname = uname,task_id = task_id)
-        return tdat
-    elif uname != "" and pname== "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname = uname, kinds = kinds)
-        return tdat
-    elif uname != "" and pname== "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname = uname, dtime = dtime)
-        return tdat
-    elif uname != "" and pname== "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname = uname, dtime = lasttime)
-        return tdat
-    elif uname == "" and pname!= "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname = pname, waibao = waibao)
-        return tdat
-    elif uname == "" and pname!= "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname = pname, task_id = task_id)
-        return tdat
-    elif uname == "" and pname!= "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname = pname, kinds = kinds)
-        return tdat
-    elif uname == "" and pname!= "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname = pname, dtime = dtime)
-        return tdat
-    elif uname == "" and pname!= "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(pname = pname, dtime = lasttime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(waibao = waibao, task_id = task_id)
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id == "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(waibao = waibao, kinds = kinds)
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(waibao = waibao, dtime = dtime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(waibao = waibao, dtime = lasttime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(task_id = task_id, kinds = kinds)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(task_id = task_id, dtime = dtime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(task_id = task_id, dtime = lasttime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(kinds = kinds, dtime = dtime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(kinds = kinds, dtime = lasttime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(dtime__range=[dtime, lasttime])
-        return tdat
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 三 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    elif uname != "" and pname != "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,waibao=waibao)
-        return tdat
-    elif uname != "" and pname != "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,task_id=task_id)
-        return tdat
-    elif uname != "" and pname != "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,kinds=kinds)
-        return tdat
-    elif uname != "" and pname != "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,dtime=dtime)
-        return tdat
-    elif uname != "" and pname != "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,dtime=lasttime) 
-        return tdat
-    elif uname != "" and pname == "---" and waibao != "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,waibao=waibao,task_id=task_id)
-        return tdat
-    elif uname != "" and pname == "---" and waibao != "---" and task_id == "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,waibao=waibao,kinds=kinds)
-        return tdat
-    elif uname != "" and pname == "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,waibao=waibao,dtime=dtime)
-        return tdat
-    elif uname != "" and pname == "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,waibao=waibao,dtime=lasttime)
-        return tdat
-    elif uname != "" and pname == "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,task_id=task_id,kinds=kinds)
-        return tdat
-    elif uname != "" and pname == "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,task_id=task_id,dtime=dtime)
-        return tdat
-    elif uname != "" and pname == "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,task_id=task_id,dtime=lasttime)
-        return tdat
-    elif uname != "" and pname == "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname != "" and pname == "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,kinds=kinds,dtime=lasttime)
-        return tdat
-    elif uname != "" and pname == "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname == "" and pname != "---" and waibao != "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname=pname,waibao=waibao,task_id=task_id)
-        return tdat
-    elif uname == "" and pname != "---" and waibao != "---" and task_id == "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname=pname,waibao=waibao,kinds=kinds)
-        return tdat
-    elif uname == "" and pname != "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname=pname,waibao=waibao,dtime=dtime)
-        return tdat
-    elif uname == "" and pname != "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(pname=pname,waibao=waibao,dtime=lasttime)
-        return tdat
-    elif uname == "" and pname != "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname=pname,task_id=task_id,kinds=kinds)
-        return tdat
-    elif uname == "" and pname != "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname=pname,task_id=task_id,dtime=dtime)
-        return tdat
-    elif uname == "" and pname != "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(pname=pname,task_id=task_id,dtime=lasttime)
-        return tdat
-    elif uname == "" and pname != "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname=pname,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname == "" and pname != "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(pname=pname,kinds=kinds,dtime=lasttime)
-        return tdat
-    elif uname == "" and pname != "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(pname=pname,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id != "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(waibao=waibao,task_id=task_id,kinds=kinds)
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id != "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(waibao=waibao,task_id=task_id,dtime=dtime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(waibao=waibao,task_id=task_id,dtime=lasttime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id == "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(waibao=waibao,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(waibao=waibao,kinds=kinds,dtime=lasttime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(waibao=waibao,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(task_id=task_id,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(task_id=task_id,kinds=kinds,dtime=lasttime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(task_id=task_id,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(kinds=kinds,dtime__range=[dtime,lasttime])
-        return tdat
-
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 四 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    elif uname != "" and pname != "---" and waibao != "---" and task_id != "" and kinds == "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,waibao=waibao,kinds=kinds)
-        return tdat
-    elif uname != "" and pname != "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,task_id=task_id,kinds=kinds)
-        return tdat
-    elif uname != "" and pname != "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname != "" and pname != "---" and waibao == "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname != "" and pname == "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,waibao=waibao,task_id=task_id,kinds=kinds)
-        return tdat
-    elif uname != "" and pname == "---" and waibao != "---" and task_id == "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,waibao=waibao,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname != "" and pname == "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,waibao=waibao,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname != "" and pname == "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,task_id=task_id,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname != "" and pname == "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,task_id=task_id,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname != "" and pname == "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,kinds=kinds,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname == "" and pname != "---" and waibao != "---" and task_id != "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname=pname,waibao=waibao,task_id=task_id,kinds=kinds)
-        return tdat
-    elif uname == "" and pname != "---" and waibao != "---" and task_id == "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname=pname,waibao=waibao,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname == "" and pname != "---" and waibao != "---" and task_id == "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(pname=pname,waibao=waibao,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname == "" and pname != "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname=pname,task_id=task_id,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname == "" and pname != "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(pname=pname,task_id=task_id,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname == "" and pname != "---" and waibao == "---" and task_id != "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(pname=pname,task_id=task_id,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(waibao=waibao,task_id=task_id,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id != "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(waibao=waibao,task_id=task_id,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname == "" and pname == "---" and waibao == "---" and task_id != "" and kinds!= "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(task_id=task_id,kinds=kinds,dtime__range=[dtime,lasttime])
-        return tdat
-
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 五 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    elif uname != "" and pname != "---" and waibao != "---" and task_id != "" and kinds != "---" and dtime == "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,waibao=waibao,task_id=task_id,kinds=kinds)
-        return tdat
-    elif uname != "" and pname != "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,task_id=task_id,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname != "" and pname != "---" and waibao == "---" and task_id == "" and kinds != "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,kinds=kinds,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname == "" and pname != "---" and waibao != "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(pname=pname,waibao=waibao,task_id=task_id,kinds=kinds,dtime=dtime)
-        return tdat
-    elif uname == "" and pname != "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(pname=pname,task_id=task_id,kinds=kinds,dtime__range=[dtime,lasttime])
-        return tdat
-    elif uname == "" and pname == "---" and waibao != "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(waibao=waibao,task_id=task_id,kinds=kinds,dtime__range=[dtime,lasttime])
-        return tdat
-
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 六 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    elif uname == "" and pname != "---" and waibao != "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(pname=pname,waibao=waibao,task_id=task_id,kinds=kinds,dtime__range=[dtime, lasttime])
-        return tdat
-    elif uname != "" and pname == "---" and waibao != "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,waibao=waibao,task_id=task_id,kinds=kinds,dtime__range=[dtime, lasttime])
-        return tdat
-    elif uname != "" and pname != "---" and waibao == "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,task_id=task_id,kinds=kinds,dtime__range=[dtime, lasttime])
-        return tdat
-    elif uname != "" and pname != "---" and waibao != "---" and task_id == "" and kinds != "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,waibao=waibao,kinds=kinds,dtime__range=[dtime, lasttime])
-        return tdat
-    elif uname != "" and pname != "---" and waibao != "---" and task_id != "" and kinds == "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,waibao=waibao,task_id=task_id,dtime__range=[dtime, lasttime])
-        return tdat
-    elif uname != "" and pname != "---" and waibao != "---" and task_id != "" and kinds != "---" and dtime == "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,waibao=waibao,task_id=task_id,kinds=kinds,dtime=lasttime)
-        return tdat
-    elif uname != "" and pname != "---" and waibao != "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime == "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,waibao=waibao,task_id=task_id,kinds=kinds,dtime=dtime)
-        return tdat
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 七 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    elif uname != "" and pname != "---" and waibao != "---" and task_id != "" and kinds != "---" and dtime != "" and lasttime != "":
-        tdat = models.Task.objects.filter(uname=uname,pname=pname,waibao=waibao,task_id=task_id,kinds=kinds,dtime__range=[dtime, lasttime])
-        return tdat
-    else:
-        pass
+    filterQuery = {}
+    if uname:
+        filterQuery['uname'] = uname
+    if pname != '---':
+        filterQuery['pname'] = pname
+    if waibao != '---':
+        filterQuery['waibao'] = waibao
+    if task_id:
+        filterQuery['task_id'] = int(task_id)
+    if kinds != '---':
+        filterQuery['kinds'] = kinds
+    if lasttime and dtime:
+        filterQuery['dtime__range'] = [dtime, lasttime]
+    elif lasttime and not dtime:
+        filterQuery['dtime'] = lasttime
+    elif not lasttime and dtime:
+        filterQuery['dtime'] = dtime
+    tdat = models.Task.objects.filter(**filterQuery)
+    return tdat
     
 
 
@@ -582,39 +299,18 @@ def waibao_insert(
 
 # waibao_search
 def waibao_search(pname, bzf,begin_time, over_time):
-    # wb_name
-    if (pname != "---" and bzf != "" and begin_time != "" and over_time != ""):  # 项目名-不为空 , 标注方-不为空 , 开始时间-不为空 , 结束时间-不为空
-        tdat = models.Waibao.objects.filter(pname=pname, wb_name=bzf, get_data_time__range=[begin_time, over_time]).order_by("get_data_time")
-    elif (pname == "---" and bzf != "" and begin_time != "" and over_time != ""):  # 项目名-为空 , 标注方-不为空 ，开始时间-不为空 , 结束时间-不为空
-        tdat = models.Waibao.objects.filter(wb_name=bzf, get_data_time__range=[begin_time, over_time]).order_by("get_data_time")
-    elif(pname != "---" and bzf == "" and begin_time != "" and over_time != ""): # 项目名-不为空 , 标注方-为空 ，开始时间-不为空 , 结束时间-不为空
-        tdat = models.Waibao.objects.filter(pname=pname, get_data_time__range=[begin_time, over_time]).order_by("get_data_time")
-    elif (pname != "---" and bzf != "" and begin_time == "" and over_time != ""):  # 项目名-不为空 , 标注方-不为空 ，开始时间-为空 , 结束时间-不为空
-        tdat = models.Waibao.objects.filter(pname=pname, wb_name=bzf, get_data_time=over_time).order_by("get_data_time")
-    elif (pname != "---" and bzf != "" and begin_time != "" and over_time == ""):  # 项目名-不为空 , 标注方-不为空 ，开始时间-不为空 , 结束时间-为空
-        tdat = models.Waibao.objects.filter(pname=pname, wb_name=bzf, get_data_time=begin_time).order_by("get_data_time")
-    elif (pname == "---" and bzf == "" and begin_time != "" and over_time != ""):  # 项目名字-为空 ， 标注方-为空 ， 开始时间-不为空 ， 结束时间-不为空
-        tdat = models.Waibao.objects.filter(get_data_time__range=[begin_time, over_time]).order_by("get_data_time")
-    elif (pname == "---" and bzf != "" and begin_time == "" and over_time != ""):  # 项目名字-为空 ， 标注方-不为空 ， 开始时间-为空 ， 结束时间-不为空
-        tdat = models.Waibao.objects.filter(wb_name=bzf, get_data_time=over_time).order_by("get_data_time")
-    elif (pname == "---" and bzf != "" and begin_time != "" and over_time == ""):  # 项目名字-为空 ， 标注方-不为空 ， 开始时间-不为空 ， 结束时间-为空
-        tdat = models.Waibao.objects.filter(wb_name=bzf, get_data_time=begin_time).order_by("get_data_time")
-    elif (pname != "---" and bzf == "" and begin_time == "" and over_time != ""):  # 项目名字-不为空 ， 标注方-为空 ，开始时间-为空 ， 结束时间-不为空
-        tdat = models.Waibao.objects.filter(pname=pname, get_data_time=over_time).order_by("get_data_time")
-    elif (pname != "---" and bzf == "" and begin_time != "" and over_time == ""):  # 项目名字-不为空 ， 标注方-为空 ， 开始时间-不为空 ， 结束时间-为空
-        tdat = models.Waibao.objects.filter(pname=pname, get_data_time=begin_time).order_by("get_data_time")
-    elif (pname != "---" and bzf != "" and begin_time == "" and over_time == ""):  # 项目名字-不为空 ， 标注方-不为空 ，开始时间-为空 ，结束时间-为空
-        tdat = models.Waibao.objects.filter(pname=pname, wb_name=bzf).order_by("get_data_time")
-    elif (pname == "---" and bzf == "" and begin_time == "" and over_time != ""):  # 项目名字-为空 ， 标注方-为空 ， 开始时间-为空 ， 结束时间-不为空
-        tdat = models.Waibao.objects.filter(get_data_time=over_time).order_by("get_data_time")
-    elif (pname == "---" and bzf == "" and begin_time != "" and over_time == ""):  # 项目名字-为空 ， 标注方-为空 ， 开始时间-不为空 ， 结束时间-为空
-        tdat = models.Waibao.objects.filter(get_data_time=begin_time).order_by("get_data_time")
-    elif (pname == "---" and bzf != "" and begin_time == "" and over_time == ""):  # 项目名字-为空 ，标注方-不为空 ， 开始时间-为空 ， 结束时间-为空
-        tdat = models.Waibao.objects.filter(wb_name=bzf).order_by("get_data_time")
-    elif (pname != "---" and bzf == "" and begin_time == "" and over_time == ""):  # 项目名字-不为空 ， 标注方-为空 ， 开始时间-为空 ， 结束时间-为空
-        tdat = models.Waibao.objects.filter(pname=pname).order_by("get_data_time")
-    else:
-        pass
+    filterQuery = {}
+    if pname != '---':
+        filterQuery['pname'] = pname
+    if bzf:
+        filterQuery['wb_name'] = bzf
+    if begin_time and over_time:
+        filterQuery['get_data_time__range'] = [begin_time, over_time]
+    elif begin_time and not over_time:
+        filterQuery['get_data_time'] = begin_time
+    elif not begin_time and over_time:
+        filterQuery['get_data_time'] = over_time
+    tdat = models.Waibao.objects.filter(**filterQuery)
     return tdat
 
 # 外包数据之 单条/批量删除

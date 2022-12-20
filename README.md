@@ -14,6 +14,7 @@
 python >= 3.6
 pip install requests
 pip install django
+pip install loguru
 pip install mysqlclient or pip install pymysql
 pip install DingtalkChatbot
 ```
