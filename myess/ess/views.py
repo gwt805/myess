@@ -28,7 +28,6 @@ from .mes import (
     dingtalk,
     gs_data_add,
 )
-import time
 import json
 import requests
 import smtplib
@@ -37,7 +36,6 @@ from email.header import Header
 import threading
 from loguru import logger
 from myess.settings import CONFIG
-from pprint import pprint
 
 
 # Create your views here.
