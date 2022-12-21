@@ -202,10 +202,6 @@ def gs_data_add(uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
 
 # search
 def search(uname, pname, waibao, task_id, kinds, dtime, lasttime):
-<<<<<<< HEAD
-    filterQuery = {}
-    if uname:
-=======
     day_count = timedelta(days=CONFIG['gs_data_show_count'])
     now_time = datetime.now()
     before_time = (now_time - day_count).strftime("%Y-%m-%d")
@@ -213,7 +209,6 @@ def search(uname, pname, waibao, task_id, kinds, dtime, lasttime):
 
     filterQuery = {}
     if uname != '---':
->>>>>>> feature/bootstraptable
         filterQuery['uname'] = uname
     if pname != '---':
         filterQuery['pname'] = pname
@@ -229,11 +224,6 @@ def search(uname, pname, waibao, task_id, kinds, dtime, lasttime):
         filterQuery['dtime'] = lasttime
     elif not lasttime and dtime:
         filterQuery['dtime'] = dtime
-<<<<<<< HEAD
-    tdat = models.Task.objects.filter(**filterQuery)
-    return tdat
-    
-=======
     else:
         filterQuery['dtime__range'] = [before_time, now_time]
     tdat = models.Task.objects.filter(**filterQuery).order_by("-dtime")
@@ -252,8 +242,6 @@ def search(uname, pname, waibao, task_id, kinds, dtime, lasttime):
         tmp_dict['ptimes'] = i.ptimes
         data.append(tmp_dict)
     return data
->>>>>>> feature/bootstraptable
-
 
 # person
 def person(uname, dtime):
