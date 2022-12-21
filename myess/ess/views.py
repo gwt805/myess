@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.contrib.auth.hashers import make_password, check_password
 from django.http.response import HttpResponse
 from django.http import JsonResponse
@@ -6,8 +7,8 @@ from ess import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
 from django.http import QueryDict
+
 from .mes import (
-    data_del,
     gsdata_tj,
     nupdate,
     nw,
@@ -27,7 +28,6 @@ from .mes import (
     dingtalk,
     gs_data_add,
 )
-import time
 import json
 import requests
 import smtplib
@@ -36,7 +36,6 @@ from email.header import Header
 import threading
 from loguru import logger
 from myess.settings import CONFIG
-from pprint import pprint
 
 
 # Create your views here.
@@ -44,10 +43,7 @@ from pprint import pprint
 # 每请求一次彩虹屁
 def caihongpi():
     res = requests.get("https://api.shadiao.pro/chp").json()["data"]["text"]
-    if len(res) > 76:  # 76为实际测试长度，超过这个长度的字会看不到
-        return caihongpi()
-    else:
-        return res
+    return res
 
 
 '''
@@ -166,119 +162,92 @@ def login(request):
 
 
 # 首页
-
 def index(request):
-    try:
-        every_day_say_api = caihongpi()
-    except:
-        every_day_say_api = "车子有油、手机有电、卡里有钱！这就是安全感！再牛的副驾驶，都不如自己紧握方向盘"
-    if request.method == "POST":  # 这里是 搜索
-        uname = request.POST.get("uname").strip()
-        pname = request.POST.get("pname").strip()
-        waibao = request.POST.get("bzf").strip()
-        task_id = request.POST.get("taskid").strip()
-        taskkind = request.POST.get("taskkind").strip()
-        dtime = request.POST.get("dtime").strip()
-        lasttime = request.POST.get("lasttime").strip()
-        projects = json.dumps(
-            [i[0] for i in models.Project.objects.values_list("pname")]
-        )  # 数据库里所有的项目名字
-        bzf = json.dumps(
-            [i[0] for i in models.Waibaos.objects.values_list("name")]
-        )  # 数据库里所有的项目名字
-        tkinds = json.dumps(
-            [i[0] for i in models.Tkinds.objects.values_list("kinds")]
-        )  # 数据库里所有的项目名字
-        stu = search(uname, pname, waibao, task_id, taskkind, dtime, lasttime)
-        return render(request, "login/index.html", {"stus": stu, "projects": projects, "bzf": bzf, "tkinds": tkinds, "every_day_say_api": every_day_say_api})
-
-    page_id = request.GET.get("page_id")  # 获取当前的页码数，默认为1
-    now_time = time.strftime("%Y-%m-%d", time.localtime())  # 格式化成2016-03-20形式
+    every_day_mes = caihongpi()
+    uname_list = [i[0] for i in models.User.objects.filter(
+        power__range=[1, 2]).values_list("zh_uname")]
+    unames = json.dumps(uname_list)
     projects = json.dumps(
         [i[0] for i in models.Project.objects.values_list("pname")]
     )  # 数据库里所有的项目名字
-    tkinds = json.dumps(
-        [i[0] for i in models.Tkinds.objects.values_list("kinds")]
-    )  # 数据库里所有的任务类型
     bzf = json.dumps(
         [i[0] for i in models.Waibaos.objects.values_list("name")]
-    )  # 数据标注方
-    if request.GET.get("showp"):  # 展示个人当天数据
-        stus = person(request.GET.get("showp"), now_time)
-        return render(
-            request,
-            "login/index.html",
-            {"stus": stus, "projects": projects, "tkinds": tkinds,
-                "bzf": bzf, "every_day_say_api": every_day_say_api},
-        )
-    if page_id or request.GET.get("showa"):  # 展示所有数据
-        stu = models.Task.objects.all().order_by("-dtime")
-        page = Paginator(stu, 13)
-        now_page = 1
-        if page_id:
-            try:
-                stus = page.page(page_id)
-                now_page = page_id
-            except PageNotAnInteger:
-                stus = page.page(1)
-            except EmptyPage:
-                stus = page.page(1)
-        else:
-            stus = page.page(1)
-        return render(
-            request,
-            "login/index.html",
-            {
-                "stus": stus,
-                "page": page,
-                "first_page": now_page,
-                "sum_page": page.num_pages,
-                "projects": projects,
-                "tkinds": tkinds,
-                "bzf": bzf,
-                "every_day_say_api": every_day_say_api
-            },
-        )
-    if request.GET.get("showpd"):  # 展示所有人当天数据
-        stu = models.Task.objects.filter(dtime=now_time).order_by("-uname")
-        return render(
-            request,
-            "login/index.html",
-            {"stus": stu, "projects": projects, "tkinds": tkinds,
-                "bzf": bzf, "every_day_say_api": every_day_say_api},
-        )
-    if request.GET.get("showpall"):  # 展示个人所有数据
-        # showpall
-        stu = models.Task.objects.filter(
-            uname=request.GET.get("showpall")).order_by("-dtime")
-        return render(
-            request,
-            "login/index.html",
-            {"stus": stu, "projects": projects, "tkinds": tkinds,
-                "bzf": bzf, "every_day_say_api": every_day_say_api},
-        )
-    stu = person(request.GET.get("name"), now_time)
-    return render(
-        request,
-        "login/index.html",
-        {"stus": stu, "projects": projects, "tkinds": tkinds,
-            "bzf": bzf, "every_day_say_api": every_day_say_api},
-    )
+    )  # 数据库里所有的项目名字
+    tkinds = json.dumps(
+        [i[0] for i in models.Tkinds.objects.values_list("kinds")]
+    )  # 数据库里所有的项目名字
+
+    return render(request, "login/index.html", {"unames": unames, "projects": projects, "tkinds": tkinds, "bzf": bzf, "every_day_mes": every_day_mes})
+
+# 首页数据
+def gsalldata(request):
+    if request.GET.get("uname") == request.GET.get("pname") == request.GET.get("bzf") == request.GET.get("taskid") == request.GET.get("taskkind") == request.GET.get("dtime") == request.GET.get("lasttime") == None:
+
+        now_time = datetime.now()
+        before_time = (
+            now_time - timedelta(days=CONFIG['gs_data_show_count'])).strftime("%Y-%m-%d")
+        now_time = now_time.strftime("%Y-%m-%d")
+
+        data_object = list(models.Task.objects.all().filter(
+            dtime__range=[before_time, now_time]))
+
+        data = []
+        for i in data_object:
+            tmp_dict = {}
+            tmp_dict['id'] = i.id
+            tmp_dict['uname'] = i.uname
+            tmp_dict['pname'] = i.pname
+            tmp_dict['waibao'] = i.waibao
+            tmp_dict['task_id'] = i.task_id
+            tmp_dict['dtime'] = i.dtime
+            tmp_dict['kinds'] = i.kinds
+            tmp_dict['pnums'] = i.pnums
+            tmp_dict['knums'] = i.knums
+            tmp_dict['ptimes'] = i.ptimes
+            data.append(tmp_dict)
+
+        pageIndex = request.GET.get("pageIndex")
+        pageSize = request.GET.get("pageSize")
+
+        res = []
+        pageInator = Paginator(data, pageSize)
+        context = pageInator.page(pageIndex)
+        for item in context:
+            res.append(item)
+        return JsonResponse({'code': 0, 'msg': '查询成功', 'count': len(data), 'data': res})
+    else:
+        uname = request.GET.get("uname").strip()
+        pname = request.GET.get("pname").strip()
+        waibao = request.GET.get("bzf").strip()
+        task_id = request.GET.get("taskid").strip()
+        taskkind = request.GET.get("taskkind").strip()
+        dtime = request.GET.get("begin_time").strip()
+        lasttime = request.GET.get("last_time").strip()
+        data = search(uname, pname, waibao, task_id, taskkind, dtime, lasttime)
+        res = []
+        pageIndex = request.GET.get("pageIndex")
+        pageSize = request.GET.get("pageSize")
+        pageInator = Paginator(data, pageSize)
+        context = pageInator.page(pageIndex)
+        for item in context:
+            res.append(item)
+        return JsonResponse({'code': 0, 'message': '查询成功', 'count': len(data), 'data': res})
 
 
 # 添加数据
+@csrf_exempt
 def insert(request):
     if request.method == "POST":
-        # 自己填写数据
-        uname = request.POST.get("uname").strip()
-        pname = request.POST.get("pname").strip()
-        waibao = request.POST.get("waibao").strip()
-        task_id = request.POST.get("task_id").strip()
-        dtime = request.POST.get("dtime").strip()
-        kinds = request.POST.get("kinds").strip()
-        pnums = int(request.POST.get("pnums").strip())
-        knums = request.POST.get("knums").strip()
-        ptimes = float(request.POST.get("ptimes").strip())
+        data = QueryDict(request.body)
+        uname = data.get("uname").strip()
+        pname = data.get("pname").strip()
+        waibao = data.get("waibao").strip()
+        task_id = data.get("task_id").strip()
+        dtime = data.get("dtime").strip()
+        kinds = data.get("kinds").strip()
+        pnums = int(data.get("pnums").strip())
+        knums = data.get("knums").strip()
+        ptimes = float(data.get("ptimes").strip())
         try:
             gs_data_add(
                 uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes
@@ -298,12 +267,9 @@ def insert(request):
                 "GS",
                 "",
             )
-            return redirect("/index?name=" + uname)
+            return JsonResponse({"data": 'successful'})
         except:
-            return render(
-                request, "login/index.html?name=" +
-                uname, {"message": "请检查内容！"}
-            )
+            return JsonResponse({"data": '添加失败'})
     projects = json.dumps(
         [i[0] for i in models.Project.objects.values_list("pname")])
     tkinds = json.dumps([i[0]
@@ -357,8 +323,21 @@ def update(request):
         {"stu": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf},
     )
 
+# 单条或批量数据删除
+
+
+def dtdel(request):
+    uname = request.GET.get("n")
+    id = request.GET.get("id")
+    models.Task.objects.get(id=id).delete()
+
+    dingtalk("删除", id, uname, "", "", "", "", "", "", "", "", "GS", "")
+
+    return JsonResponse({"data": 'successful'})
 
 # 效率
+
+
 def efficiency(request):
     if request.method == "POST":
         now_begin_time = request.POST.get("now-begin-time").strip()
@@ -410,15 +389,6 @@ def performance(request):
         except:
             pass
     return render(request, "tasks/performance.html")
-
-
-# 单条或批量数据删除
-def dtdel(request):
-    uname = request.GET.get("n")
-    ids = request.GET.get("dtid")
-    data_del(ids)
-    dingtalk("删除", ids, uname, "", "", "", "", "", "", "", "", "GS", "")
-    return redirect("/index?name=" + uname)
 
 
 # GS数据统计

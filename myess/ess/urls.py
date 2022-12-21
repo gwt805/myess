@@ -11,6 +11,8 @@ urlpatterns = [
     path("regist/", views.regist),
     path("pwd_update/", views.pwd_update),
 
+    path("gsalldata/", views.gsalldata),
+
     path("insert/", views.insert),
     path("efficiency/", views.efficiency),
     path("performance/", views.performance),

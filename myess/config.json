@@ -4,6 +4,7 @@
     "mysql_pwd": "",
     "mysql_port": "",
     "mysql_db": "",
+    "gs_data_show_count": 31,
     "ding_access_token": "",
     "ding_secret": "",
     "send_qqEmail": "",

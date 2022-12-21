@@ -1,10 +1,10 @@
+from datetime import datetime, timedelta
 from time import strftime, gmtime
 from myess.settings import CONFIG
 from loguru import logger
 from ess import models
 import threading
 import math
-
 
 
 def str2sec(x):
@@ -137,7 +137,8 @@ def plw(last_begin_time, last_over_time):
 
 # 绩效
 def performanceq(begin_time, over_time, name):
-    tdat = models.Task.objects.filter(dtime__range=[begin_time, over_time], uname=name)
+    tdat = models.Task.objects.filter(
+        dtime__range=[begin_time, over_time], uname=name)
     k_p = (
         []
     )  # [('审核', 'S线数据'), ('其他', None), ('标注', '杂物'), ('标注', 'S线数据'), ('审核', '脏污'), ('审核', '杂物')]
@@ -201,8 +202,18 @@ def gs_data_add(uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
 
 # search
 def search(uname, pname, waibao, task_id, kinds, dtime, lasttime):
+<<<<<<< HEAD
     filterQuery = {}
     if uname:
+=======
+    day_count = timedelta(days=CONFIG['gs_data_show_count'])
+    now_time = datetime.now()
+    before_time = (now_time - day_count).strftime("%Y-%m-%d")
+    now_time = now_time.strftime("%Y-%m-%d")
+
+    filterQuery = {}
+    if uname != '---':
+>>>>>>> feature/bootstraptable
         filterQuery['uname'] = uname
     if pname != '---':
         filterQuery['pname'] = pname
@@ -218,9 +229,30 @@ def search(uname, pname, waibao, task_id, kinds, dtime, lasttime):
         filterQuery['dtime'] = lasttime
     elif not lasttime and dtime:
         filterQuery['dtime'] = dtime
+<<<<<<< HEAD
     tdat = models.Task.objects.filter(**filterQuery)
     return tdat
     
+=======
+    else:
+        filterQuery['dtime__range'] = [before_time, now_time]
+    tdat = models.Task.objects.filter(**filterQuery).order_by("-dtime")
+    data = []
+    for i in tdat:
+        tmp_dict = {}
+        tmp_dict['id'] = i.id
+        tmp_dict['uname'] = i.uname
+        tmp_dict['pname'] = i.pname
+        tmp_dict['waibao'] = i.waibao
+        tmp_dict['task_id'] = i.task_id
+        tmp_dict['dtime'] = i.dtime
+        tmp_dict['kinds'] = i.kinds
+        tmp_dict['pnums'] = i.pnums
+        tmp_dict['knums'] = i.knums
+        tmp_dict['ptimes'] = i.ptimes
+        data.append(tmp_dict)
+    return data
+>>>>>>> feature/bootstraptable
 
 
 # person
@@ -266,18 +298,6 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
     now_data.save()
 
 
-# 单条/批量数据删除
-def data_del(ids):
-    id = []
-    for i in ids.split(","):
-        try:
-            id.append(int(i))
-        except:
-            pass
-    for i in id:
-        models.Task.objects.get(id=i).delete()
-
-
 def waibao_insert(
     pname, get_data_time, pnums, knums, settlement_method, unit_price, wb_name
 ):
@@ -314,6 +334,8 @@ def waibao_search(pname, bzf,begin_time, over_time):
     return tdat
 
 # 外包数据之 单条/批量删除
+
+
 def wb_data_del(ids):
     id = []
     for i in ids.split(","):
@@ -349,13 +371,13 @@ def wb_nupdate(
 def wbdata_tj(btime, otime):
     from decimal import Decimal
     bzf = [i["name"] for i in models.Waibaos.objects.values("name")]
-    bzf.remove("高仙") # ['高仙', '倍赛', '龙猫', '曼孚']
+    bzf.remove("高仙")  # ['高仙', '倍赛', '龙猫', '曼孚']
     bzf_total_list = {}
     bzf_pnames_list = {}
     bzf_pnums_list = {}
     bzf_knums_list = {}
     bzf_money_list = {}
-    bzf_price_and_pnum_total = []# 这里预留统计每家供应商的图片数量和金额
+    bzf_price_and_pnum_total = []  # 这里预留统计每家供应商的图片数量和金额
     for wb in bzf:
         if btime == otime == "":
             all_data = models.Waibao.objects.filter(wb_name=wb)
@@ -364,7 +386,8 @@ def wbdata_tj(btime, otime):
                 if i.pname not in pname:
                     pname.append(i.pname)
         elif btime != "" and otime != "":
-            all_data = models.Waibao.objects.filter(wb_name=wb,get_data_time__range=[btime, otime])
+            all_data = models.Waibao.objects.filter(
+                wb_name=wb, get_data_time__range=[btime, otime])
             pname = []
             for i in all_data:
                 if i.pname not in pname:
@@ -374,9 +397,9 @@ def wbdata_tj(btime, otime):
         pnums_list = []
         knums_list = []
         money_list = []
-        tmp = []# 这里预留统计每家供应商的图片数量和金额
+        tmp = []  # 这里预留统计每家供应商的图片数量和金额
         tmp.append(wb)
-        
+
         for i in pname:
             one_data = []
             pnums = 0
@@ -397,18 +420,20 @@ def wbdata_tj(btime, otime):
             for kk in all_data.filter(pname=i):  # 算框数和金额
                 knums += kk.knums
                 money += kk.knums * kk.unit_price
-        
+
             one_data.append(i)
             one_data.append(pnums)
             one_data.append(knums)
-            one_data.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
+            one_data.append(
+                float(Decimal(str(money)).quantize(Decimal("0.00"))))
             pname_list.append(i)
             pnums_list.append(pnums)
             knums_list.append(knums)
-            money_list.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
+            money_list.append(
+                float(Decimal(str(money)).quantize(Decimal("0.00"))))
             data_list.append(one_data)
         tmp.append(sum(pnums_list))
-        tmp.append(round(sum(money_list),3))
+        tmp.append(round(sum(money_list), 3))
         bzf_price_and_pnum_total.append(tmp)
         bzf_total_list[wb] = data_list
         bzf_pnames_list[wb] = pname_list
@@ -467,13 +492,14 @@ def gsdata_tj(btime, otime):
 
 
 # 钉通知
-def dingtalk(kind,id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes,who,wbdata):
+def dingtalk(kind, id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes, who, wbdata):
     import time
     import hmac
     import hashlib
     import base64
     import urllib.parse
     from dingtalkchatbot.chatbot import DingtalkChatbot
+
     def ding_mes():
         timestamp = str(round(time.time() * 1000))
 

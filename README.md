@@ -21,6 +21,7 @@ pip install DingtalkChatbot
 
 启动项目
 ```Bash
+先设置config.json 配置文件
 cd myess
 python manage.py makemigrations
 python manage.py migrate
