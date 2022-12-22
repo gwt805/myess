@@ -386,11 +386,14 @@
                 },
             }).done(function (res) {
                 if (res && res.data == "successful") {
-                    $("#task_id_insert").val("");
+                    $("#pname_insert").find('option:first').prop("selected", "selected");
+                    $("#get_data_time_insert").val("");
                     $("#pnums_insert").val("");
                     $("#knums_insert").val("");
-                    $("#ptimes_insert").val("");
-
+                    $("#settlement_method_insert").val("");
+                    $("#unit_price_insert").val("");
+                    $("#wb_name_insert").find('option:first').prop("selected", "selected");
+                    
                     let url = '/wballdata'
                     table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
 
