@@ -10,9 +10,7 @@ urlpatterns = [
     path("index/", views.index),
     path("regist/", views.regist),
     path("pwd_update/", views.pwd_update),
-
     path("gsalldata/", views.gsalldata),
-
     path("insert/", views.insert),
     path("efficiency/", views.efficiency),
     path("performance/", views.performance),
@@ -20,6 +18,7 @@ urlpatterns = [
     path("update/", views.update),
     path("dtdel/", views.dtdel),
     path("waibao/", views.waibao),
+    path("wballdata/", views.wballdata),
     path("waiabo_data_insert/", views.waiabo_data_insert),
     path("wb_update/", views.wb_update),
     path("wb_dtdel/", views.wb_dtdel),

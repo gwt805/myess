@@ -14,6 +14,7 @@ class ControlUser(UserAdmin):
     list_display = ("username", "zh_uname", "email", "password", "power")
     list_editable = ["zh_uname", "power"]
 
+
 @admin.register(models.Task)
 class ControlTASK(admin.ModelAdmin):
     list_display = (

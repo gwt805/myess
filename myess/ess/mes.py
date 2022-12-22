@@ -137,8 +137,7 @@ def plw(last_begin_time, last_over_time):
 
 # 绩效
 def performanceq(begin_time, over_time, name):
-    tdat = models.Task.objects.filter(
-        dtime__range=[begin_time, over_time], uname=name)
+    tdat = models.Task.objects.filter(dtime__range=[begin_time, over_time], uname=name)
     k_p = (
         []
     )  # [('审核', 'S线数据'), ('其他', None), ('标注', '杂物'), ('标注', 'S线数据'), ('审核', '脏污'), ('审核', '杂物')]
@@ -202,51 +201,46 @@ def gs_data_add(uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
 
 # search
 def search(uname, pname, waibao, task_id, kinds, dtime, lasttime):
-    day_count = timedelta(days=CONFIG['gs_data_show_count'])
+    day_count = timedelta(days=CONFIG["gs_data_show_count"])
     now_time = datetime.now()
     before_time = (now_time - day_count).strftime("%Y-%m-%d")
     now_time = now_time.strftime("%Y-%m-%d")
 
     filterQuery = {}
-    if uname != '---':
-        filterQuery['uname'] = uname
-    if pname != '---':
-        filterQuery['pname'] = pname
-    if waibao != '---':
-        filterQuery['waibao'] = waibao
+    if uname != "---":
+        filterQuery["uname"] = uname
+    if pname != "---":
+        filterQuery["pname"] = pname
+    if waibao != "---":
+        filterQuery["waibao"] = waibao
     if task_id:
-        filterQuery['task_id'] = int(task_id)
-    if kinds != '---':
-        filterQuery['kinds'] = kinds
+        filterQuery["task_id"] = int(task_id)
+    if kinds != "---":
+        filterQuery["kinds"] = kinds
     if lasttime and dtime:
-        filterQuery['dtime__range'] = [dtime, lasttime]
+        filterQuery["dtime__range"] = [dtime, lasttime]
     elif lasttime and not dtime:
-        filterQuery['dtime'] = lasttime
+        filterQuery["dtime"] = lasttime
     elif not lasttime and dtime:
-        filterQuery['dtime'] = dtime
+        filterQuery["dtime"] = dtime
     else:
-        filterQuery['dtime__range'] = [before_time, now_time]
+        filterQuery["dtime__range"] = [before_time, now_time]
     tdat = models.Task.objects.filter(**filterQuery).order_by("-dtime")
     data = []
     for i in tdat:
         tmp_dict = {}
-        tmp_dict['id'] = i.id
-        tmp_dict['uname'] = i.uname
-        tmp_dict['pname'] = i.pname
-        tmp_dict['waibao'] = i.waibao
-        tmp_dict['task_id'] = i.task_id
-        tmp_dict['dtime'] = i.dtime
-        tmp_dict['kinds'] = i.kinds
-        tmp_dict['pnums'] = i.pnums
-        tmp_dict['knums'] = i.knums
-        tmp_dict['ptimes'] = i.ptimes
+        tmp_dict["id"] = i.id
+        tmp_dict["uname"] = i.uname
+        tmp_dict["pname"] = i.pname
+        tmp_dict["waibao"] = i.waibao
+        tmp_dict["task_id"] = i.task_id
+        tmp_dict["dtime"] = i.dtime
+        tmp_dict["kinds"] = i.kinds
+        tmp_dict["pnums"] = i.pnums
+        tmp_dict["knums"] = i.knums
+        tmp_dict["ptimes"] = i.ptimes
         data.append(tmp_dict)
     return data
-
-# person
-def person(uname, dtime):
-    stu = models.Task.objects.filter(uname=uname, dtime=dtime)
-    return stu
 
 
 # update
@@ -306,33 +300,39 @@ def waibao_insert(
 
 
 # waibao_search
-def waibao_search(pname, bzf,begin_time, over_time):
+def waibao_search(pname, bzf, begin_time, over_time):
+    day_count = timedelta(days=CONFIG["wb_data_show_count"])
+    now_time = datetime.now()
+    before_time = (now_time - day_count).strftime("%Y-%m-%d")
+    now_time = now_time.strftime("%Y-%m-%d")
+
     filterQuery = {}
-    if pname != '---':
-        filterQuery['pname'] = pname
-    if bzf:
-        filterQuery['wb_name'] = bzf
+    if pname != "---":
+        filterQuery["pname"] = pname
+    if bzf != "---":
+        filterQuery["wb_name"] = bzf
     if begin_time and over_time:
-        filterQuery['get_data_time__range'] = [begin_time, over_time]
+        filterQuery["get_data_time__range"] = [begin_time, over_time]
     elif begin_time and not over_time:
-        filterQuery['get_data_time'] = begin_time
+        filterQuery["get_data_time"] = begin_time
     elif not begin_time and over_time:
-        filterQuery['get_data_time'] = over_time
+        filterQuery["get_data_time"] = over_time
+    else:
+        filterQuery["get_data_time__range"] = [before_time, now_time]
     tdat = models.Waibao.objects.filter(**filterQuery)
-    return tdat
-
-# 外包数据之 单条/批量删除
-
-
-def wb_data_del(ids):
-    id = []
-    for i in ids.split(","):
-        try:
-            id.append(int(i))
-        except:
-            pass
-    for i in id:
-        models.Waibao.objects.get(id=i).delete()
+    data = []
+    for i in tdat:
+        tmp_dict = {}
+        tmp_dict["id"] = i.id
+        tmp_dict["pname"] = i.pname
+        tmp_dict["get_data_time"] = i.get_data_time
+        tmp_dict["pnums"] = i.pnums
+        tmp_dict["knums"] = i.knums
+        tmp_dict["settlement_method"] = i.settlement_method
+        tmp_dict["unit_price"] = i.unit_price
+        tmp_dict["wb_name"] = i.wb_name
+        data.append(tmp_dict)
+    return data
 
 
 # 外包要修改的数据渲染
@@ -358,6 +358,7 @@ def wb_nupdate(
 # 外包数据统计
 def wbdata_tj(btime, otime):
     from decimal import Decimal
+
     bzf = [i["name"] for i in models.Waibaos.objects.values("name")]
     bzf.remove("高仙")  # ['高仙', '倍赛', '龙猫', '曼孚']
     bzf_total_list = {}
@@ -375,7 +376,8 @@ def wbdata_tj(btime, otime):
                     pname.append(i.pname)
         elif btime != "" and otime != "":
             all_data = models.Waibao.objects.filter(
-                wb_name=wb, get_data_time__range=[btime, otime])
+                wb_name=wb, get_data_time__range=[btime, otime]
+            )
             pname = []
             for i in all_data:
                 if i.pname not in pname:
@@ -412,13 +414,11 @@ def wbdata_tj(btime, otime):
             one_data.append(i)
             one_data.append(pnums)
             one_data.append(knums)
-            one_data.append(
-                float(Decimal(str(money)).quantize(Decimal("0.00"))))
+            one_data.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
             pname_list.append(i)
             pnums_list.append(pnums)
             knums_list.append(knums)
-            money_list.append(
-                float(Decimal(str(money)).quantize(Decimal("0.00"))))
+            money_list.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
             data_list.append(one_data)
         tmp.append(sum(pnums_list))
         tmp.append(round(sum(money_list), 3))
@@ -428,7 +428,15 @@ def wbdata_tj(btime, otime):
         bzf_pnums_list[wb] = pnums_list
         bzf_knums_list[wb] = knums_list
         bzf_money_list[wb] = money_list
-    return bzf_price_and_pnum_total, bzf_total_list, bzf_pnames_list, bzf_pnums_list, bzf_knums_list, bzf_money_list, bzf
+    return (
+        bzf_price_and_pnum_total,
+        bzf_total_list,
+        bzf_pnames_list,
+        bzf_pnums_list,
+        bzf_knums_list,
+        bzf_money_list,
+        bzf,
+    )
 
 
 # GS 数据统计
@@ -480,7 +488,21 @@ def gsdata_tj(btime, otime):
 
 
 # 钉通知
-def dingtalk(kind, id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes, who, wbdata):
+def dingtalk(
+    kind,
+    id,
+    uname,
+    pname,
+    waibao,
+    task_id,
+    dtime,
+    kinds,
+    pnums,
+    knums,
+    ptimes,
+    who,
+    wbdata,
+):
     import time
     import hmac
     import hashlib

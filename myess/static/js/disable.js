@@ -18,6 +18,14 @@ document.oncontextmenu = function () {
     return false;
 }
 
+// 监视窗口大小
+var h = window.innerHeight
+var w = window.innerWidth;
+window.onresize = function () {
+    if (h != window.innerHeight || w != window.innerWidth) {
+        window.location = "https://www.baidu.com";
+    }
+};
 // 禁止选取内容
 // document.onselectstart = function () {
 //     return false;
@@ -42,10 +50,10 @@ $(window).load(function () {
     // }
     let isLogin = sessionStorage.getItem("isLogin");
     let zhuname = sessionStorage.getItem("zhuname");
-    if (isLogin != 'true'){
+    if (isLogin != 'true') {
         alert("必须登录后才能查看!");
         window.location.href = "/login";
-    }else {
+    } else {
         $("#name").html(zhuname);
     }
 });

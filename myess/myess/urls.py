@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path,include
+from django.urls import path, re_path, include
 from django.views import static
 from django.conf import settings
 from ess import views
@@ -22,5 +22,5 @@ import ess
 
 urlpatterns = [
     path("sites/", admin.site.urls),
-    path("",include("ess.urls")),
+    path("", include("ess.urls")),
 ]

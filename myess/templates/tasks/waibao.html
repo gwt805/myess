@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="/static/css/index1.css">
     <script src="/static/lib/jquery/2.1.4/jquery.min.js"></script>
     <script src="/static/lib/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link href="/static/lib/layui-v2.7.6/layui/css/layui.css" rel="stylesheet">
+    <script src="/static/lib/layui-v2.7.6/layui/layui.js"></script>
     <title>外包数据</title>
     <style>
         h3 {
@@ -83,7 +85,7 @@
         </div><!-- /.container-fluid -->
     </nav>
     <div id="body-div">
-        <div id="left">
+        <div id="left" onselectstart="return false">
             <label onclick="ginsert()">
                 <i class="fa fa-plus-square" aria-hidden="true"></i>
                 <span>添加数据</span>
@@ -92,99 +94,22 @@
                 <i class="fa fa-search" aria-hidden="true"></i>
                 <span>搜索数据</span>
             </label>
-            <label onclick="showData('a')">
-                <i class="fa fa-diamond" aria-hidden="true"></i>
-                <span>所有数据</span>
-            </label>
-            <label onclick="pl_dl()">
-                <i class="fa fa-window-close" aria-hidden="true"></i>
-                <span>批量删除</span>
-            </label>
             <label onclick="showData('wbdata_count')">
                 <i class="fa fa-bar-chart" aria-hidden="true"></i>
                 <span>图表展示</span>
             </label>
-            <p>© weilong 2021.12.18</p>
+            <p>© gwt 2021.12.18</p>
         </div>
         <div id="right">
-            <!-- 右边主体div-->
-            <div style="width: 100%; height: 10%;border-bottom: 1px solid white;"> <!-- 右边上面div -->
-                <div id="index_right_img" style="overflow: hidden; width: 1877px; height: 90px;">
-                    <marquee direction="left" scrollamount="15" id="h3" style="line-height: 60px; font-size: 30px;">
-                        {{ every_day_say_api }}
-                    </marquee>
-                </div>
+            <div id="toolbar" style="border-bottom: 1px solid gray; height: 100px;">
+                <div class="alert alert-danger hide" id="alert_div"
+                    style="width: 300px; position: fixed; top: 40%;left: 50%; right: 50%;z-index: 1; font-size: 22px;">
+                </div> <!-- 警告弹出框 -->
                 <!-- insert -->
                 <div id="ginsert" style="display: none;">
-                    <form class='form-register' action="/waiabo_data_insert/" method="post">
-                        {% if message %}
-                        <div class="alert alert-warning" id="warning">{{ message }}</div>
-                        {% endif %}
-                        {% csrf_token %}
-                        <table class="table">
-                            <tr>
-                                <th>项目名字</th>
-                                <th>发送数据时间</th>
-                                <th>图片数量</th>
-                                <th>标注框数量</th>
-                                <th>结算方式</th>
-                                <th>单价</th>
-                                <th>外包名字</th>
-                                <th>按钮</th>
-                            </tr>
-                            <tr>
-                                <td><select class="form-control" name="pname" id="pname"></select></td>
-                                <td><input type="date" name="get_data_time" class="form-control"></td>
-                                <td><input type="text" name="pnums" class="form-control"></td>
-                                <td><input type="text" name="knums" class="form-control"></td>
-                                <td><input type="text" name="settlement_method" class="form-control"
-                                        placeholder="矩形框/多边形"></td>
-                                <td><input type="text" name="unit_price" class="form-control" required='required'></td>
-                                <td><input type="text" name="wb_name" class="form-control"></td>
-                                <td><input type="submit" class="btn btn-primary" value="添加"></td>
-                            </tr>
-                        </table>
-                    </form>
-                </div>
-                <!-- searcch -->
-                <div id="search" style="display: none;">
-                    <form class='form-register' action="/waibao/" method="post">
-                        {% csrf_token %}
-                        <table class="table">
-                            <tr>
-                                <th>项目名字</th>
-                                <th>标注方</th>
-                                <th>开始时间</th>
-                                <th>结束时间</th>
-                                <th>按钮</th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <select class="form-control" name="pname" id="spname">
-                                        <option value="---">---</option>
-                                    </select>
-                                </td>
-                                <td><input type="text" placeholder="倍赛 云测 龙猫 曼孚" name="bzf" class="form-control"></td>
-                                <td><input type="date" name="begin_time" class="form-control"></td>
-                                <td><input type="date" name="over_time" class="form-control"></td>
-                                <td>
-                                    <input type="submit" class="btn btn-primary" value="搜索">
-                                </td>
-                            </tr>
-                        </table>
-                    </form>
-                </div>
-            </div> <!-- 右边上面div -->
-            <!-- show -->
-            <div
-                style="position: fixed; width: 89.5%; height: 83%; overflow-y: auto; overflow-x: hidden; border-top: 1px solid gray;">
-                <!-- 展示div-->
-                <table class="table table-hover">
-                    <thead>
+                    <table class="table">
                         <tr>
-                            <th><span style="margin-right: 10px;" onclick="qx_all()"><input type="checkbox" name="fbs"
-                                        id="fbs">
-                                    全选</span>项目名字</th>
+                            <th>项目名字</th>
                             <th>发送数据时间</th>
                             <th>图片数量</th>
                             <th>标注框数量</th>
@@ -193,50 +118,58 @@
                             <th>外包名字</th>
                             <th>按钮</th>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {% for tasks in stus %}
                         <tr>
-                            <td><span style="margin-right: 45px;"><input type="checkbox" name="fb"
-                                        value="{{ tasks.id }}"></span>{{ tasks.pname }}</td>
-                            <td>{{ tasks.get_data_time }}</td>
-                            <td>{{ tasks.pnums }}</td>
-                            <td>{{ tasks.knums }}</td>
-                            <td>{{ tasks.settlement_method }}</td>
-                            <td>{{ tasks.unit_price }}</td>
-                            <td>{{ tasks.wb_name }}</td>
-                            <td><button class="btn btn-warning" onclick='test("{{ tasks.id }}","{{ tasks.uname }}")'>修改</button></td>
+                            <td><select class="form-control" name="pname" id="pname_insert"></select></td>
+                            <td><input type="date" name="get_data_time" class="form-control" id="get_data_time_insert">
+                            </td>
+                            <td><input type="number" name="pnums" min="0" class="form-control" id="pnums_insert"></td>
+                            <td><input type="number" name="knums" min="0" class="form-control" id="knums_insert"></td>
+                            <td><input type="text" name="settlement_method" class="form-control"
+                                    id="settlement_method_insert" placeholder="矩形框/多边形/3D框/筛选/线段"></td>
+                            <td><input type="text" name="unit_price" class="form-control" id="unit_price_insert"></td>
+                            <td><select class="form-control" name="wb_name" id="wb_name_insert"></select></td>
+                            <td><button class="btn btn-primary" id="btn_insert"><i class="fa fa-plus-square"
+                                        aria-hidden="true"></i> 添加</button></td>
                         </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <div class="container" style="margin-left: 32.5%;"> <!-- 底部页数 -->
-                    {% if stus.has_previous %}
-                    <a href="/waibao?page_id={{stus.previous_page_number}}">
-                        <button class="btn btn-default">上一页</button>
-                    </a>
-                    {% endif %}
-
-                    {% if sum_page %}
-                    <span> {{ first_page }} / {{ sum_page }}</span>
-                    {% endif %}
-
-                    {% if stus.has_next %}
-                    <a href="/waibao?page_id={{stus.next_page_number}}">
-                        <button class="btn btn-default">下一页</button>
-                    </a>
-                    {% endif %}
-
-                    {% if sum_page %}
-                    <span style="margin-left: 10px;">共<span id="total_page">{{ sum_page }}</span>页</span>
-                    <span>
-                        到第 <input type="text" class="form-control" style="width: 60px; display: inline;" id="now_page">
-                        页
-                        <button class="btn btn-default" style="margin-left: 10px;" onclick="page_switch()">确定</button>
-                    </span>
-                    {% endif %}
+                    </table>
+                </div>
+                <!-- searcch -->
+                <div id="search">
+                    <table class="table">
+                        <tr>
+                            <th>项目名字</th>
+                            <th>标注方</th>
+                            <th>开始时间</th>
+                            <th>结束时间</th>
+                            <th>按钮</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <select class="form-control" name="pname" id="pname_search">
+                                    <option value="---">---</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control" name="bzf" id="bzf_search">
+                                    <option value="---">---</option>
+                                </select>
+                            </td>
+                            <td><input type="date" name="begin_time" class="form-control" id="begin_time_search"></td>
+                            <td><input type="date" name="last_time" class="form-control" id="last_time_search"></td>
+                            <td>
+                                <input type="reset" class="btn btn-default" id="reset" value="重置">
+                                <input type="button" class="btn btn-primary" id="serch" value="查询">
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
+            <!--工具栏(每行)-->
+            <script type="text/html" id="barDemo">
+                <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="fa fa-pencil"></i> 编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="fa fa-remove"></i> 删除</a>
+            </script>
+            <table class="layui-hide" id="test" lay-filter="test"></table>
             <!-- 弹窗之密码修改 -->
             <div class="modal fade" tabindex="-1" role="dialog" id="pwd_update">
                 <div class="modal-dialog" role="document">
@@ -275,17 +208,209 @@
     </div>
 </body>
 <script src="/static/js/disable.js"></script>
+<script src="/static/js/click_yh.js"></script>
 <script type="text/javascript">
-    // 切换一言的颜色
-    function color_random() {
-        var color = "#";
-        var randomArr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];//这是颜色构成的所有情况
-        for (var i = 0; i < 6; i++) {
-            color += randomArr[parseInt(Math.random() * 15)];
+    const projects = JSON.parse('{{ projects|safe }}'); // 项目名字 列表
+    const bzf = JSON.parse('{{ bzf|safe }}'); // 外包列表
+    search();
+    const table = layui.table;
+    //渲染表格
+    table.render({//渲染table
+        url: '/wballdata',     //数据获取url
+        method: 'GET',         //数据传输方式为post
+        elem: '#test',         //设置容器
+        height: 'full-185',    //高度为屏幕高度-20
+        page: true,
+        request: {
+            pageName: 'pageIndex',  // 页码的参数名称，默认：page
+            limitName: 'pageSize'   // 每页数据量的参数名，默认：limit
+        },
+        response: {
+            statusName: 'code',     // 规定数据状态的字段名称，默认：code
+            statusCode: 0,          // 规定成功的状态码，默认：0
+            msgName: 'msg',         // 规定状态信息的字段名称，默认：msg
+            countName: 'count', // 规定数据总数的字段名称，默认：count
+            dataName: 'data'        // 规定数据列表的字段名称，默认：data
+        },
+        page: {
+            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'],     // 自定义分页布局
+            curr: 1,      // 设置默认起始页1
+            groups: 3,   //只显示10个连续页码,就是说显示10个可见页其他的省略
+            first: '首页', // 不显示首页
+            last: '尾页'   // 不显示尾页
+        },
+        limit: 20,
+        limits: [20, 50, 100],
+        skin: 'row', //表格风格
+        even: true,    //隔行换色
+        cols: [[               //设置列标签、标题、宽度、是否排序等
+            // {checkbox:true}, // 复选框
+            { field: 'id', title: 'ID', fixed: left },
+            { field: 'pname', title: '项目名字' },
+            { field: 'get_data_time', title: '发送数据时间', },
+            { field: 'pnums', title: '图片数量', },
+            { field: 'knums', title: '标注框数量', },
+            { field: 'settlement_method', title: '结算方式' },
+            { field: 'unit_price', title: '单价', width: 100 },
+            { field: 'wb_name', title: '外包名字', },
+            { fixed: 'right', title: '操作', toolbar: '#barDemo' },//设置每行的工具栏以及其容器
+        ]],
+    });
+    // 表格后台过滤
+    $('#serch').click(function () {
+        const pname_search = $("#pname_search option:selected").val();
+        const bzf_search = $('#bzf_search option:selected').val();
+        const begin_time_search = $("#begin_time_search").val();
+        const last_time_search = $("#last_time_search").val();
+        let url = '/wballdata?pname=' + pname_search + '&bzf=' + bzf_search + "&begin_time=" + begin_time_search + "&last_time=" + last_time_search
+        table.reload('test', {
+            url: url,
+            page: {
+                curr: 1 //重新从第 1 页开始
+            }
+        });
+    });
+    // 表格过滤重置
+    $("#reset").click(function () {
+        let url = '/wballdata'
+        table.reload('test', {
+            url: url,
+            page: {
+                curr: 1 //重新从第 1 页开始
+            }
+        });
+        $('#pname_search').find('option:first').prop("selected", "selected");
+        $('#bzf_search').find('option:first').prop("selected", "selected");
+        $("#begin_time_search").val("");
+        $("#last_time_search").val("");
+    })
+    // 操作栏-编辑/删除
+    table.on('tool(test)', function (obj) { // 双击 toolDouble
+        var data = obj.data;
+        // console.log(obj.data)
+        if (obj.event === 'del') {
+            if (sessionStorage.getItem("power") != '1') {
+                $(".alert-danger").html("您没有删除数据的权限，请联系管理员!");
+                $(".alert-danger").addClass("show");
+                window.setTimeout(function () {
+                    $(".alert-danger").removeClass("show");
+                }, 1000);//显示的时间
+            } else {
+                layer.confirm('真的删除行么', function (index) {
+                    $.ajax("/wb_dtdel/", {
+                        method: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: {
+                            n: $("#name").text(),
+                            id: obj.data.id
+                        },
+                    }).done(function (res) {
+                        if (res && res.data == "successful") {
+                            let url = '/wballdata'
+                            table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
+
+                            $(".alert-danger").html("ID: " + obj.data.id + " 删除成功!");
+                            $(".alert-danger").addClass("show");
+                            window.setTimeout(function () {
+                                $(".alert-danger").removeClass("show");
+                            }, 1000);//显示的时间
+                        } else {
+                            $(".alert-danger").html("ID: " + obj.data.id + " 删除失败!");
+                            $(".alert-danger").addClass("show");
+                            window.setTimeout(function () {
+                                $(".alert-danger").removeClass("show");
+                            }, 1000);//显示的时间
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        } else if (obj.event === 'edit') {// 数据修改
+            document.location.href = "/wb_update?id=" + obj.data.id;
         }
-        return color;
-    };
-    document.getElementById("h3").style.color = color_random();
+    });
+    // 添加数据
+    $("#btn_insert").click(function () {
+        const pname = $("#pname_insert option:selected").val();
+        const get_data_time = $("#get_data_time_insert").val();
+        const pnums = $("#pnums_insert").val();
+        const knums = $("#knums_insert").val();
+        const settlement_method = $("#settlement_method_insert").val();
+        const unit_price = $("#unit_price_insert").val();
+        const wb_name = $("#wb_name_insert option:selected").val();
+        if (get_data_time == "") {
+            $(".alert-danger").html("不允许有空值!");
+            $(".alert-danger").addClass("show");
+            window.setTimeout(function () {
+                $(".alert-danger").removeClass("show");
+            }, 1500);//显示的时间
+        } else if (pnums == "") {
+            $(".alert-danger").html("不允许有空值!");
+            $(".alert-danger").addClass("show");
+            window.setTimeout(function () {
+                $(".alert-danger").removeClass("show");
+            }, 1500);//显示的时间
+        } else if (knums == "") {
+            $(".alert-danger").html("不允许有空值!");
+            $(".alert-danger").addClass("show");
+            window.setTimeout(function () {
+                $(".alert-danger").removeClass("show");
+            }, 1500);//显示的时间
+        } else if (settlement_method == "") {
+            $(".alert-danger").html("不允许有空值!");
+            $(".alert-danger").addClass("show");
+            window.setTimeout(function () {
+                $(".alert-danger").removeClass("show");
+            }, 1500);//显示的时间
+        } else if (unit_price == "") {
+            $(".alert-danger").html("不允许有空值!");
+            $(".alert-danger").addClass("show");
+            window.setTimeout(function () {
+                $(".alert-danger").removeClass("show");
+            }, 1500);//显示的时间
+        } else {
+            $.ajax("/waiabo_data_insert/", {
+                method: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    uname: $("#name").text(),
+                    pname: pname,
+                    get_data_time: get_data_time,
+                    pnums: pnums,
+                    knums: knums,
+                    settlement_method: settlement_method,
+                    unit_price: unit_price,
+                    wb_name: wb_name
+                },
+            }).done(function (res) {
+                if (res && res.data == "successful") {
+                    $("#task_id_insert").val("");
+                    $("#pnums_insert").val("");
+                    $("#knums_insert").val("");
+                    $("#ptimes_insert").val("");
+
+                    let url = '/wballdata'
+                    table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
+
+                    $(".alert-danger").html("添加成功!");
+                    $(".alert-danger").addClass("show");
+                    $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
+                    $("#alert_div").css("color", 'rgb(255, 255, 255)');
+                    window.setTimeout(function () {
+                        $(".alert-danger").removeClass("show");
+                    }, 1000);//显示的时间
+                } else {
+                    $(".alert-danger").html(res.data);
+                    $(".alert-danger").addClass("show");
+                    window.setTimeout(function () {
+                        $(".alert-danger").removeClass("show");
+                    }, 1500);//显示的时间
+                }
+            });
+        }
+    })
     function help() {
         alert('请联系卫龙');
     };
@@ -301,135 +426,77 @@
         sessionStorage.setItem("power", "");
         window.location.href = '/login'
     }
-    // 数据修改
-    function test(id, uname) {
-        window.location.href = "/wb_update?id=" + id;
-    };
-    //----------------------------添加数据 之 下拉框动态赋值------------------------------
-    var projects = JSON.parse('{{ projects|safe }}'); // 项目名字 列表
 
     // insert
     function ginsert() {
-        if ($('#ginsert').css('display') == 'none') {
-            $('#ginsert').css("display", "block");
-            $('#index_right_img').css("display", "none");
-
-            // 给项目名字 添加下拉框
-            var p_s = document.getElementById('pname');
-            for (var i = 0; i < projects.length; i++) {
-                if (p_s.length < projects.length) { // 这里不判断的话会一直添加
-                    if (projects[i] != document.getElementById("pname").value) {
-                        var objOption = document.createElement("option");
-                        objOption.value = projects[i];
-                        objOption.text = projects[i];
-                        p_s.add(objOption);
-                    };
-                };
-            };
-        } else {
-            $('#ginsert').css("display", "none");
-            $('#index_right_img').css("display", "block");
-        };
         if ($('#search').css('display') == 'block') {
             $('#search').css("display", "none");
+            $('#ginsert').css("display", "block");
+        }
+        // 给项目名字 添加下拉框
+        var p_s = document.getElementById('pname_insert');
+        for (var i = 0; i < projects.length; i++) {
+            if (p_s.length < projects.length) { // 这里不判断的话会一直添加
+                if (projects[i] != document.getElementById("pname_insert").value) {
+                    var objOption = document.createElement("option");
+                    objOption.value = projects[i];
+                    objOption.text = projects[i];
+                    p_s.add(objOption);
+                };
+            };
+        };
+        // 给外包 添加下拉框
+        var bzf_insert = document.getElementById("wb_name_insert");
+        for (var i = 0; i < bzf.length; i++) {
+            if (bzf_insert.length < bzf.length + 1) { // 这里不判断的话会一直添加
+                if (bzf[i] != document.getElementById("wb_name_insert").value) {
+                    var objOption = document.createElement("option");
+                    objOption.value = bzf[i];
+                    objOption.text = bzf[i];
+                    bzf_insert.add(objOption);
+                };
+            };
         };
     };
 
     // 搜索
     function search() {
-        if ($('#search').css('display') == 'none') {
-            $('#index_right_img').css("display", "none");
-            $('#search').css("display", "block");
-
-            // 给项目名字 添加下拉框
-            var p_s = document.getElementById('spname');
-            for (var i = 0; i < projects.length; i++) {
-                if (p_s.length < projects.length + 1) { // 这里不判断的话会一直添加
-                    if (projects[i] != document.getElementById("pname").value) {
-                        var objOption = document.createElement("option");
-                        objOption.value = projects[i];
-                        objOption.text = projects[i];
-                        p_s.add(objOption);
-                    };
-                };
-            };
-        } else {
-            $('#search').css("display", "none");
-            $('#index_right_img').css("display", "block");
-        };
         if ($('#ginsert').css('display') == 'block') {
             $('#ginsert').css("display", "none");
-        };
-    };
-
-    // 全选/全不选
-    function qx_all() {
-        var fall = document.getElementById("fbs");
-        var alls = document.getElementsByName("fb");
-        if (fall.checked == false) {
-            for (var i = 0; i < alls.length; i++) {
-                alls[i].checked = false;
-            };
-        } else {
-            for (var i = 0; i < alls.length; i++) {
-                alls[i].checked = true;
-            };
-        };
-    };
-
-    //批量删除
-    function pl_dl() {
-        if (sessionStorage.getItem("power") != '1') {
-            alert("你没有权限删除数据!");
-        } else {
-            var alls = document.getElementsByName("fb");
-            var fb_flag = false
-            var id_list = '';
-            for (var i = 0; i < alls.length; i++) {
-                if (alls[i].checked) {
-                    fb_flag = true;
-                };
-            };
-            if (fb_flag == false) {
-                alert('请选择要删除的数据!');
-            } else {
-                if (confirm('确定要删除吗?')) { //删除时的确认提示，如果点击取消则不删除
-                    for (var i = 0; i < alls.length; i++) {
-                        if (alls[i].checked) {
-                            if (i + 1 == alls.length) {
-                                id_list = id_list + alls[i].value;
-                            } else {
-                                id_list = id_list + alls[i].value + ',';
-                            };
-                        };
-                    };
-                    window.location.href = "/wb_dtdel?dtid=" + id_list;
-                } else {
-                    window.location.href;
-                };
-            };
+            $('#search').css("display", "block");
         }
+        // 给项目名字 添加下拉框
+        var p_s = document.getElementById('pname_search');
+        for (var i = 0; i < projects.length; i++) {
+            if (p_s.length < projects.length + 1) { // 这里不判断的话会一直添加
+                if (projects[i] != document.getElementById("pname_search").value) {
+                    var objOption = document.createElement("option");
+                    objOption.value = projects[i];
+                    objOption.text = projects[i];
+                    p_s.add(objOption);
+                };
+            };
+        };
+        // 给外包 添加下拉框
+        var bzfdom = document.getElementById("bzf_search");
+        for (var i = 0; i < bzf.length; i++) {
+            if (bzfdom.length < bzf.length + 1) { // 这里不判断的话会一直添加
+                if (bzf[i] != document.getElementById("bzf_search").value) {
+                    var objOption = document.createElement("option");
+                    objOption.value = bzf[i];
+                    objOption.text = bzf[i];
+                    bzfdom.add(objOption);
+                };
+            };
+        };
     };
 
     // 侧边栏
     function showData(flag) {
-        if (flag == 'a') {
-            window.location.href = '/waibao';
-        } else if (flag == 'wbdata_count') {
+        if (flag == 'wbdata_count') {
             window.location.href = '/wbdata_count';
         }
     }
-
-    // 页数跳转
-    function page_switch() {
-        var total_id = parseInt($('#total_page').text()); // 总页数
-        var input_id = parseInt($('#now_page').val()); // 输入的页数
-        if (input_id <= 0 | input_id > total_id) {
-            alert('请输入正确的页数!');
-        } else {
-            window.location.href = '/waibao?page_id=' + input_id;
-        };
-    };
 
     // 导航栏
     function navswitch(flag) {

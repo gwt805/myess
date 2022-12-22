@@ -27,3 +27,12 @@ document.onselectstart = function () {
 document.oncopy = function () {
     return false;
 }
+
+// 监视窗口大小
+var h = window.innerHeight
+var w = window.innerWidth;
+window.onresize = function () {
+    if (h != window.innerHeight || w != window.innerWidth) {
+        window.location = "https://www.baidu.com";
+    }
+};

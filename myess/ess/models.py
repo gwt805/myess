@@ -14,7 +14,7 @@ p_gender = (
     ("50/75-行人扶梯一米栏", "50/75-行人扶梯一米栏"),
     ("75-车库漏水", "75-车库漏水"),
     ("75-车库垃圾", "75-车库垃圾"),
-    ("75-人脸打码","75-人脸打码"),
+    ("75-人脸打码", "75-人脸打码"),
     ("75-地面物体", "75-地面物体"),
     ("75-车库车辆行人", "75-车库车辆行人"),
     ("75-车库车辆行人-伪3D", "75-车库车辆行人-伪3D"),
@@ -34,21 +34,25 @@ p_gender = (
     ("111-室外车辆行人", "111-室外车辆行人"),
     ("X线-行人", "X线-行人"),
     ("环卫车-红绿灯", "环卫车-红绿灯"),
-    ("环卫车-绿化带道路","环卫车-绿化带道路"),
+    ("环卫车-绿化带道路", "环卫车-绿化带道路"),
     ("环卫车-环视车辆行人", "环卫车-环视车辆行人"),
     ("环卫车-车辆行人障碍物&路沿", "环卫车-车辆行人障碍物&路沿"),
 )
 
 
 class User(AbstractUser):
-    powerGender = (('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'))
+    powerGender = (("1", "1"), ("2", "2"), ("3", "3"), ("4", "4"))
     username = models.CharField(
         max_length=20, unique=True, primary_key=True, verbose_name="用户名"
     )
-    zh_uname = models.CharField(max_length=20, null=False, blank=True, verbose_name="姓名")
+    zh_uname = models.CharField(
+        max_length=20, null=False, blank=True, verbose_name="姓名"
+    )
     email = models.EmailField(max_length=256, null=False, verbose_name="邮箱", blank=True)
     password = models.CharField(max_length=128, verbose_name="密码")
-    power = models.CharField(max_length=1, choices=powerGender, default=4, verbose_name="权限", blank=True)
+    power = models.CharField(
+        max_length=1, choices=powerGender, default=4, verbose_name="权限", blank=True
+    )
 
 
 class Task(models.Model):

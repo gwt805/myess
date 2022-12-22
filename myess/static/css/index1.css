@@ -1,7 +1,7 @@
 * {
     padding: 0;
     margin: 0;
-    cursor: url("/static/img/mouse.png"),default;
+    cursor: url("../img/mouse.png"),default;
 }
 
 /* 滚动条 */
@@ -69,9 +69,7 @@
 
 /* 侧边栏 */
 #left {
-    width: 200px;
     height: 100%;
-    /* border: 1px solid blue; */
     float: left;
     background-color: rgb(3, 73, 120);
 }
@@ -79,6 +77,7 @@
 
 #left {
     display: flex;
+    width: 150px;
     flex-direction: column;
     flex-wrap: wrap;
     color: rgb(212, 209, 209);
@@ -106,16 +105,15 @@
     display: block;
     position: absolute;
     bottom: 0;
-    margin-left: 20px;
+    margin-left: 10px;
     font-size: 16px;
 }
 
 #right {
     position: absolute;
-    left: 200px;
-    width: 89.5%;
+    left: 150px;
+    width: 92.17%;
     height: 100%;
-    /* border: 1px solid green; */
     float: left;
     overflow: auto;
     overflow-x: hidden;
