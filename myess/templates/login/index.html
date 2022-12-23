@@ -211,7 +211,8 @@
                     <div class="modal-content  modal-sm">
                         <div class="modal-header">
                             <h3 class="modal-title" style="color: rgb(68, 147, 199);">
-                                <i class="fa fa-info-circle"></i> ESS-INFO</h3>
+                                <i class="fa fa-info-circle"></i> ESS-INFO
+                            </h3>
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
@@ -246,8 +247,11 @@
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                <a href="https://github.com/gwt805/myess/tree/master" target="_blank" style="position: absolute; left: 20px;"><i class="fa fa-github-square fa-2x"></i></a>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: blue;">
+                                <a href="https://github.com/gwt805/myess/tree/master" target="_blank"
+                                    style="position: absolute; left: 20px;"><i
+                                        class="fa fa-github-square fa-2x"></i></a>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                    style="color: blue;">
                                     <span aria-hidden="true">OK</span>
                                 </button>
                             </div>
@@ -650,7 +654,11 @@
     // 导航栏
     function navswitch(flag) {
         if (sessionStorage.getItem("power") == '2') {
-            alert("您没有权限查看!");
+            $(".alert-danger").html("您没有权限查看!");
+            $(".alert-danger").addClass("show");
+            window.setTimeout(function () {
+                $(".alert-danger").removeClass("show");
+            }, 1500);//显示的时间
         } else {
             window.location.href = '/' + flag;
         }

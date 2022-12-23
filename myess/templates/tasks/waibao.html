@@ -573,7 +573,11 @@
     // 导航栏
     function navswitch(flag) {
         if (sessionStorage.getItem("power") == '3') {
-            alert("您没有权限查看!");
+            $(".alert-danger").html("您没有权限查看!");
+            $(".alert-danger").addClass("show");
+            window.setTimeout(function () {
+                $(".alert-danger").removeClass("show");
+            }, 1500);//显示的时间
         } else {
             window.location.href = '/' + flag;
         }
