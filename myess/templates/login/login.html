@@ -38,6 +38,11 @@
   <script src="/static/js/login_canvas.js"></script>
   <script src="/static/js/disable_login.js"></script>
   <script>
+    $("input").keydown(function (event) {
+        if (event.keyCode == 13) {
+          login();
+        }
+    });
     function login() {
       if ($("#user").val() == "") {
         $("#error").html("请填写账号!");
