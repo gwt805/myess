@@ -68,16 +68,34 @@
                         <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                             style="text-align: center;">
                             <i class="fa fa-user" style="margin-left: -30px; font-size: 18px;"></i>
-                            <span style="font-size: 18px; margin-left: 5px;" id="name"></span><span class="caret"
-                                style="margin-left: 10px;"></span>
+                            <span style="font-size: 18px; margin-left: 5px;" id="name"></span>
+                            <span class="caret" style="margin-left: 10px;"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li style="border-bottom: 1px solid gray;"><a href="/sites/" target="black"><i
-                                        class="fa fa-gear"></i><span style="margin-left: 10px;">设置</span></a></li>
-                            <li style="border-bottom: 1px solid gray;"><a href="#" onclick="pwd_upd()"><i
-                                        class="fa fa-compass"></i><span style="margin-left: 10px;">修改密码</span></a></li>
-                            <li onclick="logout()"><a><i class="fa fa-sign-out"></i><span
-                                        style="margin-left: 10px;">注销</span></a></li>
+                            <li style="border-bottom: 1px solid gray;">
+                                <a href="/sites/" target="black">
+                                    <i class="fa fa-gear"></i>
+                                    <span style="margin-left: 10px;">设置</span>
+                                </a>
+                            </li>
+                            <li style="border-bottom: 1px solid gray;" onclick="info()">
+                                <a>
+                                    <i class="fa fa-info-circle"></i>
+                                    <span style="margin-left: 10px;">关于</span>
+                                </a>
+                            </li>
+                            <li style="border-bottom: 1px solid gray;">
+                                <a onclick="pwd_upd()">
+                                    <i class="fa fa-compass"></i>
+                                    <span style="margin-left: 10px;">修改密码</span>
+                                </a>
+                            </li>
+                            <li onclick="logout()">
+                                <a>
+                                    <i class="fa fa-sign-out"></i>
+                                    <span style="margin-left: 10px;">注销</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -187,6 +205,56 @@
                 <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="fa fa-remove"></i> 删除</a>
             </script>
             <table class="layui-hide" id="test" lay-filter="test"></table>
+            <!-- 弹窗之ESS-Info -->
+            <div class="modal fade" tabindex="-1" role="dialog" id="ess_info" style="margin: 200px 0 0 500px; ">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content  modal-sm">
+                        <div class="modal-header">
+                            <h3 class="modal-title" style="color: rgb(68, 147, 199);">
+                                <i class="fa fa-info-circle"></i> ESS-INFO</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <p>
+                                    ESS 是一款统计性的功能平台<br>
+                                    主要有记录个人平时的工作内容，工作量，工作效率，绩效等<br>
+                                    也可以统计给供应商发送的数据量，各供应商在每个项目上所用的费用等
+                                </p>
+                            </div>
+                            <div class="form-group">
+                                <p>
+                                    <span class="ant-typography"><strong>Font-Awesome version:</strong></span>
+                                    <span class="ant-typography ant-typography-secondary"> 4.7.0</span>
+                                </p>
+                            </div>
+                            <div class="form-group">
+                                <p>
+                                    <span class="ant-typography"><strong>Bootstrap version:</strong></span>
+                                    <span class="ant-typography ant-typography-secondary"> 3.4.1</span>
+                                </p>
+                            </div>
+                            <div class="form-group">
+                                <p>
+                                    <span class="ant-typography"><strong>jQuery version:</strong></span>
+                                    <span class="ant-typography ant-typography-secondary"> 2.1.4</span>
+                                </p>
+                            </div>
+                            <div class="form-group">
+                                <p>
+                                    <span class="ant-typography"><strong>Layui version:</strong></span>
+                                    <span class="ant-typography ant-typography-secondary"> 2.7.6</span>
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="https://github.com/gwt805/myess/tree/master" target="_blank" style="position: absolute; left: 20px;"><i class="fa fa-github-square fa-2x"></i></a>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: blue;">
+                                    <span aria-hidden="true">OK</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
             <!-- 弹窗之密码修改 -->
             <div class="modal fade" tabindex="-1" role="dialog" id="pwd_update">
                 <div class="modal-dialog" role="document">
@@ -223,7 +291,6 @@
             </div><!-- /.modal -->
         </div><!-- /.modal -->
     </div>
-
 </body>
 <script src="/static/js/disable.js"></script>
 <script src="/static/js/click_yh.js"></script>
@@ -437,15 +504,15 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: {
-                uname:uname,
-                pname:pname,
-                waibao:waibao,
-                task_id:task_id,
-                dtime:dtime,
-                kinds:kinds,
-                pnums:pnums,
-                knums:knums,
-                ptimes:ptimes
+                uname: uname,
+                pname: pname,
+                waibao: waibao,
+                task_id: task_id,
+                dtime: dtime,
+                kinds: kinds,
+                pnums: pnums,
+                knums: knums,
+                ptimes: ptimes
             },
         }).done(function (res) {
             if (res && res.data == "successful") {
@@ -456,9 +523,9 @@
                 var d = new Date();
                 let today = ''
                 const year = d.getFullYear();
-                const month = d.getMonth()+1;
+                const month = d.getMonth() + 1;
                 let day = d.getDate();
-                if (day<10){
+                if (day < 10) {
                     day = "0" + day;
                 }
                 today = today + year + '-' + month + '-' + day;
@@ -537,15 +604,26 @@
         };
     }
 
+    // Help
     function help() {
-        alert('请联系卫龙');
+        $(".alert-danger").html("请联系卫龙!");
+        $(".alert-danger").addClass("show");
+        window.setTimeout(function () {
+            $(".alert-danger").removeClass("show");
+        }, 1000);//显示的时间
     };
+    // 关于
+    function info() {
+        $('#ess_info').modal('show');
+    }
 
+    // 修改密码模态框展示
     function pwd_upd() {
         $('#pwd_update').modal('show');
         $(".zh_uname").val($("#name").text());
     };
 
+    // 退出登录
     function logout() {
         sessionStorage.setItem("isLogin", "");
         sessionStorage.setItem("zhuname", "");

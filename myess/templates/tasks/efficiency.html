@@ -58,6 +58,12 @@
                         <ul class="dropdown-menu">
                             <li style="border-bottom: 1px solid gray;"><a href="/sites/" target="black"><i
                                         class="fa fa-gear"></i><span style="margin-left: 10px;">设置</span></a></li>
+                            <li style="border-bottom: 1px solid gray;" onclick="info()">
+                                <a>
+                                    <i class="fa fa-info-circle"></i>
+                                    <span style="margin-left: 10px;">关于</span>
+                                </a>
+                            </li>
                             <li style="border-bottom: 1px solid gray;"><a href="#" onclick="pwd_upd()"><i
                                         class="fa fa-compass"></i><span style="margin-left: 10px;">修改密码</span></a></li>
                             <li onclick="logout()"><a><i class="fa fa-sign-out"></i><span
@@ -68,6 +74,9 @@
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
+    <div class="alert alert-danger hide" id="alert_div"
+        style="width: 300px; position: fixed; top: 40%;left: 45%; right: 50%;z-index: 1; font-size: 22px;">
+    </div> <!-- 警告弹出框 -->
     <div style="margin-top: 50px; position: fixed; width: 100%; height: 10%; background-color: #bdbdbd;">
         <form class="form-efficiency" action="" method="post">
             {% csrf_token %}
@@ -112,7 +121,8 @@
                 </tr>
             </thead>
             <tbody>
-                {% for i in tks_nw %} <!-- 本周工作量 -->
+                {% for i in tks_nw %}
+                <!-- 本周工作量 -->
                 <tr>
                     {% if i.0 == '审核' %}
                     <td>{{ i.0 }}</td>
@@ -120,7 +130,8 @@
                     <td>{{ i.2 }}</td>
                     <td></td>
                     <td>{{ i.3 }}张/h</td>
-                    {% for j in tks_lw %} <!-- 上周工作量 -->
+                    {% for j in tks_lw %}
+                    <!-- 上周工作量 -->
                     {% if j.0 == '审核' and j.1 == i.1 %}
                     <td>{{ j.3 }}张/h</td>
                     {% endif %}
@@ -132,7 +143,8 @@
                     <td>{{ i.2 }}</td>
                     <td></td>
                     <td>{{ i.3 }}张/h</td>
-                    {% for j in tks_lw %} <!-- 上周工作量 -->
+                    {% for j in tks_lw %}
+                    <!-- 上周工作量 -->
                     {% if j.0 == '筛选' and j.1 == i.1 %}
                     <td>{{ j.3 }}张/h</td>
                     {% endif %}
@@ -144,7 +156,8 @@
                     <td>{{ i.2 }}</td>
                     <td>{{ i.3 }}</td>
                     <td>{{ i.4 }}框/h</td>
-                    {% for j in tks_lw %} <!-- 上周工作量 -->
+                    {% for j in tks_lw %}
+                    <!-- 上周工作量 -->
                     {% if j.0 == '2D框标注' and j.1 == i.1 %}
                     <td>{{ j.4 }}框/h</td>
                     {% endif %}
@@ -156,7 +169,8 @@
                     <td>{{ i.2 }}</td>
                     <td>{{ i.3 }}</td>
                     <td>{{ i.4 }}框/h</td>
-                    {% for j in tks_lw %} <!-- 上周工作量 -->
+                    {% for j in tks_lw %}
+                    <!-- 上周工作量 -->
                     {% if j.0 == '2D分割标注' and j.1 == i.1 %}
                     <td>{{ j.4 }}框/h</td>
                     {% endif %}
@@ -168,7 +182,8 @@
                     <td>{{ i.2 }}</td>
                     <td>{{ i.3 }}</td>
                     <td>{{ i.4 }}框/h</td>
-                    {% for j in tks_lw %} <!-- 上周工作量 -->
+                    {% for j in tks_lw %}
+                    <!-- 上周工作量 -->
                     {% if j.0 == '2.5D点云标注' and j.1 == i.1 %}
                     <td>{{ j.4 }}框/h</td>
                     {% endif %}
@@ -180,7 +195,8 @@
                     <td>{{ i.2 }}</td>
                     <td>{{ i.3 }}</td>
                     <td>{{ i.4 }} /h</td>
-                    {% for j in tks_lw %} <!-- 上周工作量 -->
+                    {% for j in tks_lw %}
+                    <!-- 上周工作量 -->
                     {% if j.0 == '视频标注' and j.1 == i.1 %}
                     <td>{{ j.4 }} /h</td>
                     {% endif %}
@@ -192,7 +208,8 @@
                     <td>{{ i.2 }}</td>
                     <td>{{ i.3 }}</td>
                     <td>{{ i.4 }}属性/h</td>
-                    {% for j in tks_lw %} <!-- 上周工作量 -->
+                    {% for j in tks_lw %}
+                    <!-- 上周工作量 -->
                     {% if j.0 == '属性标注' and j.1 == i.1 %}
                     <td>{{ j.4 }}属性/h</td>
                     {% endif %}
@@ -220,14 +237,16 @@
             {% for gp in pnw %}
             <tbody>
                 <tr>
-                    {% if gp.1 == '审核' %}<!--['guoweitao', '审核', 'S线数据', 1076, 2152]-->
+                    {% if gp.1 == '审核' %}
+                    <!--['guoweitao', '审核', 'S线数据', 1076, 2152]-->
                     <td>{{ gp.0 }}</td>
                     <td>{{ gp.1 }}</td>
                     <td>{{ gp.2 }}</td>
                     <td>{{ gp.3 }}</td>
                     <td></td>
                     <td>{{ gp.4 }}张/h</td>
-                    {% for j1 in pks_lw %} <!-- 上周工作量 -->
+                    {% for j1 in pks_lw %}
+                    <!-- 上周工作量 -->
                     {% for j2 in j1 %}
                     {% if j2.1 == '审核' and j2.2 == gp.2 and j2.0 == gp.0 %}
                     <td>{{ j2.4 }}张/h</td>
@@ -235,14 +254,16 @@
                     {% endfor %}
                     {% endfor %}
                     {% endif %}
-                    {% if gp.1 == '筛选' %}<!--['guoweitao', '审核', 'S线数据', 1076, 2152]-->
+                    {% if gp.1 == '筛选' %}
+                    <!--['guoweitao', '审核', 'S线数据', 1076, 2152]-->
                     <td>{{ gp.0 }}</td>
                     <td>{{ gp.1 }}</td>
                     <td>{{ gp.2 }}</td>
                     <td>{{ gp.3 }}</td>
                     <td></td>
                     <td>{{ gp.4 }}张/h</td>
-                    {% for j1 in pks_lw %} <!-- 上周工作量 -->
+                    {% for j1 in pks_lw %}
+                    <!-- 上周工作量 -->
                     {% for j2 in j1 %}
                     {% if j2.1 == '筛选' and j2.2 == gp.2 and j2.0 == gp.0 %}
                     <td>{{ j2.4 }}张/h</td>
@@ -250,14 +271,16 @@
                     {% endfor %}
                     {% endfor %}
                     {% endif %}
-                    {% if gp.1 == '2D框标注' %}<!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
+                    {% if gp.1 == '2D框标注' %}
+                    <!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
                     <td>{{ gp.0 }}</td>
                     <td>{{ gp.1 }}</td>
                     <td>{{ gp.2 }}</td>
                     <td>{{ gp.3 }}</td>
                     <td>{{ gp.4 }}</td>
                     <td>{{ gp.5 }}框/h</td>
-                    {% for j3 in pks_lw %} <!-- 上周工作量  -->
+                    {% for j3 in pks_lw %}
+                    <!-- 上周工作量  -->
                     {% for j4 in j3 %}
                     {% if j4.1 == '2D框标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
                     <td>{{ j4.5 }}框/h</td>
@@ -265,14 +288,16 @@
                     {% endfor %}
                     {% endfor %}
                     {% endif %}
-                    {% if gp.1 == '2D分割标注' %}<!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
+                    {% if gp.1 == '2D分割标注' %}
+                    <!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
                     <td>{{ gp.0 }}</td>
                     <td>{{ gp.1 }}</td>
                     <td>{{ gp.2 }}</td>
                     <td>{{ gp.3 }}</td>
                     <td>{{ gp.4 }}</td>
                     <td>{{ gp.5 }}框/h</td>
-                    {% for j3 in pks_lw %} <!-- 上周工作量  -->
+                    {% for j3 in pks_lw %}
+                    <!-- 上周工作量  -->
                     {% for j4 in j3 %}
                     {% if j4.1 == '2D分割标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
                     <td>{{ j4.5 }}框/h</td>
@@ -280,14 +305,16 @@
                     {% endfor %}
                     {% endfor %}
                     {% endif %}
-                    {% if gp.1 == '2.5D点云标注' %}<!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
+                    {% if gp.1 == '2.5D点云标注' %}
+                    <!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
                     <td>{{ gp.0 }}</td>
                     <td>{{ gp.1 }}</td>
                     <td>{{ gp.2 }}</td>
                     <td>{{ gp.3 }}</td>
                     <td>{{ gp.4 }}</td>
                     <td>{{ gp.5 }}框/h</td>
-                    {% for j3 in pks_lw %} <!-- 上周工作量  -->
+                    {% for j3 in pks_lw %}
+                    <!-- 上周工作量  -->
                     {% for j4 in j3 %}
                     {% if j4.1 == '2.5D点云标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
                     <td>{{ j4.5 }}框/h</td>
@@ -295,14 +322,16 @@
                     {% endfor %}
                     {% endfor %}
                     {% endif %}
-                    {% if gp.1 == '视频标注' %}<!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
+                    {% if gp.1 == '视频标注' %}
+                    <!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
                     <td>{{ gp.0 }}</td>
                     <td>{{ gp.1 }}</td>
                     <td>{{ gp.2 }}</td>
                     <td>{{ gp.3 }}</td>
                     <td>{{ gp.4 }}</td>
                     <td>{{ gp.5 }} /h</td>
-                    {% for j3 in pks_lw %} <!-- 上周工作量  -->
+                    {% for j3 in pks_lw %}
+                    <!-- 上周工作量  -->
                     {% for j4 in j3 %}
                     {% if j4.1 == '视频标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
                     <td>{{ j4.5 }} /h</td>
@@ -310,14 +339,16 @@
                     {% endfor %}
                     {% endfor %}
                     {% endif %}
-                    {% if gp.1 == '属性标注' %}<!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
+                    {% if gp.1 == '属性标注' %}
+                    <!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
                     <td>{{ gp.0 }}</td>
                     <td>{{ gp.1 }}</td>
                     <td>{{ gp.2 }}</td>
                     <td>{{ gp.3 }}</td>
                     <td>{{ gp.4 }}</td>
                     <td>{{ gp.5 }}属性/h</td>
-                    {% for j3 in pks_lw %} <!-- 上周工作量  -->
+                    {% for j3 in pks_lw %}
+                    <!-- 上周工作量  -->
                     {% for j4 in j3 %}
                     {% if j4.1 == '属性标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
                     <td>{{ j4.5 }}属性/h</td>
@@ -328,7 +359,8 @@
                 </tr>
             </tbody>
             {% endfor %}
-            <tr> <!-- 为了每个人的表格能够明显看出来,特此弄一个空行 -->
+            <tr>
+                <!-- 为了每个人的表格能够明显看出来,特此弄一个空行 -->
                 <th></th>
                 <th></th>
                 <th></th>
@@ -340,6 +372,59 @@
             {% endfor %}
         </table>
     </div>
+    <!-- 弹窗之ESS-Info -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="ess_info" style="margin: 200px 0 0 500px; ">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content  modal-sm">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color: rgb(68, 147, 199);">
+                        <i class="fa fa-info-circle"></i> ESS-INFO
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <p>
+                            ESS 是一款统计性的功能平台<br>
+                            主要有记录个人平时的工作内容，工作量，工作效率，绩效等<br>
+                            也可以统计给供应商发送的数据量，各供应商在每个项目上所用的费用等
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>Font-Awesome version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 4.7.0</span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>Bootstrap version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 3.4.1</span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>jQuery version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 2.1.4</span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>Layui version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 2.7.6</span>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="https://github.com/gwt805/myess/tree/master" target="_blank"
+                            style="position: absolute; left: 20px;"><i class="fa fa-github-square fa-2x"></i></a>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            style="color: blue;">
+                            <span aria-hidden="true">OK</span>
+                        </button>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
     <!-- 弹窗之密码修改 -->
     <div class="modal fade" tabindex="-1" role="dialog" id="pwd_update">
         <div class="modal-dialog" role="document">
@@ -379,8 +464,16 @@
 <script src="/static/js/click_yh.js"></script>
 <script>
     function help() {
-        alert('请联系卫龙');
+        $(".alert-danger").html("请联系卫龙!");
+        $(".alert-danger").addClass("show");
+        window.setTimeout(function () {
+            $(".alert-danger").removeClass("show");
+        }, 1000);//显示的时间
     };
+    // 关于
+    function info() {
+        $('#ess_info').modal('show');
+    }
     // 修改密码
     function pwd_upd() {
         $('#pwd_update').modal('show');
@@ -394,11 +487,11 @@
     }
 
     // 导航栏
-    function navswitch(flag){
+    function navswitch(flag) {
         if (sessionStorage.getItem("power") == '2') {
             alert("您没有权限查看!");
         } else {
-            window.location.href = '/'+flag;
+            window.location.href = '/' + flag;
         }
     }
 </script>
