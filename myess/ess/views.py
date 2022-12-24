@@ -14,11 +14,9 @@ from .mes import (
     performanceq,
     plw,
     pnw,
-    pupdate,
     search,
     waibao_insert,
     waibao_search,
-    waibao_update,
     wb_nupdate,
     wbdata_tj,
     dingtalk,
@@ -31,8 +29,6 @@ from email.header import Header
 import threading
 from loguru import logger
 from myess.settings import CONFIG
-
-
 # Create your views here.
 
 """
@@ -93,9 +89,11 @@ def regist(request):
         zhuname = data.get("zhuname")
         email = data.get("email")
         password = data.get("pwd")
-        username_list = [u[0] for u in models.User.objects.values_list("username")]
+        username_list = [u[0]
+                         for u in models.User.objects.values_list("username")]
         email_list = [e["email"] for e in models.User.objects.values("email")]
-        zhuname_list = [zhn[0] for zhn in models.User.objects.values_list("zh_uname")]
+        zhuname_list = [zhn[0]
+                        for zhn in models.User.objects.values_list("zh_uname")]
 
         if (
             username in username_list
@@ -200,7 +198,8 @@ def gsalldata(request):  # 首页数据
         now_time = now_time.strftime("%Y-%m-%d")
 
         data_object = list(
-            models.Task.objects.all().filter(dtime__range=[before_time, now_time])
+            models.Task.objects.all().filter(
+                dtime__range=[before_time, now_time])
         )
 
         data = []
@@ -286,26 +285,35 @@ def insert(request):
             return JsonResponse({"data": "successful"})
         except:
             return JsonResponse({"data": "添加失败"})
-    projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
-    tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list("kinds")])
+    projects = json.dumps(
+        [i[0] for i in models.Project.objects.values_list("pname")])
+    tkinds = json.dumps([i[0]
+                        for i in models.Tkinds.objects.values_list("kinds")])
     return render(request, "login/index.html", {"projects": projects, "tkinds": tkinds})
 
 
 # 修改
+@csrf_exempt
 def update(request):
     id = request.GET.get("id")
     if request.method == "POST":
-        id = request.POST.get("id")
-        uname = request.POST.get("uname").strip()
-        pname = request.POST.get("pname").strip()
-        waibao = request.POST.get("waibao").strip()
-        task_id = request.POST.get("task_id").strip()
-        dtime = request.POST.get("dtime").strip()
-        kinds = request.POST.get("kinds").strip()
-        pnums = request.POST.get("pnums").strip()
-        knums = request.POST.get("knums").strip()
-        ptimes = request.POST.get("ptimes").strip()
-        nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes)
+        data = QueryDict(request.body)
+        id = data.get("id")
+        uname = data.get("uname").strip()
+        pname = data.get("pname").strip()
+        waibao = data.get("waibao").strip()
+        task_id = data.get("task_id").strip()
+        dtime = data.get("dtime").strip()
+        kinds = data.get("kinds").strip()
+        pnums = data.get("pnums").strip()
+        knums = data.get("knums").strip()
+        ptimes = data.get("ptimes").strip()
+        res = nupdate(id, uname, pname, waibao, task_id,
+                dtime, kinds, pnums, knums, ptimes)
+
+        if res == "error":
+            return JsonResponse({"status": "error", "mes": '请检查您填写的数据!'})
+
         dingtalk(
             "修改",
             id,
@@ -321,18 +329,24 @@ def update(request):
             "GS",
             "",
         )
-        return redirect("/index?name=" + uname)
-    stu = pupdate(id)
-    projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
-    tkinds = json.dumps([i[0] for i in models.Tkinds.objects.values_list("kinds")])
-    bzf = json.dumps(
-        [i[0] for i in models.Waibaos.objects.values_list("name")]
-    )  # 数据标注方
-    return render(
-        request,
-        "tasks/update.html",
-        {"stu": stu, "projects": projects, "tkinds": tkinds, "bzf": bzf},
-    )
+        return JsonResponse({"status": "successful"})
+
+    res = models.Task.objects.filter(id=id)
+    data = []
+    for i in res:
+        tmp_dict = {}
+        tmp_dict["id"] = i.id
+        tmp_dict["uname"] = i.uname
+        tmp_dict["pname"] = i.pname
+        tmp_dict["waibao"] = i.waibao
+        tmp_dict["task_id"] = i.task_id
+        tmp_dict["dtime"] = i.dtime
+        tmp_dict["kinds"] = i.kinds
+        tmp_dict["pnums"] = i.pnums
+        tmp_dict["knums"] = i.knums
+        tmp_dict["ptimes"] = i.ptimes
+        data.append(tmp_dict)
+    return JsonResponse({"data": data, "status": "successful"})
 
 
 def dtdel(request):  # 单条数据删除
@@ -566,27 +580,32 @@ def wb_dtdel(request):
 
 
 # 外包数据修改
+@csrf_exempt
 def wb_update(request):
     id = request.GET.get("id")
     if request.method == "POST":
-        id = request.POST.get("id")
-        pname = request.POST.get("pname")
-        get_data_time = request.POST.get("get_data_time")
-        pnums = request.POST.get("pnums").strip()
-        knums = request.POST.get("knums").strip()
-        settlement_method = request.POST.get("settlement_method").strip()
-        unit_price = request.POST.get("unit_price").strip()
-        wb_name = request.POST.get("wb_name").strip()
-        wb_nupdate(
-            id,
-            pname,
-            get_data_time,
-            pnums,
-            knums,
-            settlement_method,
-            unit_price,
-            wb_name,
-        )
+        data = QueryDict(request.body)
+        id = data.get("id")
+        pname = data.get("pname")
+        get_data_time = data.get("get_data_time")
+        pnums = data.get("pnums").strip()
+        knums = data.get("knums").strip()
+        settlement_method = data.get("settlement_method").strip()
+        unit_price = data.get("unit_price").strip()
+        wb_name = data.get("wb_name").strip()
+        try:
+            wb_nupdate(
+                id,
+                pname,
+                get_data_time,
+                pnums,
+                knums,
+                settlement_method,
+                unit_price,
+                wb_name,
+            )
+        except:
+            return JsonResponse({"status": "error", "mes": "请检查填写的信息!"})
         dingtalk(
             "修改",
             id,
@@ -610,14 +629,23 @@ def wb_update(request):
                 "外包名字": wb_name,
             },
         )
-        return redirect("/waibao/")
-    stu = waibao_update(id)
+        return JsonResponse({"status": "successful"})
+    res =  models.Waibao.objects.filter(id=id)
 
-    projects = json.dumps([i[0] for i in models.Project.objects.values_list("pname")])
+    data = []
+    for i in res:
+        tmp_dict = {}
+        tmp_dict["id"] = i.id
+        tmp_dict["pname"] = i.pname
+        tmp_dict["get_data_time"] = i.get_data_time
+        tmp_dict["pnums"] = i.pnums
+        tmp_dict["knums"] = i.knums
+        tmp_dict["settlement_method"] = i.settlement_method
+        tmp_dict["unit_price"] = i.unit_price
+        tmp_dict["wb_name"] = i.wb_name
+        data.append(tmp_dict)
 
-    return render(
-        request, "tasks/waibao_update.html", {"stu": stu, "projects": projects}
-    )
+    return JsonResponse({"data": data, "status": "successful"})
 
 
 # 外包数据统计

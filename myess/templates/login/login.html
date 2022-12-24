@@ -74,12 +74,9 @@
             // sessionStorage.getItem("zhuname")
             // sessionStorage.removeItem("isLogin")
             // sessionStorage.removeItem("zhuname")
-            if (res.power == '3') {
-              window.location.href = '/waibao';
-            } else {
-              window.location.href = "/index";
-            }
-          } else {
+            window.location.href = "/index";
+          }
+          else {
             $("#error").html(res.data);
             $("#user").val("");
             $("#pwd").val("");

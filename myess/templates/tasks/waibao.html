@@ -52,11 +52,10 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="my-nav">
                 <ul class="nav navbar-nav">
-                    <li class="active" onclick="navswitch('index')"><a>首页</a></li>
-                    <li class="active" onclick="navswitch('efficiency')"><a>标注效率</a></li>
-                    <li class="active" onclick="navswitch('performance')"><a>个人绩效</a></li>
-                    <li class="active"><a href="/waibao"
-                            style="color: #fff; background-color: rgb(68, 147, 199);">外包数据</a></li>
+                    <li class="active"><a href="/index">首页</a></li>
+                    <li class="active">
+                        <a style="color: #fff; background-color: rgb(68, 147, 199);">外包数据</a>
+                    </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li style="border-right: 1px solid #bdbdbd; margin-right: 20px; cursor: pointer;"><a
@@ -217,6 +216,12 @@
                                     <span class="ant-typography ant-typography-secondary"> 2.7.6</span>
                                 </p>
                             </div>
+                            <div class="form-group">
+                                <p>
+                                    <span class="ant-typography"><strong>Django version:</strong></span>
+                                    <span class="ant-typography ant-typography-secondary"> 3.2.14</span>
+                                </p>
+                            </div>
                             <div class="modal-footer">
                                 <a href="https://github.com/gwt805/myess/tree/master" target="_blank"
                                     style="position: absolute; left: 20px;"><i
@@ -225,6 +230,61 @@
                                     style="color: blue;">
                                     <span aria-hidden="true">OK</span>
                                 </button>
+                            </div>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+            <!-- 弹窗之数据修改 -->
+            <div class="modal fade" tabindex="-1" role="dialog" id="gs_update_model">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h3 class="modal-title">修改数据</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-warning" id="err_msg" style="display: none;"></div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">ID:</label>
+                                <input type="number" min="0" class="form-control" name="id" readonly="readonly"
+                                    id="id_update">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">项目名字:</label>
+                                <select class="form-control" name="pname" id="pname_update"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">发送数据时间:</label>
+                                <input type="date" class="form-control" name="get_data_time" id="get_data_time_update">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="control-label">图片数量:</label>
+                                <input type="number" min="0" class="form-control" name="pnums" id="pnums_update">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">标注框数量:</label>
+                                <input type="number" min="0" class="form-control" name="knums" id="knums_update">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">结算方式:</label>
+                                <input type="text" class="form-control" name="settlement_method"
+                                    id="settlement_method_update" placeholder="矩形框/多边形/3D框/筛选/线段">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="control-label">单价:</label>
+                                <input type="number" min="0" class="form-control" name="unit_price"
+                                    id="unit_price_update">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">外包名字:</label>
+                                <select class="form-control" name="wb_name" id="wb_name_update"></select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal"
+                                    id="btn-miss">取消</button>
+                                <button type="submit" class="btn btn-primary" id="btn-update">修改</button>
                             </div>
                         </div>
                     </div><!-- /.modal-content -->
@@ -350,7 +410,7 @@
         // console.log(obj.data)
         if (obj.event === 'del') {
             if (sessionStorage.getItem("power") != '1') {
-                $(".alert-danger").html("您没有删除数据的权限，请联系管理员!");
+                $(".alert-danger").html("您没有删除数据权限!");
                 $(".alert-danger").addClass("show");
                 window.setTimeout(function () {
                     $(".alert-danger").removeClass("show");
@@ -386,56 +446,203 @@
                     layer.close(index);
                 });
             }
-        } else if (obj.event === 'edit') {// 数据修改
-            document.location.href = "/wb_update?id=" + obj.data.id;
+        }
+        else if (obj.event === 'edit') {// 数据修改
+            if (sessionStorage.getItem("power") == '3') {
+                $(".alert-danger").html("您没有修改数据权限!");
+                $(".alert-danger").addClass("show");
+                window.setTimeout(function () {
+                    $(".alert-danger").removeClass("show");
+                }, 1000);//显示的时间
+            }
+            else {
+                $('#gs_update_model').modal('show');
+                $.ajax("/wb_update", {
+                    method: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {
+                        id: obj.data.id
+                    },
+                }).done(function (res) {
+                    if (res && res.status == "successful") {
+                        const id = res.data[0].id;
+                        const pname = res.data[0].pname;
+                        const get_data_time = res.data[0].get_data_time;
+                        const pnums = res.data[0].pnums;
+                        const knums = res.data[0].knums;
+                        const settlement_method = res.data[0].settlement_method;
+                        const unit_price = res.data[0].unit_price;
+                        const wb_name = res.data[0].wb_name;
+
+                        $("#id_update").val(id);
+                        $("#pname_update").html("<option value=" + pname + ">" + pname + "</option>");
+                        $("#get_data_time_update").val(get_data_time);
+                        $("#pnums_update").val(pnums);
+                        $("#knums_update").val(knums);
+                        $("#settlement_method_update").val(settlement_method);
+                        $("#unit_price_update").val(unit_price);
+                        $("#wb_name_update").html("<option value=" + wb_name + ">" + wb_name + "</option>");
+
+                        // 给数据标注方 赋值
+                        let bzfs1 = document.getElementById('wb_name_update');
+                        for (var i = 0; i < bzf.length; i++) {
+                            if (bzfs1.length < bzf.length) { // 这里不判断的话会一直添加
+                                if (bzf[i] != document.getElementById("wb_name_update").value) {
+                                    var objOption = document.createElement("option");
+                                    objOption.value = bzf[i];
+                                    objOption.text = bzf[i];
+                                    bzfs1.add(objOption);
+                                };
+                            };
+                        };
+                        // 给项目名字 添加下拉框
+                        let p_s1 = document.getElementById('pname_update');
+                        for (var i = 0; i < projects.length; i++) {
+                            if (p_s1.length < projects.length) { // 这里不判断的话会一直添加
+                                if (projects[i] != document.getElementById("pname_update").value) {
+                                    var objOption = document.createElement("option");
+                                    objOption.value = projects[i];
+                                    objOption.text = projects[i];
+                                    p_s1.add(objOption);
+                                };
+                            };
+                        };
+                    }
+                });
+            }
         }
     });
     // 添加数据
     $("#btn_insert").click(function () {
-        const pname = $("#pname_insert option:selected").val();
-        const get_data_time = $("#get_data_time_insert").val();
-        const pnums = $("#pnums_insert").val();
-        const knums = $("#knums_insert").val();
-        const settlement_method = $("#settlement_method_insert").val();
-        const unit_price = $("#unit_price_insert").val();
-        const wb_name = $("#wb_name_insert option:selected").val();
-        if (get_data_time == "") {
-            $(".alert-danger").html("不允许有空值!");
+        if (sessionStorage.getItem("power") == '3') {
+            $(".alert-danger").html("您没有权限添加数据!");
             $(".alert-danger").addClass("show");
             window.setTimeout(function () {
                 $(".alert-danger").removeClass("show");
-            }, 1500);//显示的时间
-        } else if (pnums == "") {
-            $(".alert-danger").html("不允许有空值!");
-            $(".alert-danger").addClass("show");
-            window.setTimeout(function () {
-                $(".alert-danger").removeClass("show");
-            }, 1500);//显示的时间
-        } else if (knums == "") {
-            $(".alert-danger").html("不允许有空值!");
-            $(".alert-danger").addClass("show");
-            window.setTimeout(function () {
-                $(".alert-danger").removeClass("show");
-            }, 1500);//显示的时间
-        } else if (settlement_method == "") {
-            $(".alert-danger").html("不允许有空值!");
-            $(".alert-danger").addClass("show");
-            window.setTimeout(function () {
-                $(".alert-danger").removeClass("show");
-            }, 1500);//显示的时间
-        } else if (unit_price == "") {
-            $(".alert-danger").html("不允许有空值!");
-            $(".alert-danger").addClass("show");
-            window.setTimeout(function () {
-                $(".alert-danger").removeClass("show");
-            }, 1500);//显示的时间
+            }, 1000);//显示的时间
         } else {
-            $.ajax("/waiabo_data_insert/", {
+            const pname = $("#pname_insert option:selected").val();
+            const get_data_time = $("#get_data_time_insert").val();
+            const pnums = $("#pnums_insert").val();
+            const knums = $("#knums_insert").val();
+            const settlement_method = $("#settlement_method_insert").val();
+            const unit_price = $("#unit_price_insert").val();
+            const wb_name = $("#wb_name_insert option:selected").val();
+            if (get_data_time == "") {
+                $(".alert-danger").html("不允许有空值!");
+                $(".alert-danger").addClass("show");
+                window.setTimeout(function () {
+                    $(".alert-danger").removeClass("show");
+                }, 1500);//显示的时间
+            } else if (pnums == "") {
+                $(".alert-danger").html("不允许有空值!");
+                $(".alert-danger").addClass("show");
+                window.setTimeout(function () {
+                    $(".alert-danger").removeClass("show");
+                }, 1500);//显示的时间
+            } else if (knums == "") {
+                $(".alert-danger").html("不允许有空值!");
+                $(".alert-danger").addClass("show");
+                window.setTimeout(function () {
+                    $(".alert-danger").removeClass("show");
+                }, 1500);//显示的时间
+            } else if (settlement_method == "") {
+                $(".alert-danger").html("不允许有空值!");
+                $(".alert-danger").addClass("show");
+                window.setTimeout(function () {
+                    $(".alert-danger").removeClass("show");
+                }, 1500);//显示的时间
+            } else if (unit_price == "") {
+                $(".alert-danger").html("不允许有空值!");
+                $(".alert-danger").addClass("show");
+                window.setTimeout(function () {
+                    $(".alert-danger").removeClass("show");
+                }, 1500);//显示的时间
+            } else {
+                $.ajax("/waiabo_data_insert/", {
+                    method: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {
+                        uname: $("#name").text(),
+                        pname: pname,
+                        get_data_time: get_data_time,
+                        pnums: pnums,
+                        knums: knums,
+                        settlement_method: settlement_method,
+                        unit_price: unit_price,
+                        wb_name: wb_name
+                    },
+                }).done(function (res) {
+                    if (res && res.data == "successful") {
+                        $("#pname_insert").find('option:first').prop("selected", "selected");
+                        $("#get_data_time_insert").val("");
+                        $("#pnums_insert").val("");
+                        $("#knums_insert").val("");
+                        $("#settlement_method_insert").val("");
+                        $("#unit_price_insert").val("");
+                        $("#wb_name_insert").find('option:first').prop("selected", "selected");
+
+                        let url = '/wballdata'
+                        table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
+
+                        $(".alert-danger").html("添加成功!");
+                        $(".alert-danger").addClass("show");
+                        $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
+                        $("#alert_div").css("color", 'rgb(255, 255, 255)');
+                        window.setTimeout(function () {
+                            $(".alert-danger").removeClass("show");
+                        }, 1000);//显示的时间
+                    } else {
+                        $(".alert-danger").html(res.data);
+                        $(".alert-danger").addClass("show");
+                        window.setTimeout(function () {
+                            $(".alert-danger").removeClass("show");
+                        }, 1500);//显示的时间
+                    }
+                });
+            }
+        }
+    })
+
+    // 修改数据
+    $("#btn-update").click(function () {
+        const id = $("#id_update").val();
+        const pname = $("#pname_update option:selected").val();
+        const get_data_time = $("#get_data_time_update").val();
+        const pnums = $("#pnums_update").val();
+        const knums = $("#knums_update").val();
+        const settlement_method = $("#settlement_method_update").val();
+        const unit_price = $("#unit_price_update").val();
+        const wb_name = $("#wb_name_update option:selected").val();
+        if (get_data_time == "") {
+            $("#err_msg").css("display", 'block');
+            $("#err_msg").html("不允许有空值!")
+        }
+        else if (pnums == '') {
+            $("#err_msg").css("display", 'block');
+            $("#err_msg").html("不允许有空值!")
+        }
+        else if (knums == '') {
+            $("#err_msg").css("display", 'block');
+            $("#err_msg").html("不允许有空值!")
+        }
+        else if (settlement_method == '') {
+            $("#err_msg").css("display", 'block');
+            $("#err_msg").html("不允许有空值!")
+        }
+        else if (unit_price == '') {
+            $("#err_msg").css("display", 'block');
+            $("#err_msg").html("不允许有空值!")
+        }
+        else {
+            $.ajax("/wb_update/", {
                 method: "POST",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: {
-                    uname: $("#name").text(),
+                    id: id,
                     pname: pname,
                     get_data_time: get_data_time,
                     pnums: pnums,
@@ -445,36 +652,27 @@
                     wb_name: wb_name
                 },
             }).done(function (res) {
-                if (res && res.data == "successful") {
-                    $("#pname_insert").find('option:first').prop("selected", "selected");
-                    $("#get_data_time_insert").val("");
-                    $("#pnums_insert").val("");
-                    $("#knums_insert").val("");
-                    $("#settlement_method_insert").val("");
-                    $("#unit_price_insert").val("");
-                    $("#wb_name_insert").find('option:first').prop("selected", "selected");
-
-                    let url = '/wballdata'
-                    table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
-
-                    $(".alert-danger").html("添加成功!");
+                if (res && res.status == "successful") {
+                    $("#btn-miss").click();
+                    $(".alert-danger").html("修改成功!");
                     $(".alert-danger").addClass("show");
                     $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
                     $("#alert_div").css("color", 'rgb(255, 255, 255)');
                     window.setTimeout(function () {
                         $(".alert-danger").removeClass("show");
                     }, 1000);//显示的时间
-                } else {
-                    $(".alert-danger").html(res.data);
-                    $(".alert-danger").addClass("show");
-                    window.setTimeout(function () {
-                        $(".alert-danger").removeClass("show");
-                    }, 1500);//显示的时间
+
+                    let url = '/wballdata'
+                    table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
+                }
+                else {
+                    $("#err_msg").css("display", 'block');
+                    $("#err_msg").html(res.mes);
+
                 }
             });
         }
     })
-
     function help() {
         $(".alert-danger").html("请联系卫龙!");
         $(".alert-danger").addClass("show");
@@ -567,19 +765,6 @@
     function showData(flag) {
         if (flag == 'wbdata_count') {
             window.location.href = '/wbdata_count';
-        }
-    }
-
-    // 导航栏
-    function navswitch(flag) {
-        if (sessionStorage.getItem("power") == '3') {
-            $(".alert-danger").html("您没有权限查看!");
-            $(".alert-danger").addClass("show");
-            window.setTimeout(function () {
-                $(".alert-danger").removeClass("show");
-            }, 1500);//显示的时间
-        } else {
-            window.location.href = '/' + flag;
         }
     }
 </script>

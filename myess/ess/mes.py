@@ -137,7 +137,8 @@ def plw(last_begin_time, last_over_time):
 
 # 绩效
 def performanceq(begin_time, over_time, name):
-    tdat = models.Task.objects.filter(dtime__range=[begin_time, over_time], uname=name)
+    tdat = models.Task.objects.filter(
+        dtime__range=[begin_time, over_time], uname=name)
     k_p = (
         []
     )  # [('审核', 'S线数据'), ('其他', None), ('标注', '杂物'), ('标注', 'S线数据'), ('审核', '脏污'), ('审核', '杂物')]
@@ -243,14 +244,9 @@ def search(uname, pname, waibao, task_id, kinds, dtime, lasttime):
     return data
 
 
-# update
-def pupdate(id):
-    stu = models.Task.objects.filter(id=id)
-    return stu
-
-
 # nupdate
 def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptimes):
+    import re
     now_data = models.Task.objects.get(id=id)
     now_data.uname = uname
     now_data.pname = pname
@@ -259,11 +255,19 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
     now_data.pnums = pnums
     now_data.kinds = kinds
     now_data.ptimes = float(ptimes)
+
     if kinds == "2D分割标注" or kinds == "2.5D点云标注" or kinds == "属性标注" or kinds == "2D框标注":
         now_data.task_id = int(task_id)
-        now_data.knums = knums
+        now_data.knums = int(knums)
     elif kinds == "视频标注":
-        now_data.knums = knums
+        knums_re = re.findall("[0-9]{2,}[:][0-9]{2,2}[:][0-9]{2,2}", knums)
+        if len(knums_re) != 0:
+            if len(knums_re[0]) != len(knums):
+                return "error"
+            else:
+                now_data.knums = knums
+        else:
+            return "error"
         if task_id == "" or task_id == None:
             now_data.task_id = None
         else:
@@ -278,6 +282,7 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
             now_data.task_id = int(task_id)
         now_data.knums = None
     now_data.save()
+    return "successful"
 
 
 def waibao_insert(
@@ -333,12 +338,6 @@ def waibao_search(pname, bzf, begin_time, over_time):
         tmp_dict["wb_name"] = i.wb_name
         data.append(tmp_dict)
     return data
-
-
-# 外包要修改的数据渲染
-def waibao_update(id):
-    stu = models.Waibao.objects.filter(id=id)
-    return stu
 
 
 def wb_nupdate(
@@ -414,11 +413,13 @@ def wbdata_tj(btime, otime):
             one_data.append(i)
             one_data.append(pnums)
             one_data.append(knums)
-            one_data.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
+            one_data.append(
+                float(Decimal(str(money)).quantize(Decimal("0.00"))))
             pname_list.append(i)
             pnums_list.append(pnums)
             knums_list.append(knums)
-            money_list.append(float(Decimal(str(money)).quantize(Decimal("0.00"))))
+            money_list.append(
+                float(Decimal(str(money)).quantize(Decimal("0.00"))))
             data_list.append(one_data)
         tmp.append(sum(pnums_list))
         tmp.append(round(sum(money_list), 3))

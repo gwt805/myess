@@ -52,11 +52,9 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="my-nav">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="/index" style="color: #fff; background-color: rgb(68, 147, 199);">首页</a>
+                    <li class="active"><a style="color: #fff; background-color: rgb(68, 147, 199);">首页</a>
                     </li>
-                    <li class="active"><a href="/efficiency">标注效率</a></li>
-                    <li class="active"><a href="/performance">个人绩效</a></li>
-                    <li class="active" onclick="navswitch('waibao')"><a>外包数据</a></li>
+                    <li class="active"><a href="/waibao">外包数据</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li style="border-right: 1px solid #bdbdbd; margin-right: 20px; cursor: pointer;"><a
@@ -115,6 +113,14 @@
             <label onclick="showData('gsdata_count')">
                 <i class="fa fa-bar-chart" aria-hidden="true"></i>
                 <span>图表展示</span>
+            </label>
+            <label onclick="showData('efficiency')">
+                <i class="fa fa-paw" aria-hidden="true"></i>
+                <span>团队效率</span>
+            </label>
+            <label onclick="showData('performance')">
+                <i class="fa fa-diamond" aria-hidden="true"></i>
+                <span>个人绩效</span>
             </label>
             <p>© gwt 2021.12.18</p>
         </div>
@@ -246,6 +252,12 @@
                                     <span class="ant-typography ant-typography-secondary"> 2.7.6</span>
                                 </p>
                             </div>
+                            <div class="form-group">
+                                <p>
+                                    <span class="ant-typography"><strong>Django version:</strong></span>
+                                    <span class="ant-typography ant-typography-secondary"> 3.2.14</span>
+                                </p>
+                            </div>
                             <div class="modal-footer">
                                 <a href="https://github.com/gwt805/myess/tree/master" target="_blank"
                                     style="position: absolute; left: 20px;"><i
@@ -254,6 +266,68 @@
                                     style="color: blue;">
                                     <span aria-hidden="true">OK</span>
                                 </button>
+                            </div>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+            <!-- 弹窗之数据修改 -->
+            <div class="modal fade" tabindex="-1" role="dialog" id="gs_update_model">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h3 class="modal-title">修改数据</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-warning" id="err_msg" style="display: none;"></div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">ID:</label>
+                                <input type="number" min="0" class="form-control" name="id" readonly="readonly"
+                                    id="id_update">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">用户名:</label>
+                                <input type="text" class="form-control" name="uname" readonly="readonly"
+                                    id="uname_update">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">项目名字:</label>
+                                <select class="form-control" name="pname" id="pname_update"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="control-label">标注方:</label>
+                                <select class="form-control" name="waibao" id="waibao_update"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">任务ID:</label>
+                                <input type="number" min="0" class="form-control" name="task_id" id="task_id_update">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">日期:</label>
+                                <input type="date" class="form-control" name="dtime" id="dtime_update">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="control-label">任务类型:</label>
+                                <select class="form-control" name="kinds" id="kinds_update"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">图片/视频数量:</label>
+                                <input type="number" min="0" class="form-control" name="pnums" id="pnums_update">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">框数/属性/时长:</label>
+                                <input type="text" class="form-control" name="knums" id="knums_update">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="control-label">工时:</label>
+                                <input type="text" class="form-control" name="ptimes" id="ptimes_update">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal"
+                                    id="btn-miss">取消</button>
+                                <button type="submit" class="btn btn-primary" id="btn-update">修改</button>
                             </div>
                         </div>
                     </div><!-- /.modal-content -->
@@ -390,12 +464,13 @@
         // console.log(obj.data)
         if (obj.event === 'del') {
             if (sessionStorage.getItem("power") != '1') {
-                $(".alert-danger").html("您没有删除数据的权限，请联系管理员!");
+                $(".alert-danger").html("您没有删除数据权限!");
                 $(".alert-danger").addClass("show");
                 window.setTimeout(function () {
                     $(".alert-danger").removeClass("show");
                 }, 1000);//显示的时间
-            } else {
+            }
+            else {
                 layer.confirm('真的删除行么', function (index) {
                     $.ajax("/dtdel/", {
                         method: "GET",
@@ -414,7 +489,8 @@
                             window.setTimeout(function () {
                                 $(".alert-danger").removeClass("show");
                             }, 1000);//显示的时间
-                        } else {
+                        }
+                        else {
                             $(".alert-danger").html("ID: " + obj.data.id + " 删除失败!");
                             $(".alert-danger").addClass("show");
                             window.setTimeout(function () {
@@ -426,16 +502,95 @@
                     layer.close(index);
                 });
             }
-        } else if (obj.event === 'edit') {// 数据修改
-            if (obj.data.uname != $('#name').text()) {
-                $(".alert-danger").html("您只能修改自己的数据喔!");
+        }
+        else if (obj.event === 'edit') {// 数据修改
+            if (sessionStorage.getItem("power") == '3') {
+                $(".alert-danger").html("您没有修改数据权限!");
                 $(".alert-danger").addClass("show");
                 window.setTimeout(function () {
                     $(".alert-danger").removeClass("show");
                 }, 1000);//显示的时间
-            } else {
-                document.location.href = "/update?id=" + obj.data.id;
-            };
+            }
+            else {
+                if (obj.data.uname != $('#name').text()) {
+                    $(".alert-danger").html("您只能修改自己的数据喔!");
+                    $(".alert-danger").addClass("show");
+                    window.setTimeout(function () {
+                        $(".alert-danger").removeClass("show");
+                    }, 1000);//显示的时间
+                }
+                else {
+                    // document.location.href = "/update?id=" + obj.data.id;
+                    $('#gs_update_model').modal('show');
+                    $.ajax("/update", {
+                        method: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: {
+                            id: obj.data.id
+                        },
+                    }).done(function (res) {
+                        if (res && res.status == "successful") {
+                            const id = res.data[0].id;
+                            const uname = res.data[0].uname;
+                            const pname = res.data[0].pname;
+                            const waibao = res.data[0].waibao;
+                            const task_id = res.data[0].task_id;
+                            const dtime = res.data[0].dtime;
+                            const kinds = res.data[0].kinds;
+                            const pnums = res.data[0].pnums;
+                            const knums = res.data[0].knums;
+                            const ptimes = res.data[0].ptimes;
+                            $("#id_update").val(id);
+                            $("#uname_update").val(uname);
+                            $("#pname_update").html("<option value=" + pname + ">" + pname + "</option>")
+                            $("#waibao_update").html("<option value=" + waibao + ">" + waibao + "</option>")
+                            $("#task_id_update").val(task_id);
+                            $("#dtime_update").val(dtime);
+                            $("#kinds_update").html("<option value=" + kinds + ">" + kinds + "</option>")
+                            $("#pnums_update").val(pnums);
+                            $("#knums_update").val(knums);
+                            $("#ptimes_update").val(ptimes);
+                            // 给数据标注方 赋值
+                            let bzfs1 = document.getElementById('waibao_update');
+                            for (var i = 0; i < bzf.length; i++) {
+                                if (bzfs1.length < bzf.length) { // 这里不判断的话会一直添加
+                                    if (bzf[i] != document.getElementById("waibao_update").value) {
+                                        var objOption = document.createElement("option");
+                                        objOption.value = bzf[i];
+                                        objOption.text = bzf[i];
+                                        bzfs1.add(objOption);
+                                    };
+                                };
+                            };
+                            // 给项目名字 添加下拉框
+                            let p_s1 = document.getElementById('pname_update');
+                            for (var i = 0; i < projects.length; i++) {
+                                if (p_s1.length < projects.length) { // 这里不判断的话会一直添加
+                                    if (projects[i] != document.getElementById("pname_update").value) {
+                                        var objOption = document.createElement("option");
+                                        objOption.value = projects[i];
+                                        objOption.text = projects[i];
+                                        p_s1.add(objOption);
+                                    };
+                                };
+                            };
+                            // 给任务类型 赋值
+                            let tk_s1 = document.getElementById('kinds_update');
+                            for (var i = 0; i < tkinds.length; i++) {
+                                if (tk_s1.length < tkinds.length) { // 这里不判断的话会一直添加
+                                    if (tkinds[i] != document.getElementById("kinds_update").value) {
+                                        var objOption = document.createElement("option");
+                                        objOption.value = tkinds[i];
+                                        objOption.text = tkinds[i];
+                                        tk_s1.add(objOption);
+                                    };
+                                };
+                            };
+                        }
+                    });
+                }
+            }
         }
     });
 
@@ -494,20 +649,91 @@
     }
     // 添加数据--
     $("#btn_insert").click(function () {
-        const uname = $("#uname_insert").val();
-        const pname = $("#pname_insert option:selected").val();
-        const waibao = $("#waibao_insert option:selected").val();
-        const task_id = $("#task_id_insert").val();
-        const dtime = $("#riqi_insert").val();
-        const kinds = $("#kinds_insert option:selected").val();
-        const pnums = $("#pnums_insert").val();
-        const knums = $("#knums_insert").val();
-        const ptimes = $("#ptimes_insert").val();
-        $.ajax("/insert/", {
+        if (sessionStorage.getItem("power") == '3') {
+            $(".alert-danger").html("您没有权限添加数据!");
+            $(".alert-danger").addClass("show");
+            window.setTimeout(function () {
+                $(".alert-danger").removeClass("show");
+            }, 1000);//显示的时间
+        } else {
+            const uname = $("#uname_insert").val();
+            const pname = $("#pname_insert option:selected").val();
+            const waibao = $("#waibao_insert option:selected").val();
+            const task_id = $("#task_id_insert").val();
+            const dtime = $("#riqi_insert").val();
+            const kinds = $("#kinds_insert option:selected").val();
+            const pnums = $("#pnums_insert").val();
+            const knums = $("#knums_insert").val();
+            const ptimes = $("#ptimes_insert").val();
+
+            $.ajax("/insert/", {
+                method: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    uname: uname,
+                    pname: pname,
+                    waibao: waibao,
+                    task_id: task_id,
+                    dtime: dtime,
+                    kinds: kinds,
+                    pnums: pnums,
+                    knums: knums,
+                    ptimes: ptimes
+                },
+            }).done(function (res) {
+                if (res && res.data == "successful") {
+                    $("#task_id_insert").val("");
+                    $("#pnums_insert").val("");
+                    $("#knums_insert").val("");
+                    $("#ptimes_insert").val("");
+                    var d = new Date();
+                    let today = ''
+                    const year = d.getFullYear();
+                    const month = d.getMonth() + 1;
+                    let day = d.getDate();
+                    if (day < 10) {
+                        day = "0" + day;
+                    }
+                    today = today + year + '-' + month + '-' + day;
+                    let url = '/gsalldata?uname=' + uname + "&pname=---&bzf=---&taskid=&taskkind=---&begin_time=" + today + "&last_time="; //第一种方法
+                    table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
+
+                    $(".alert-danger").html("添加成功!");
+                    $(".alert-danger").addClass("show");
+                    $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
+                    $("#alert_div").css("color", 'rgb(255, 255, 255)');
+                    window.setTimeout(function () {
+                        $(".alert-danger").removeClass("show");
+                    }, 1000);//显示的时间
+                } else {
+                    $(".alert-danger").html(res.data);
+                    $(".alert-danger").addClass("show");
+                    window.setTimeout(function () {
+                        $(".alert-danger").removeClass("show");
+                    }, 1500);//显示的时间
+                }
+            });
+        }
+    })
+    // 修改数据
+    $("#btn-update").click(function () {
+        const id = $("#id_update").val();
+        const uname = $("#uname_update").val();
+        const pname = $("#pname_update option:selected").val();
+        const waibao = $("#waibao_update option:selected").val();
+        const task_id = $("#task_id_update").val();
+        const dtime = $("#dtime_update").val();
+        const kinds = $("#kinds_update option:selected").val();
+        const pnums = $("#pnums_update").val();
+        const knums = $("#knums_update").val();
+        const ptimes = $("#ptimes_update").val();
+        $.ajax("/update/", {
             method: "POST",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: {
+                id: id,
                 uname: uname,
                 pname: pname,
                 waibao: waibao,
@@ -519,11 +745,16 @@
                 ptimes: ptimes
             },
         }).done(function (res) {
-            if (res && res.data == "successful") {
-                $("#task_id_insert").val("");
-                $("#pnums_insert").val("");
-                $("#knums_insert").val("");
-                $("#ptimes_insert").val("");
+            if (res && res.status == "successful") {
+                $("#btn-miss").click();
+                $(".alert-danger").html("修改成功!");
+                $(".alert-danger").addClass("show");
+                $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
+                $("#alert_div").css("color", 'rgb(255, 255, 255)');
+                window.setTimeout(function () {
+                    $(".alert-danger").removeClass("show");
+                }, 1000);//显示的时间
+
                 var d = new Date();
                 let today = ''
                 const year = d.getFullYear();
@@ -535,20 +766,10 @@
                 today = today + year + '-' + month + '-' + day;
                 let url = '/gsalldata?uname=' + uname + "&pname=---&bzf=---&taskid=&taskkind=---&begin_time=" + today + "&last_time="; //第一种方法
                 table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
-
-                $(".alert-danger").html("添加成功!");
-                $(".alert-danger").addClass("show");
-                $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
-                $("#alert_div").css("color", 'rgb(255, 255, 255)');
-                window.setTimeout(function () {
-                    $(".alert-danger").removeClass("show");
-                }, 1000);//显示的时间
             } else {
-                $(".alert-danger").html(res.data);
-                $(".alert-danger").addClass("show");
-                window.setTimeout(function () {
-                    $(".alert-danger").removeClass("show");
-                }, 1500);//显示的时间
+                $("#err_msg").css("display", 'block');
+                $("#err_msg").html(res.mes);
+
             }
         });
     })
@@ -647,19 +868,10 @@
     // 整合
     function showData(flag) {
         if (flag == 'gsdata_count') {
-            window.location.href = '/gsdata_count'
-        }
-    }
-
-    // 导航栏
-    function navswitch(flag) {
-        if (sessionStorage.getItem("power") == '2') {
-            $(".alert-danger").html("您没有权限查看!");
-            $(".alert-danger").addClass("show");
-            window.setTimeout(function () {
-                $(".alert-danger").removeClass("show");
-            }, 1500);//显示的时间
-        } else {
+            window.location.href = '/' + flag;
+        } else if (flag == 'efficiency') {
+            window.location.href = '/' + flag;
+        } else if (flag == 'performance') {
             window.location.href = '/' + flag;
         }
     }

@@ -1,4 +1,3 @@
-{% block title %}{% endblock %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -37,11 +36,10 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="my-nav">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="/index" style="color: #fff; background-color: rgb(68, 147, 199);">首页</a>
+                    <li class="active">
+                        <a href="/index" style="color: #fff; background-color: rgb(68, 147, 199);">首页</a>
                     </li>
-                    <li class="active"><a href="/efficiency">标注效率</a></li>
-                    <li class="active"><a href="/performance">个人绩效</a></li>
-                    <li class="active" onclick="navswitch('waibao')"><a>外包数据</a></li>
+                    <li class="active"><a href="/waibao">外包数据</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li style="border-right: 1px solid #bdbdbd; margin-right: 20px; cursor: pointer;"><a
@@ -162,6 +160,12 @@
                         <p>
                             <span class="ant-typography"><strong>Layui version:</strong></span>
                             <span class="ant-typography ant-typography-secondary"> 2.7.6</span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>Django version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 3.2.14</span>
                         </p>
                     </div>
                     <div class="modal-footer">
@@ -326,19 +330,6 @@
 
         };
     };
-
-    // 导航栏
-    function navswitch(flag) {
-        if (sessionStorage.getItem("power") == '2') {
-            $(".alert-danger").html("您没有权限查看!");
-            $(".alert-danger").addClass("show");
-            window.setTimeout(function () {
-                $(".alert-danger").removeClass("show");
-            }, 1500);//显示的时间
-        } else {
-            window.location.href = '/' + flag;
-        }
-    }
 </script>
 
 </html>
