@@ -256,33 +256,36 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
     now_data.kinds = kinds
     now_data.ptimes = float(ptimes)
 
-    if kinds == "2D分割标注" or kinds == "2.5D点云标注" or kinds == "属性标注" or kinds == "2D框标注":
-        now_data.task_id = int(task_id)
-        now_data.knums = int(knums)
-    elif kinds == "视频标注":
-        knums_re = re.findall("[0-9]{2,}[:][0-9]{2,2}[:][0-9]{2,2}", knums)
-        if len(knums_re) != 0:
-            if len(knums_re[0]) != len(knums):
-                return "error"
+    try:
+        if kinds == "2D分割标注" or kinds == "2.5D点云标注" or kinds == "属性标注" or kinds == "2D框标注":
+            now_data.task_id = int(task_id)
+            now_data.knums = int(knums)
+        elif kinds == "视频标注":
+            knums_re = re.findall("[0-9]{2,}[:][0-9]{2,2}[:][0-9]{2,2}", knums)
+            if len(knums_re) != 0:
+                if len(knums_re[0]) != len(knums):
+                    return "error"
+                else:
+                    now_data.knums = knums
             else:
-                now_data.knums = knums
-        else:
-            return "error"
-        if task_id == "" or task_id == None:
-            now_data.task_id = None
-        else:
+                return "error"
+            if task_id == "" or task_id == None:
+                now_data.task_id = None
+            else:
+                now_data.task_id = int(task_id)
+        elif kinds == "审核":
             now_data.task_id = int(task_id)
-    elif kinds == "审核":
-        now_data.task_id = int(task_id)
-        now_data.knums = None
-    elif kinds == "筛选":
-        if task_id == "" or task_id == None:
-            now_data.task_id = None
-        else:
-            now_data.task_id = int(task_id)
-        now_data.knums = None
-    now_data.save()
-    return "successful"
+            now_data.knums = None
+        elif kinds == "筛选":
+            if task_id == "" or task_id == None:
+                now_data.task_id = None
+            else:
+                now_data.task_id = int(task_id)
+            now_data.knums = None
+        now_data.save()
+        return "successful"
+    except:
+        return "error"
 
 
 def waibao_insert(

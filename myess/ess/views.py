@@ -127,7 +127,9 @@ def login(request):
         username = data.get("user")
         password = data.get("pwd")
         if len(models.User.objects.filter(username=username)) == True:
-            pwd_flag = check_password(password, make_password(password))
+            db_pwd = models.User.objects.filter(
+                username=username).values("password")[0]["password"]
+            pwd_flag = check_password(password, db_pwd)
             if pwd_flag:
                 zhuname = models.User.objects.get(username=username).zh_uname
                 power = models.User.objects.get(username=username).power
@@ -138,8 +140,12 @@ def login(request):
                     return JsonResponse(
                         {"data": "successful", "zhuname": zhuname, "power": power}
                     )
+            else:
+                return JsonResponse({"data": "账号或密码错误!"})
         elif len(models.User.objects.filter(email=username)) == True:
-            pwd_flag = check_password(password, make_password(password))
+            db_pwd = models.User.objects.filter(
+                email=username).values("password")[0]["password"]
+            pwd_flag = check_password(password, db_pwd)
             if pwd_flag:
                 zhuname = models.User.objects.get(email=username).zh_uname
                 power = models.User.objects.get(email=username).power
@@ -150,6 +156,8 @@ def login(request):
                     return JsonResponse(
                         {"data": "successful", "zhuname": zhuname, "power": power}
                     )
+            else:
+                return JsonResponse({"data": "账号或密码错误!"})
         else:
             return JsonResponse({"data": "账号或密码错误!"})
 
@@ -309,7 +317,7 @@ def update(request):
         knums = data.get("knums").strip()
         ptimes = data.get("ptimes").strip()
         res = nupdate(id, uname, pname, waibao, task_id,
-                dtime, kinds, pnums, knums, ptimes)
+                      dtime, kinds, pnums, knums, ptimes)
 
         if res == "error":
             return JsonResponse({"status": "error", "mes": '请检查您填写的数据!'})
@@ -630,7 +638,7 @@ def wb_update(request):
             },
         )
         return JsonResponse({"status": "successful"})
-    res =  models.Waibao.objects.filter(id=id)
+    res = models.Waibao.objects.filter(id=id)
 
     data = []
     for i in res:

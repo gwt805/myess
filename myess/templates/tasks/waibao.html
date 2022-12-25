@@ -131,7 +131,7 @@
                             <td><input type="number" name="knums" min="0" class="form-control" id="knums_insert"></td>
                             <td><input type="text" name="settlement_method" class="form-control"
                                     id="settlement_method_insert" placeholder="矩形框/多边形/3D框/筛选/线段"></td>
-                            <td><input type="text" name="unit_price" class="form-control" id="unit_price_insert"></td>
+                            <td><input type="number" min="0" step="0.0001" name="unit_price" class="form-control" id="unit_price_insert"></td>
                             <td><select class="form-control" name="wb_name" id="wb_name_insert"></select></td>
                             <td><button class="btn btn-primary" id="btn_insert"><i class="fa fa-plus-square"
                                         aria-hidden="true"></i> 添加</button></td>
@@ -274,7 +274,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="message-text" class="control-label">单价:</label>
-                                <input type="number" min="0" class="form-control" name="unit_price"
+                                <input type="number" min="0" step="0.0001" class="form-control" name="unit_price"
                                     id="unit_price_update">
                             </div>
                             <div class="form-group">
@@ -457,6 +457,7 @@
             }
             else {
                 $('#gs_update_model').modal('show');
+                $("#err_msg").css("display", 'none');
                 $.ajax("/wb_update", {
                     method: "GET",
                     contentType: "application/json; charset=utf-8",
