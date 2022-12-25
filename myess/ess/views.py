@@ -62,7 +62,10 @@ def sendEmail(username: str, password: str, email: str):
             logger.error(f"用户 {username} 的邮箱可能不是真的!")
 
     task = threading.Thread(target=thread_task)
-    task.start()
+    if CONFIG["send_qqEmail"] == "" or CONFIG["send_qqEmail_pwd"] == "":
+        logger.warning("邮件发送相关配置您还没有操作喔!")
+    else:
+        task.start()
 
 
 # 密码修改
@@ -74,6 +77,7 @@ def pwd_update(request):
         new_pwd = request.POST.get("new_pwd1").strip()
         user_fliter = models.User.objects.get(zh_uname=uname)
         user_fliter.set_password(new_pwd)
+        user_fliter.save()
         logger.info(f"用户 {uname} 密码修改成功!")
         username = user_fliter.username
         email = user_fliter.email

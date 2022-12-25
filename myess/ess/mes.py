@@ -566,4 +566,7 @@ def dingtalk(
         logger.info(states)
 
     task = threading.Thread(target=ding_mes)
-    task.start()
+    if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
+        logger.warning("钉机器人您还没有配置喔!")
+    else:
+        task.start()
