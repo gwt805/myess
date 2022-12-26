@@ -150,16 +150,16 @@ def performanceq(begin_time, over_time, name):
         pnum = 0
         knum = 0
         ptm = 0.0
-        pp = []
+        pp = {}
         gg = tdat.filter(kinds=i[0], pname=i[1])
         # public code
-        pp.append(i[0])
-        pp.append(i[1])
+        pp['kinds'] = i[0]
+        pp['pname'] = i[1]
         if i[0] == "审核" or i[0] == "筛选":
             for j in gg:
                 pnum += j.pnums
                 ptm += j.ptimes
-            pp.append(pnum)
+            pp['pnum'] = pnum
         elif (
             i[0] == "2D框标注" or i[0] == "2.5D点云标注" or i[0] == "属性标注" or i[0] == "2D分割标注"
         ):
@@ -167,15 +167,15 @@ def performanceq(begin_time, over_time, name):
                 pnum += j.pnums
                 knum += int(j.knums)
                 ptm += j.ptimes
-            pp.append(pnum)
-            pp.append(knum)
+            pp['pnum'] = pnum
+            pp['knum'] = knum
         elif i[0] == "视频标注":
             for j in gg:
                 pnum += j.pnums
                 knum += str2sec(j.knums)
                 ptm += j.ptimes
-            pp.append(pnum)
-            pp.append(strftime("%H时%M分%S秒", gmtime(knum)))
+            pp['pnum'] = pnum
+            pp['knum'] = strftime("%H时%M分%S秒", gmtime(knum))
         tps.append(pp)
     return tps
 

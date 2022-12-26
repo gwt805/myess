@@ -403,26 +403,28 @@ def efficiency(request):  # 效率
 
 # 绩效
 def performance(request):
-    if request.method == "POST":
-        now_begin_time = request.POST.get("now-begin-time").strip()
-        now_over_time = request.POST.get("now-over-time").strip()
-        uname = request.POST.get("uname")
-        try:
-            tks_nw = performanceq(now_begin_time, now_over_time, uname)
-            return render(
-                request,
-                "tasks/performance.html",
-                {
-                    "now_begin_time": now_begin_time,
-                    "now_over_time": now_over_time,
-                    "uname": uname,
-                    "tks_nw": tks_nw,
-                },
-            )
-        except:
-            pass
     return render(request, "tasks/performance.html")
-
+# 绩效
+def getperformancedata(request):
+    if request.GET.get("begin_time") == None or request.GET.get("last_time") == None or request.GET.get("uname") == None:
+        return JsonResponse({"code": 0, "msg": " ", "count": 0, "data": None})
+    else:
+        begin_time = request.GET.get("begin_time").strip()
+        last_time = request.GET.get("last_time").strip()
+        uname = request.GET.get("uname")
+        
+        data = performanceq(begin_time, last_time, uname)
+        if len(data) == 0:
+            return JsonResponse({"code": 0, "msg": "很遗憾没有查询到数据!", "count": 0, "data": None})
+        else:
+            pageIndex = request.GET.get("pageIndex")
+            pageSize = request.GET.get("pageSize")
+            res = []
+            pageInator = Paginator(data, pageSize)
+            context = pageInator.page(pageIndex)
+            for item in context:
+                res.append(item)
+            return JsonResponse({"code": 0, "msg": "查询成功!", "count": len(data), "data": res})
 
 # GS数据统计
 def gsdata_count(request):

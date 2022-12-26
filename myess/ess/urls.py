@@ -14,6 +14,7 @@ urlpatterns = [
     path("insert/", views.insert),
     path("efficiency/", views.efficiency),
     path("performance/", views.performance),
+    path("getperformancedata/",views.getperformancedata),
     path("gsdata_count/", views.gsdata_count),
     path("update/", views.update),
     path("dtdel/", views.dtdel),
