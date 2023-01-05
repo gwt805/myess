@@ -313,10 +313,10 @@ def waibao_search(pname, bzf, begin_time, over_time):
     now_time = datetime.now()
     before_time = (now_time - day_count).strftime("%Y-%m-%d")
     now_time = now_time.strftime("%Y-%m-%d")
-
+    print(pname)
     filterQuery = {}
     if pname != "---":
-        filterQuery["pname"] = pname
+        filterQuery["pname"] = pname 
     if bzf != "---":
         filterQuery["wb_name"] = bzf
     if begin_time and over_time:
@@ -328,6 +328,7 @@ def waibao_search(pname, bzf, begin_time, over_time):
     else:
         filterQuery["get_data_time__range"] = [before_time, now_time]
     tdat = models.Waibao.objects.filter(**filterQuery)
+    print("===========",filterQuery)
     data = []
     for i in tdat:
         tmp_dict = {}

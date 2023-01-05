@@ -427,7 +427,7 @@
     // 表格后台过滤
     $('#serch').click(function () {
         const uname = $('#uname_search').val();
-        const pname = $('#pname_search option:selected').val();
+        const pname = encodeURIComponent($('#pname_search option:selected').val()); //.replace("&","%26");
         const bzf = $('#bzf_search option:selected').val();
         const taskid = $("#taskid_search").val();
         const taskkind = $('#taskkind_search option:selected').val();

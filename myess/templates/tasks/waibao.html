@@ -378,7 +378,8 @@
     });
     // 表格后台过滤
     $('#serch').click(function () {
-        const pname_search = $("#pname_search option:selected").val();
+        // var pname_search = $("#pname_search option:selected").val().replace("&","%26");
+        const pname_search = encodeURIComponent($("#pname_search option:selected").val()); // encodeURIComponent 解决了把& 当参数问题
         const bzf_search = $('#bzf_search option:selected').val();
         const begin_time_search = $("#begin_time_search").val();
         const last_time_search = $("#last_time_search").val();

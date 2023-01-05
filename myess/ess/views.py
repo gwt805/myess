@@ -29,6 +29,7 @@ from email.header import Header
 import threading
 from loguru import logger
 from myess.settings import CONFIG
+import urllib
 # Create your views here.
 
 """
@@ -241,6 +242,7 @@ def gsalldata(request):  # 首页数据
     else:
         uname = request.GET.get("uname").strip()
         pname = request.GET.get("pname").strip()
+        print(pname)
         waibao = request.GET.get("bzf").strip()
         task_id = request.GET.get("taskid").strip()
         taskkind = request.GET.get("taskkind").strip()
@@ -521,7 +523,9 @@ def wballdata(request):
             res.append(item)
         return JsonResponse({"code": 0, "msg": "查询成功", "count": len(data), "data": res})
     else:
+        
         pname = request.GET.get("pname").strip()
+        print(pname)
         bzf = request.GET.get("bzf").strip()
         begin_time = request.GET.get("begin_time").strip()
         last_time = request.GET.get("last_time").strip()
@@ -607,6 +611,7 @@ def wb_update(request):
         settlement_method = data.get("settlement_method").strip()
         unit_price = data.get("unit_price").strip()
         wb_name = data.get("wb_name").strip()
+        print(pname)
         try:
             wb_nupdate(
                 id,
