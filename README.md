@@ -20,6 +20,7 @@ pip install django
 pip install loguru
 pip install mysqlclient or pip install pymysql
 pip install DingtalkChatbot
+python manage.py demo --convert_data # 数据转移，慎用
 ```
 
 ### 启动项目
