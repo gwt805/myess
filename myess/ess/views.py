@@ -17,8 +17,9 @@ from .mes import (
     search,
     waibao_search,
     wbdata_tj,
-    dingtalk,
     gs_data_add,
+    dingtalk,
+    wb_dingtalk
 )
 import json
 import smtplib
@@ -286,9 +287,7 @@ def insert(request):
                 kinds,
                 pnums,
                 knums,
-                ptimes,
-                "GS",
-                "",
+                ptimes
             )
             return JsonResponse({"data": "successful"})
         except:
@@ -334,8 +333,6 @@ def update(request):
             pnums,
             knums,
             ptimes,
-            "GS",
-            "",
         )
         return JsonResponse({"status": "successful"})
 
@@ -362,7 +359,7 @@ def dtdel(request):  # 单条数据删除
     id = request.GET.get("id")
     models.Task.objects.get(id=id).delete()
 
-    dingtalk("删除", id, uname, "", "", "", "", "", "", "", "", "GS", "")
+    dingtalk("删除", id, uname, "", "", "", "", "", "", "", "")
 
     return JsonResponse({"data": "successful"})
 
@@ -568,7 +565,7 @@ def waiabo_data_insert(request):
         }
         try:
             models.Supplier.objects.create(**dataone)
-            # dingtalk("添加","",data.get("user"),"","","","","","","","","外包",{"项目名字": data.get("pname"),"发送数据时间": get_data_time,"图片数量": pnums,"框数": knums,"结算方式": settlement_method,"单价": unit_price,"外包名字": wb_name,},)
+            wb_dingtalk(models.User.objects.get(zh_uname=data.get("user")).username, "添加", "", dataone)
             return JsonResponse({"data": "successful"})
         except:
             return JsonResponse({"data": "请检查填写的内容"})
@@ -579,7 +576,7 @@ def wb_dtdel(request):
     id = request.GET.get("id")
     uname = request.GET.get("n")
     models.Supplier.objects.get(id=id).delete()
-    # dingtalk("删除", id, uname, "", "", "", "", "", "", "", "", "外包", "")
+    wb_dingtalk(models.User.objects.get(zh_uname=uname).username, "删除", id, '')
     return JsonResponse({"data": "successful"})
 
 # 外包数据修改
@@ -588,7 +585,6 @@ def wb_update(request):
     id = request.GET.get("id")
     if request.method == "POST":
         data = QueryDict(request.body)
-        print(data)
         data_update = {
             'user': models.User.objects.get(username=models.User.objects.get(zh_uname=data.get("user")).username),
             'proname': models.Project.objects.get(pname=data.get("pname")),
@@ -669,7 +665,7 @@ def wb_update(request):
             # 预留 修改后算这个项目的折线趋势图
         try:
             models.Supplier.objects.filter(id=data.get('id')).update(**data_update)
-            # dingtalk("修改",id,"郭卫焘","","","","","","","","","外包",{"项目名字": pname,"发送数据时间": get_data_time,"图片数量": pnums,"框数": knums,"结算方式": settlement_method,"单价": unit_price,"外包名字": wb_name,},)
+            wb_dingtalk(models.User.objects.get(zh_uname=data.get("user")).username, "修改", "", data_update)
             return JsonResponse({"status": "successful"})
         except:
             return JsonResponse({"status": "error", "mes": "请检查填写的信息!"})
