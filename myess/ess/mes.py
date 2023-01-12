@@ -5,7 +5,7 @@ from loguru import logger
 from ess import models
 import threading
 import math
-
+import json
 
 def str2sec(x):
     """
@@ -287,76 +287,52 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
     except:
         return "error"
 
-
-def waibao_insert(
-    pname, get_data_time, pnums, knums, settlement_method, unit_price, wb_name
-):
-    try:
-        waibao_tasks = models.Waibao(
-            pname=pname,
-            get_data_time=get_data_time,
-            pnums=int(pnums),
-            knums=int(knums),
-            settlement_method=settlement_method,
-            unit_price=float(unit_price),
-            wb_name=wb_name,
-        )
-        waibao_tasks.save()
-        return "ok"
-    except:
-        return "error"
-
-
 # waibao_search
 def waibao_search(pname, bzf, begin_time, over_time):
     day_count = timedelta(days=CONFIG["wb_data_show_count"])
     now_time = datetime.now()
     before_time = (now_time - day_count).strftime("%Y-%m-%d")
     now_time = now_time.strftime("%Y-%m-%d")
-    print(pname)
     filterQuery = {}
     if pname != "---":
-        filterQuery["pname"] = pname 
+        filterQuery["proname"] = models.Project.objects.get(pname=pname)
     if bzf != "---":
-        filterQuery["wb_name"] = bzf
+        filterQuery["wb_name"] = models.Waibaos.objects.get(name=bzf)
     if begin_time and over_time:
-        filterQuery["get_data_time__range"] = [begin_time, over_time]
+        filterQuery["send_data_time__range"] = [begin_time, over_time]
     elif begin_time and not over_time:
-        filterQuery["get_data_time"] = begin_time
+        filterQuery["send_data_time"] = begin_time
     elif not begin_time and over_time:
-        filterQuery["get_data_time"] = over_time
+        filterQuery["send_data_time"] = over_time
     else:
-        filterQuery["get_data_time__range"] = [before_time, now_time]
-    tdat = models.Waibao.objects.filter(**filterQuery)
-    print("===========",filterQuery)
+        filterQuery["send_data_time__range"] = [before_time, now_time]
+    tdat = models.Supplier.objects.filter(**filterQuery)
     data = []
     for i in tdat:
         tmp_dict = {}
+        tmp_dict = {}
         tmp_dict["id"] = i.id
-        tmp_dict["pname"] = i.pname
-        tmp_dict["get_data_time"] = i.get_data_time
+        tmp_dict['user'] = i.user.zh_uname
+        tmp_dict["pname"] = i.proname.pname
+        tmp_dict['send_data_time'] = i.send_data_time
         tmp_dict["pnums"] = i.pnums
-        tmp_dict["knums"] = i.knums
-        tmp_dict["settlement_method"] = i.settlement_method
-        tmp_dict["unit_price"] = i.unit_price
-        tmp_dict["wb_name"] = i.wb_name
+        tmp_dict['data_source'] = i.data_source
+        tmp_dict['scene'] = i.scene
+        tmp_dict['send_reason'] = i.send_reason
+        tmp_dict['key_frame_extracted_methods'] = i.key_frame_extracted_methods
+        tmp_dict['begin_check_data_time'] = i.begin_check_data_time
+        tmp_dict['last_check_data_time'] = i.last_check_data_time
+        tmp_dict["get_data_time"] = i.get_data_time
+
+        if i.ann_meta_data == None:
+            tmp_dict['ann_meta_data'] = ""
+        else:
+            tmp_dict['ann_meta_data'] = json.dumps(i.ann_meta_data, ensure_ascii=False)
+
+        tmp_dict["wb_name"] = i.wb_name.name
+        tmp_dict['total_money'] = i.total_money
         data.append(tmp_dict)
     return data
-
-
-def wb_nupdate(
-    id, pname, get_data_time, pnums, knums, settlement_method, unit_price, wb_name
-):
-    wb_data = models.Waibao.objects.get(id=id)
-    wb_data.pname = pname
-    wb_data.get_data_time = get_data_time
-    wb_data.pnums = int(pnums)
-    wb_data.knums = int(knums)
-    wb_data.settlement_method = settlement_method
-    wb_data.unit_price = float(unit_price)
-    wb_data.wb_name = wb_name
-    wb_data.save()
-
 
 # 外包数据统计
 def wbdata_tj(btime, otime):

@@ -106,35 +106,44 @@
             <p>© gwt 2021.12.18</p>
         </div>
         <div id="right">
-            <div id="toolbar" style="border-bottom: 1px solid gray; height: 100px;">
+            <div id="toolbar" style="height: 80px;">
                 <div class="alert alert-danger hide" id="alert_div"
-                    style="width: 300px; position: fixed; top: 40%;left: 50%; right: 50%;z-index: 1; font-size: 22px;">
+                    style="width: 300px; position: fixed; top: 40%;left: 45%; right: 50%;z-index: 1; font-size: 22px;">
                 </div> <!-- 警告弹出框 -->
                 <!-- insert -->
                 <div id="ginsert" style="display: none;">
                     <table class="table">
                         <tr>
+                            <th>研发名字</th>
                             <th>项目名字</th>
-                            <th>发送数据时间</th>
-                            <th>图片数量</th>
-                            <th>标注框数量</th>
-                            <th>结算方式</th>
-                            <th>单价</th>
+                            <th>送标时间</th>
+                            <th>送标样本数量</th>
+                            <th>数据来源</th>
+                            <th>场景分布</th>
+                            <th>送标原因</th>
+                            <th>关键帧抽取方式</th>
                             <th>外包名字</th>
-                            <th>按钮</th>
+                            <th>操作</th>
                         </tr>
                         <tr>
-                            <td><select class="form-control" name="pname" id="pname_insert"></select></td>
-                            <td><input type="date" name="get_data_time" class="form-control" id="get_data_time_insert">
+                            <td>
+                                <input type="text" class="form-control" name="user_insert" id="user_insert" disabled>
                             </td>
+                            <td><select class="form-control" name="pname" id="pname_insert"><option value="---">---</option></select></td>
+                            <td><input type="date" class="form-control" name="send_data_time_insert" id="send_data_time_insert"></td>
                             <td><input type="number" name="pnums" min="0" class="form-control" id="pnums_insert"></td>
-                            <td><input type="number" name="knums" min="0" class="form-control" id="knums_insert"></td>
-                            <td><input type="text" name="settlement_method" class="form-control"
-                                    id="settlement_method_insert" placeholder="矩形框/多边形/3D框/筛选/线段"></td>
-                            <td><input type="number" min="0" step="0.0001" name="unit_price" class="form-control" id="unit_price_insert"></td>
-                            <td><select class="form-control" name="wb_name" id="wb_name_insert"></select></td>
-                            <td><button class="btn btn-primary" id="btn_insert"><i class="fa fa-plus-square"
-                                        aria-hidden="true"></i> 添加</button></td>
+                            <td>
+                                <select name="data_source_insert" class="form-control" id="data_source_insert"></select>
+                            </td>
+                            <td><input type="text" class="form-control" name="scene_insert" id="scene_insert"></td>
+                            <td><input type="text" class="form-control" name="send_reason_insert" id="send_reason_insert"></td>
+                            <td><input type="text" class="form-control" name="key_frame_extracted_methods_insert" id="key_frame_extracted_methods_insert"></td>
+                            <td><select class="form-control" name="wb_name" id="wb_name_insert"><option value="---">---</option></select></td>
+                            <td>
+                                <button class="btn btn-primary" id="btn_insert">
+                                    <i class="fa fa-plus-square" aria-hidden="true"></i> 添加
+                                </button>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -174,7 +183,7 @@
                 <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="fa fa-pencil"></i> 编辑</a>
                 <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="fa fa-remove"></i> 删除</a>
             </script>
-            <table class="layui-hide" id="test" lay-filter="test"></table>
+            <div><table class="layui-hide table-bordered" id="test" lay-filter="test"></table></div>
             <!-- 弹窗之ESS-Info -->
             <div class="modal fade" tabindex="-1" role="dialog" id="ess_info" style="margin: 200px 0 0 500px; ">
                 <div class="modal-dialog" role="document">
@@ -245,41 +254,92 @@
                             <h3 class="modal-title">修改数据</h3>
                         </div>
                         <div class="modal-body">
-                            <div class="alert alert-warning" id="err_msg" style="display: none;"></div>
-                            <div class="form-group">
-                                <label for="recipient-name" class="control-label">ID:</label>
-                                <input type="number" min="0" class="form-control" name="id" readonly="readonly"
-                                    id="id_update">
-                            </div>
-                            <div class="form-group">
-                                <label for="recipient-name" class="control-label">项目名字:</label>
-                                <select class="form-control" name="pname" id="pname_update"></select>
-                            </div>
-                            <div class="form-group">
-                                <label for="recipient-name" class="control-label">发送数据时间:</label>
-                                <input type="date" class="form-control" name="get_data_time" id="get_data_time_update">
-                            </div>
-                            <div class="form-group">
-                                <label for="message-text" class="control-label">图片数量:</label>
-                                <input type="number" min="0" class="form-control" name="pnums" id="pnums_update">
-                            </div>
-                            <div class="form-group">
-                                <label for="recipient-name" class="control-label">标注框数量:</label>
-                                <input type="number" min="0" class="form-control" name="knums" id="knums_update">
-                            </div>
-                            <div class="form-group">
-                                <label for="recipient-name" class="control-label">结算方式:</label>
-                                <input type="text" class="form-control" name="settlement_method"
-                                    id="settlement_method_update" placeholder="矩形框/多边形/3D框/筛选/线段">
-                            </div>
-                            <div class="form-group">
-                                <label for="message-text" class="control-label">单价:</label>
-                                <input type="number" min="0" step="0.0001" class="form-control" name="unit_price"
-                                    id="unit_price_update">
-                            </div>
-                            <div class="form-group">
-                                <label for="recipient-name" class="control-label">外包名字:</label>
-                                <select class="form-control" name="wb_name" id="wb_name_update"></select>
+                            <div class="alert alert-danger" id="err_msg" style="display: none;"></div>
+                            <table class="table" id="gtable">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>研发名字</th>
+                                    <th>项目名字</th>
+                                    <th>送标时间</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="number" min="0" class="form-control" name="id" disabled id="id_update"></td>
+                                    <td><input type="text" class="form-control" id="user_update" disabled></td>
+                                    <td><select class="form-control" name="pname" id="pname_update" disabled></select></td>
+                                    <td><input type="date" class="form-control" name="send_data_time" id="send_data_time_update" disabled></td>
+                                </tr>
+                                <tr>
+                                    <th>送标样本数量</th>
+                                    <th>数据来源</th>
+                                    <th>场景分布</th>
+                                    <th>送标原因</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="number" class="form-control" min="0" name="pnums" id="pnums_update" disabled></td>
+                                    <td><select class="form-control" name="data_source" id="data_source_update" disabled></select></td>
+                                    <td><input type="text" class="form-control" name="scene_update" id="scene_update" disabled></td>
+                                    <td><input type="text" class="form-control" name="send_reason_update" id="send_reason_update" disabled></td>
+                                </tr>
+                                <tr>
+                                    <th>关键帧抽取方式</th>
+                                    <th>外包名字</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="text" class="form-control" name="key_frame_extracted_methods_update" id="key_frame_extracted_methods_update" disabled></td>
+                                    <td><select class="form-control" name="wb_name" id="wb_name_update" disabled></select></td>
+                                </tr>
+                                <tr>
+                                    <th>开始验收时间</th>
+                                    <th>结束验收时间</th>
+                                    <th>收到标注结果时间</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="date" class="form-control" name="begin_check_data_time_update" id="begin_check_data_time_update"></td>
+                                    <td><input type="date" class="form-control" name="last_check_data_time_update" id="last_check_data_time_update"></td>
+                                    <td><input type="date" class="form-control" name="get_data_time" id="get_data_time_update"></td>
+                                </tr>
+                                <tr>
+                                    <th>结算方式</th>
+                                    <th>交付准确率</th>
+                                    <th>框数</th>
+                                    <th>单价</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select class="form-control settlement_method_update" id="settlement_method_update1"><option value="---">---</option></select>
+                                    </td>
+                                    <td><input type="number" class="form-control" min="0" max="100" name="recovery_precision_update" id="recovery_precision_update1"></td>
+                                    <td><input type="number" min="0" class="form-control" name="knums_update" id="knums_update1"></td>
+                                    <td><input type="number" min="0" step="0.01" class="form-control" name="unit_price_update" id="unit_price_update1"></td>
+                                </tr>
+                                <tr>
+                                    <th>结算方式</th>
+                                    <th>交付准确率</th>
+                                    <th>框数</th>
+                                    <th>单价</th>
+                                </tr>
+                                <tr>
+                                    <td><select class="form-control settlement_method_update"  id="settlement_method_update2"><option value="---">---</option></select></td>
+                                    <td><input type="number" class="form-control" min="0" max="100" name="recovery_precision_update" id="recovery_precision_update2"></td>
+                                    <td><input type="number" min="0" class="form-control" name="knums_update" id="knums_update2"></td>
+                                    <td><input type="number" min="0" step="0.01" class="form-control" name="unit_price_update" id="unit_price_update2"></td>
+                                </tr>
+                                <tr>
+                                    <th>结算方式</th>
+                                    <th>交付准确率</th>
+                                    <th>框数</th>
+                                    <th>单价</th>
+                                </tr>
+                                <tr>
+                                    <td><select class="form-control settlement_method_update" id="settlement_method_update3"><option value="---">---</option></select></td>
+                                    <td><input type="number" class="form-control" min="0" max="100" name="recovery_precision_update" id="recovery_precision_update3"></td>
+                                    <td><input type="number" min="0" class="form-control" name="knums_update" id="knums_update3"></td>
+                                    <td><input type="number" min="0" step="0.01" class="form-control" name="unit_price_update" id="unit_price_update3"></td>
+                                </tr>
+                            </table>
+                            <div style="display: flex; justify-content: center;">
+                                <button style="margin-bottom: 15px; display: inline; width: 100%;" class="btn btn-warning">
+                                <i class="fa fa-plus-square" aria-hidden="true" style="margin-right: 10px;"></i>新&nbsp;增</button>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal"
@@ -332,14 +392,39 @@
 <script type="text/javascript">
     const projects = JSON.parse('{{ projects|safe }}'); // 项目名字 列表
     const bzf = JSON.parse('{{ bzf|safe }}'); // 外包列表
+    const data_source_list = JSON.parse('{{ data_source|safe }}'); // 数据来源列表
+    const js_methods = JSON.parse('{{ js_methods|safe }}'); // 结算方式
     search();
+    
+    function clean_insert_data(){
+        // end 清除
+        $("#pname_insert").find('option:first').prop("selected", "selected");
+        $("#send_data_time_insert").val("");
+        $("#pnums_insert").val("");
+        $("#data_source_insert").find('option:first').prop("selected", "selected");
+        $("#scene_insert").val("");
+        $("#send_reason_insert").val("");
+        $("#key_frame_extracted_methods_insert").val("");
+        $("#wb_name_insert").find('option:first').prop("selected", "selected");
+    }
+
+    function warning_alert(msg){
+        $(".alert-danger").html(msg);
+        $("#alert_div").css("background-color", 'rgb(242, 222, 222)');
+        $("#alert_div").css("color", 'rgb(169, 68,66)');
+        $(".alert-danger").addClass("show");
+        window.setTimeout(function () {
+            $(".alert-danger").removeClass("show");
+        }, 1000);//显示的时间
+    }
     const table = layui.table;
     //渲染表格
     table.render({//渲染table
         url: '/wballdata',     //数据获取url
         method: 'GET',         //数据传输方式为post
         elem: '#test',         //设置容器
-        height: 'full-185',    //高度为屏幕高度-20
+        toolbar: "default",    // 工具栏
+        height: 'full-155',    //高度为屏幕高度-20
         page: true,
         request: {
             pageName: 'pageIndex',  // 页码的参数名称，默认：page
@@ -366,14 +451,21 @@
         cols: [[               //设置列标签、标题、宽度、是否排序等
             // {checkbox:true}, // 复选框
             { field: 'id', title: 'ID', fixed: left },
-            { field: 'pname', title: '项目名字' },
-            { field: 'get_data_time', title: '发送数据时间', },
-            { field: 'pnums', title: '图片数量', },
-            { field: 'knums', title: '标注框数量', },
-            { field: 'settlement_method', title: '结算方式' },
-            { field: 'unit_price', title: '单价', width: 100 },
-            { field: 'wb_name', title: '外包名字', },
-            { fixed: 'right', title: '操作', toolbar: '#barDemo' },//设置每行的工具栏以及其容器
+            { field: 'user', title:'研发', width: 80},
+            { field: 'pname', title: '项目名字', width: 220},
+            { field: 'send_data_time', title: "送标时间", width: 110},
+            { field: 'pnums', title: "送标样本数量", width: 130},
+            { field: 'data_source', title: "数据来源", width: 110},
+            { field: 'scene', title: "场景分布", width: 110},
+            { field: 'send_reason', title: "送标原因", width: 110},
+            { field: 'key_frame_extracted_methods', title: "关键帧抽取方式", width: 130},
+            { field: 'begin_check_data_time', title: "开始验收时间", width: 120},
+            { field: 'last_check_data_time', title: "结束验收时间", width: 120},
+            { field: 'get_data_time', title: '标注结果返回时间', width: 150},
+            { field: 'ann_meta_data', title:'准确率&框数&结算方式&单价', width: 230},
+            { field: 'wb_name', title: '外包名字', width: 90 },
+            { field: 'total_money', title: "总价", width: 110},
+            { fixed: 'right', title: '操作', toolbar: '#barDemo',width:150 },//设置每行的工具栏以及其容器
         ]],
     });
     // 表格后台过滤
@@ -416,7 +508,8 @@
                 window.setTimeout(function () {
                     $(".alert-danger").removeClass("show");
                 }, 1000);//显示的时间
-            } else {
+            }
+            else {
                 layer.confirm('真的删除行么', function (index) {
                     $.ajax("/wb_dtdel/", {
                         method: "GET",
@@ -436,7 +529,8 @@
                             window.setTimeout(function () {
                                 $(".alert-danger").removeClass("show");
                             }, 1000);//显示的时间
-                        } else {
+                        }
+                        else {
                             $(".alert-danger").html("ID: " + obj.data.id + " 删除失败!");
                             $(".alert-danger").addClass("show");
                             window.setTimeout(function () {
@@ -468,48 +562,95 @@
                     },
                 }).done(function (res) {
                     if (res && res.status == "successful") {
+                        for(let clean_idx=1; clean_idx<=3; clean_idx++){
+                            $("#settlement_method_update"+clean_idx).find('option:first').prop("selected", "selected");
+                            $("#recovery_precision_update"+clean_idx).val("");
+                            $("#knums_update"+clean_idx).val("");
+                            $("#unit_price_update"+clean_idx).val("");
+                        }
                         const id = res.data[0].id;
+                        const user = res.data[0].user;
                         const pname = res.data[0].pname;
-                        const get_data_time = res.data[0].get_data_time;
+                        const send_data_time = res.data[0].send_data_time;
                         const pnums = res.data[0].pnums;
-                        const knums = res.data[0].knums;
-                        const settlement_method = res.data[0].settlement_method;
-                        const unit_price = res.data[0].unit_price;
+                        const data_source = res.data[0].data_source;
+                        const scene = res.data[0].scene;
+                        const send_reason = res.data[0].send_reason;
+                        const key_frame_extracted_methods = res.data[0].key_frame_extracted_methods;
+                        const begin_check_data_time = res.data[0].begin_check_data_time;
+                        const last_check_data_time = res.data[0].last_check_data_time;
+                        const get_data_time = res.data[0].get_data_time;
                         const wb_name = res.data[0].wb_name;
+                        const ann_meta_data = res.data[0].ann_meta_data;
 
                         $("#id_update").val(id);
+                        $("#user_update").val(user);
                         $("#pname_update").html("<option value=" + pname + ">" + pname + "</option>");
-                        $("#get_data_time_update").val(get_data_time);
+                        $("#send_data_time_update").val(send_data_time);
                         $("#pnums_update").val(pnums);
-                        $("#knums_update").val(knums);
-                        $("#settlement_method_update").val(settlement_method);
-                        $("#unit_price_update").val(unit_price);
+                        $("#data_source_update").html("<option value=" + data_source + ">" + data_source + "</option>");
+                        $("#scene_update").val(scene);
+                        $("#send_reason_update").val(send_reason);
+                        $("#key_frame_extracted_methods_update").val(key_frame_extracted_methods);
+                        $("#begin_check_data_time_update").val(begin_check_data_time);
+                        $("#last_check_data_time_update").val(last_check_data_time);
+                        $("#get_data_time_update").val(get_data_time);
                         $("#wb_name_update").html("<option value=" + wb_name + ">" + wb_name + "</option>");
+                    
+                        // 给结算方式 添加下拉框
+                        let js1 = document.getElementById('settlement_method_update1');
+                        for (var i = 0; i < js_methods.length; i++) {
+                            if (js1.length < js_methods.length+1) { // 这里不判断的话会一直添加
+                                if (js_methods[i] != js1.value) {
+                                    var objOption = document.createElement("option");
+                                    objOption.value = js_methods[i];
+                                    objOption.text = js_methods[i];
+                                    js1.add(objOption);
+                                };
+                            };
+                        };
+                        // 2
+                        let js2 = document.getElementById('settlement_method_update2');
+                        for (var i = 0; i < js_methods.length; i++) {
+                            if (js2.length < js_methods.length+1) { // 这里不判断的话会一直添加
+                                if (js_methods[i] != js2.value) {
+                                    var objOption = document.createElement("option");
+                                    objOption.value = js_methods[i];
+                                    objOption.text = js_methods[i];
+                                    js2.add(objOption);
+                                };
+                            };
+                        };
+                        // 3
+                        let js3 = document.getElementById('settlement_method_update3');
+                        for (var i = 0; i < js_methods.length; i++) {
+                            if (js3.length < js_methods.length+1) { // 这里不判断的话会一直添加
+                                if (js_methods[i] != js3.value) {
+                                    var objOption = document.createElement("option");
+                                    objOption.value = js_methods[i];
+                                    objOption.text = js_methods[i];
+                                    js3.add(objOption);
+                                };
+                            };
+                        };
 
-                        // 给数据标注方 赋值
-                        let bzfs1 = document.getElementById('wb_name_update');
-                        for (var i = 0; i < bzf.length; i++) {
-                            if (bzfs1.length < bzf.length) { // 这里不判断的话会一直添加
-                                if (bzf[i] != document.getElementById("wb_name_update").value) {
-                                    var objOption = document.createElement("option");
-                                    objOption.value = bzf[i];
-                                    objOption.text = bzf[i];
-                                    bzfs1.add(objOption);
-                                };
-                            };
-                        };
-                        // 给项目名字 添加下拉框
-                        let p_s1 = document.getElementById('pname_update');
-                        for (var i = 0; i < projects.length; i++) {
-                            if (p_s1.length < projects.length) { // 这里不判断的话会一直添加
-                                if (projects[i] != document.getElementById("pname_update").value) {
-                                    var objOption = document.createElement("option");
-                                    objOption.value = projects[i];
-                                    objOption.text = projects[i];
-                                    p_s1.add(objOption);
-                                };
-                            };
-                        };
+                        if (ann_meta_data == ""){
+                            console.log('空的!')
+                        }
+                        else{
+                            for (let index = 0; index < ann_meta_data.length; index++) {
+                                const method = ann_meta_data[index]["settlement_method"];
+                                const price = ann_meta_data[index]["unit_price"];
+                                const pricision = ann_meta_data[index]["recovery_precision"];
+                                const knums = ann_meta_data[index]["knums"];
+                                // 结算方式	交付准确率	框数	单价
+                                $("#settlement_method_update"+(index+1)).val(method);
+                                $("#recovery_precision_update"+(index+1)).val(pricision);
+                                $("#knums_update"+(index+1)).val(knums);
+                                $("#unit_price_update"+(index+1)).val(price);
+                            }
+                        }
+
                     }
                 });
             }
@@ -518,74 +659,66 @@
     // 添加数据
     $("#btn_insert").click(function () {
         if (sessionStorage.getItem("power") == '3') {
-            $(".alert-danger").html("您没有权限添加数据!");
-            $(".alert-danger").addClass("show");
-            window.setTimeout(function () {
-                $(".alert-danger").removeClass("show");
-            }, 1000);//显示的时间
-        } else {
+            warning_alert("您没有权限添加数据!");
+        }
+        else {
+            const user = $("#user_insert").val();
             const pname = $("#pname_insert option:selected").val();
-            const get_data_time = $("#get_data_time_insert").val();
+            const send_data_time = $("#send_data_time_insert").val();
             const pnums = $("#pnums_insert").val();
-            const knums = $("#knums_insert").val();
-            const settlement_method = $("#settlement_method_insert").val();
-            const unit_price = $("#unit_price_insert").val();
+            const data_source = $("#data_source_insert option:selected").val();
+            const scene = $("#scene_insert").val();
+            const send_reason = $("#send_reason_insert").val();
+            const key_frame_extracted_methods = $("#key_frame_extracted_methods_insert").val();
             const wb_name = $("#wb_name_insert option:selected").val();
-            if (get_data_time == "") {
-                $(".alert-danger").html("不允许有空值!");
-                $(".alert-danger").addClass("show");
-                window.setTimeout(function () {
-                    $(".alert-danger").removeClass("show");
-                }, 1500);//显示的时间
-            } else if (pnums == "") {
-                $(".alert-danger").html("不允许有空值!");
-                $(".alert-danger").addClass("show");
-                window.setTimeout(function () {
-                    $(".alert-danger").removeClass("show");
-                }, 1500);//显示的时间
-            } else if (knums == "") {
-                $(".alert-danger").html("不允许有空值!");
-                $(".alert-danger").addClass("show");
-                window.setTimeout(function () {
-                    $(".alert-danger").removeClass("show");
-                }, 1500);//显示的时间
-            } else if (settlement_method == "") {
-                $(".alert-danger").html("不允许有空值!");
-                $(".alert-danger").addClass("show");
-                window.setTimeout(function () {
-                    $(".alert-danger").removeClass("show");
-                }, 1500);//显示的时间
-            } else if (unit_price == "") {
-                $(".alert-danger").html("不允许有空值!");
-                $(".alert-danger").addClass("show");
-                window.setTimeout(function () {
-                    $(".alert-danger").removeClass("show");
-                }, 1500);//显示的时间
-            } else {
+            console.log(pnums)
+            if (send_data_time == "") {
+                warning_alert("送标时间不允许为空!");
+            }
+            else if  (pname == "---") {
+                warning_alert("项目名字不允许为空!");
+            }
+            else if (scene == "---") {
+                warning_alert("数据来源不允许为空!");
+            }
+            else if(wb_name == "---") {
+                warning_alert("外包名字不允许为空!");
+            }
+            else if (pnums == "") {
+                warning_alert("样本数量不允许为空!");
+            }
+            else if (pnums <= 0) {
+                warning_alert("样本数量不允许小于等于 <b>0<b/> !");
+            }
+            else if (scene == "") {
+                warning_alert("场景分布不允许为空!");
+            }
+            else if (send_reason == "") {
+                warning_alert("送标原因不允许为空!");
+            }
+            else if (key_frame_extracted_methods == "") {
+                warning_alert("关键帧抽取方式不允许为空!");
+            }
+            else {
                 $.ajax("/waiabo_data_insert/", {
                     method: "POST",
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     data: {
-                        uname: $("#name").text(),
+                        user: user,
                         pname: pname,
-                        get_data_time: get_data_time,
+                        send_data_time: send_data_time,
                         pnums: pnums,
-                        knums: knums,
-                        settlement_method: settlement_method,
-                        unit_price: unit_price,
+                        data_source: data_source,
+                        scene: scene,
+                        send_reason: send_reason,
+                        key_frame_extracted_methods: key_frame_extracted_methods,
                         wb_name: wb_name
                     },
                 }).done(function (res) {
                     if (res && res.data == "successful") {
-                        $("#pname_insert").find('option:first').prop("selected", "selected");
-                        $("#get_data_time_insert").val("");
-                        $("#pnums_insert").val("");
-                        $("#knums_insert").val("");
-                        $("#settlement_method_insert").val("");
-                        $("#unit_price_insert").val("");
-                        $("#wb_name_insert").find('option:first').prop("selected", "selected");
-
+                        // 添加数据后清除上次的值
+                        clean_insert_data();
                         let url = '/wballdata'
                         table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
 
@@ -596,12 +729,9 @@
                         window.setTimeout(function () {
                             $(".alert-danger").removeClass("show");
                         }, 1000);//显示的时间
-                    } else {
-                        $(".alert-danger").html(res.data);
-                        $(".alert-danger").addClass("show");
-                        window.setTimeout(function () {
-                            $(".alert-danger").removeClass("show");
-                        }, 1500);//显示的时间
+                    }
+                    else {
+                        warning_alert(res.data);
                     }
                 });
             }
@@ -611,69 +741,91 @@
     // 修改数据
     $("#btn-update").click(function () {
         const id = $("#id_update").val();
+        const user = $("#user_update").val();
         const pname = $("#pname_update option:selected").val();
-        const get_data_time = $("#get_data_time_update").val();
+        const send_data_time = $("#send_data_time_update").val();
         const pnums = $("#pnums_update").val();
-        const knums = $("#knums_update").val();
-        const settlement_method = $("#settlement_method_update").val();
-        const unit_price = $("#unit_price_update").val();
+        const data_source = $("#data_source_update option:selected").val();
+        const scene = $("#scene_update").val();
+        const send_reason = $("#send_reason_update").val();
+        const key_frame_extracted_methods = $("#key_frame_extracted_methods_update").val();
+        const begin_check_data_time = $("#begin_check_data_time_update").val();
+        const last_check_data_time = $("#last_check_data_time_update").val();
+        const get_data_time = $("#get_data_time_update").val();
         const wb_name = $("#wb_name_update option:selected").val();
-        if (get_data_time == "") {
-            $("#err_msg").css("display", 'block');
-            $("#err_msg").html("不允许有空值!")
-        }
-        else if (pnums == '') {
-            $("#err_msg").css("display", 'block');
-            $("#err_msg").html("不允许有空值!")
-        }
-        else if (knums == '') {
-            $("#err_msg").css("display", 'block');
-            $("#err_msg").html("不允许有空值!")
-        }
-        else if (settlement_method == '') {
-            $("#err_msg").css("display", 'block');
-            $("#err_msg").html("不允许有空值!")
-        }
-        else if (unit_price == '') {
-            $("#err_msg").css("display", 'block');
-            $("#err_msg").html("不允许有空值!")
-        }
-        else {
-            $.ajax("/wb_update/", {
-                method: "POST",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: {
-                    id: id,
-                    pname: pname,
-                    get_data_time: get_data_time,
-                    pnums: pnums,
-                    knums: knums,
-                    settlement_method: settlement_method,
-                    unit_price: unit_price,
-                    wb_name: wb_name
-                },
-            }).done(function (res) {
-                if (res && res.status == "successful") {
-                    $("#btn-miss").click();
-                    $(".alert-danger").html("修改成功!");
-                    $(".alert-danger").addClass("show");
-                    $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
-                    $("#alert_div").css("color", 'rgb(255, 255, 255)');
-                    window.setTimeout(function () {
-                        $(".alert-danger").removeClass("show");
-                    }, 1000);//显示的时间
+        
+        const recovery_precision1 = $("#recovery_precision_update1").val();
+        const knums1 = $("#knums_update1").val();
+        const settlement_method1 = $("#settlement_method_update1  option:selected").val();
+        const unit_price1 = $("#unit_price_update1").val();
+        
+        const recovery_precision2 = $("#recovery_precision_update2").val();
+        const knums2 = $("#knums_update2").val();
+        const settlement_method2 = $("#settlement_method_update2  option:selected").val();
+        const unit_price2 = $("#unit_price_update2").val();
 
-                    let url = '/wballdata'
-                    table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
-                }
-                else {
-                    $("#err_msg").css("display", 'block');
-                    $("#err_msg").html(res.mes);
+        const recovery_precision3 = $("#recovery_precision_update3").val();
+        const knums3 = $("#knums_update3").val();
+        const settlement_method3 = $("#settlement_method_update3  option:selected").val();
+        const unit_price3 = $("#unit_price_update3").val();
+        
+        const ann_meta_data = [
+                                {'recovery_precision': recovery_precision1,
+                                'knums': knums1, 
+                                "settlement_method": settlement_method1, 
+                                "unit_price": unit_price1
+                                },
+                                {'recovery_precision': recovery_precision2,
+                                    'knums': knums2, 
+                                    "settlement_method": settlement_method2, 
+                                    "unit_price": unit_price2
+                                },
+                                {'recovery_precision': recovery_precision3,
+                                    'knums': knums3, 
+                                    "settlement_method": settlement_method3, 
+                                    "unit_price": unit_price3
+                                }
+                            ]
+        $.ajax("/wb_update/", {
+            method: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: {
+                id: id,
+                user: user,
+                pname: pname,
+                send_data_time: send_data_time,
+                pnums: pnums,
+                data_source: data_source,
+                scene: scene,
+                send_reason: send_reason,
+                key_frame_extracted_methods: key_frame_extracted_methods,
+                wb_name: wb_name,
+                begin_check_data_time: begin_check_data_time,
+                last_check_data_time: last_check_data_time,
+                get_data_time: get_data_time,
+                ann_meta_data: ann_meta_data
+            },
+        }).done(function (res) {
+            if (res && res.status == "successful") {
+                $("#btn-miss").click();
+                $(".alert-danger").html("修改成功!");
+                $(".alert-danger").addClass("show");
+                $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
+                $("#alert_div").css("color", 'rgb(255, 255, 255)');
+                window.setTimeout(function () {
+                    $(".alert-danger").removeClass("show");
+                }, 1000);//显示的时间
 
-                }
-            });
-        }
+                let url = '/wballdata'
+                table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
+            }
+            else {
+                $("#err_msg").css("display", 'block');
+                $("#err_msg").html(res.mes);
+
+            }
+        });
     })
     function help() {
         $(".alert-danger").html("请联系卫龙!");
@@ -705,11 +857,16 @@
             $('#search').css("display", "none");
             $('#ginsert').css("display", "block");
         }
+        // $("#knums_insert").tagsinput();
+        // $("#unit_price_insert").tagsinput();
+        // $('.selectpicker').selectpicker();
+
+        document.getElementById("user_insert").value = $("#name").text();
         // 给项目名字 添加下拉框
         var p_s = document.getElementById('pname_insert');
         for (var i = 0; i < projects.length; i++) {
             if (p_s.length < projects.length) { // 这里不判断的话会一直添加
-                if (projects[i] != document.getElementById("pname_insert").value) {
+                if (projects[i] != p_s.value) {
                     var objOption = document.createElement("option");
                     objOption.value = projects[i];
                     objOption.text = projects[i];
@@ -717,6 +874,19 @@
                 };
             };
         };
+        // 给数据来源添加下拉框
+        var dsl_insert = document.getElementById("data_source_insert");
+        for (var i = 0; i < data_source_list.length; i++){
+            if (dsl_insert.length < data_source_list.length){
+                if (data_source_list[i] != dsl_insert.value){
+                    var objOption = document.createElement("option");
+                    objOption.value = data_source_list[i];
+                    objOption.text = data_source_list[i];
+                    dsl_insert.add(objOption);
+                }
+            }
+        }
+
         // 给外包 添加下拉框
         var bzf_insert = document.getElementById("wb_name_insert");
         for (var i = 0; i < bzf.length; i++) {
@@ -737,6 +907,12 @@
             $('#ginsert').css("display", "none");
             $('#search').css("display", "block");
         }
+        $("#begin_time_search").val("2021-01-01")
+        var now = new Date();
+        var day = ('0' + now.getDate()).slice(-2);
+        var month = ('0' + (now.getMonth() + 1)).slice(-2);
+        var today = now.getFullYear() + '-' + (month) + '-' + (day);
+        $("#last_time_search").val(today);
         // 给项目名字 添加下拉框
         var p_s = document.getElementById('pname_search');
         for (var i = 0; i < projects.length; i++) {

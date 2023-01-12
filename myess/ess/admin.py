@@ -67,3 +67,41 @@ class ControlWaibaos(admin.ModelAdmin):
     list_display = ("name",)
     search_fields = ('name',)
     list_per_page = 10  # 每页展示5条记录
+
+@admin.register(models.Supplier)
+class ControlSupplier(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "proname_id",
+        "send_data_time",
+        "pnums",
+        "data_source",
+        "scene",
+        "send_reason",
+        "key_frame_extracted_methods",
+        "begin_check_data_time",
+        "last_check_data_time",
+        "ann_meta_data",
+        "get_data_time",
+        "wb_name_id",
+        "created_time",
+        "total_money"
+    )
+    ordering = ("-created_time",)
+    list_per_page = 5  # 每页展示5条记录
+    search_fields = [
+                    "user__username",
+                    "proname__pname",
+                    "send_data_time",
+                    "pnums",
+                    "data_source",
+                    "scene",
+                    "send_reason",
+                    "key_frame_extracted_methods",
+                    "begin_check_data_time",
+                    "last_check_data_time",
+                    "ann_meta_data",
+                    "get_data_time",
+                    "wb_name__name",
+                    "created_time",
+                    "total_money"]

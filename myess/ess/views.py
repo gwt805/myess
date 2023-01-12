@@ -15,9 +15,7 @@ from .mes import (
     plw,
     pnw,
     search,
-    waibao_insert,
     waibao_search,
-    wb_nupdate,
     wbdata_tj,
     dingtalk,
     gs_data_add,
@@ -29,7 +27,7 @@ from email.header import Header
 import threading
 from loguru import logger
 from myess.settings import CONFIG
-import urllib
+
 # Create your views here.
 
 """
@@ -67,9 +65,6 @@ def sendEmail(username: str, password: str, email: str):
         logger.warning("邮件发送相关配置您还没有操作喔!")
     else:
         task.start()
-
-
-# 密码修改
 
 
 def pwd_update(request):
@@ -242,7 +237,6 @@ def gsalldata(request):  # 首页数据
     else:
         uname = request.GET.get("uname").strip()
         pname = request.GET.get("pname").strip()
-        print(pname)
         waibao = request.GET.get("bzf").strip()
         task_id = request.GET.get("taskid").strip()
         taskkind = request.GET.get("taskkind").strip()
@@ -477,7 +471,9 @@ def waibao(request):
     bzf = json.dumps(
         [i[0] for i in models.Waibaos.objects.values_list("name")]
     )  # 数据库里所有的项目名字
-    return render(request, "tasks/waibao.html", {"projects": projects, "bzf": bzf})
+    data_source_list = json.dumps(["---",'人工采集',"回流数据"])
+    js_methods = json.dumps(['矩形框',"多边形", "线段", "筛选", "3D框", "3D分割"])
+    return render(request, "tasks/waibao.html", {"projects": projects, "bzf": bzf, "data_source": data_source_list, "js_methods": js_methods})
 
 
 def wballdata(request):
@@ -494,25 +490,32 @@ def wballdata(request):
         ).strftime("%Y-%m-%d")
         now_time = now_time.strftime("%Y-%m-%d")
 
-        data_object = list(
-            models.Waibao.objects.all().filter(
-                get_data_time__range=[before_time, now_time]
-            )
-        )
+        data_object = models.Supplier.objects.all().filter(created_time__range=[before_time, now_time])
 
         data = []
         for i in data_object:
             tmp_dict = {}
             tmp_dict["id"] = i.id
-            tmp_dict["pname"] = i.pname
-            tmp_dict["get_data_time"] = i.get_data_time
+            tmp_dict['user'] = i.user.zh_uname
+            tmp_dict["pname"] = i.proname.pname
+            tmp_dict['send_data_time'] = i.send_data_time
             tmp_dict["pnums"] = i.pnums
-            tmp_dict["knums"] = i.knums
-            tmp_dict["settlement_method"] = i.settlement_method
-            tmp_dict["unit_price"] = i.unit_price
-            tmp_dict["wb_name"] = i.wb_name
+            tmp_dict['data_source'] = i.data_source
+            tmp_dict['scene'] = i.scene
+            tmp_dict['send_reason'] = i.send_reason
+            tmp_dict['key_frame_extracted_methods'] = i.key_frame_extracted_methods
+            tmp_dict['begin_check_data_time'] = i.begin_check_data_time
+            tmp_dict['last_check_data_time'] = i.last_check_data_time
+            tmp_dict["get_data_time"] = i.get_data_time
+            
+            if i.ann_meta_data == None:
+                tmp_dict['ann_meta_data'] = ""
+            else:
+                tmp_dict['ann_meta_data'] = json.dumps(i.ann_meta_data, ensure_ascii=False) # ensure_ascii
+            tmp_dict["wb_name"] = i.wb_name.name
+            tmp_dict['total_money'] = i.total_money
             data.append(tmp_dict)
-        data.sort(key=lambda x: x["get_data_time"], reverse=True)
+        data.sort(key=lambda x: x["send_data_time"], reverse=True)
         pageIndex = request.GET.get("pageIndex")
         pageSize = request.GET.get("pageSize")
 
@@ -525,12 +528,11 @@ def wballdata(request):
     else:
         
         pname = request.GET.get("pname").strip()
-        print(pname)
         bzf = request.GET.get("bzf").strip()
         begin_time = request.GET.get("begin_time").strip()
         last_time = request.GET.get("last_time").strip()
         data = waibao_search(pname, bzf, begin_time, last_time)
-        data.sort(key=lambda x: x["get_data_time"], reverse=True)
+        data.sort(key=lambda x: x["send_data_time"], reverse=True)
         res = []
         pageIndex = request.GET.get("pageIndex")
         pageSize = request.GET.get("pageSize")
@@ -548,43 +550,27 @@ def wballdata(request):
 def waiabo_data_insert(request):
     if request.method == "POST":
         data = QueryDict(request.body)
-        uname = data.get("uname")
-        pname = data.get("pname")
-        get_data_time = data.get("get_data_time")
-        pnums = data.get("pnums")
-        knums = data.get("knums")
-        settlement_method = data.get("settlement_method")
-        unit_price = data.get("unit_price")
-        wb_name = data.get("wb_name")
-        res = waibao_insert(
-            pname, get_data_time, pnums, knums, settlement_method, unit_price, wb_name
-        )
-        if res == "ok":
-            dingtalk(
-                "添加",
-                "",
-                uname,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "外包",
-                {
-                    "项目名字": pname,
-                    "发送数据时间": get_data_time,
-                    "图片数量": pnums,
-                    "框数": knums,
-                    "结算方式": settlement_method,
-                    "单价": unit_price,
-                    "外包名字": wb_name,
-                },
-            )
+        try:
+            int(data.get("pnums"))
+        except:
+            return JsonResponse({"data": "样本数量 是 <b>整数<b/>么?"})
+        dataone = {
+                'user': models.User.objects.get(username=models.User.objects.get(zh_uname=data.get("user")).username),
+                'proname': models.Project.objects.get(pname=data.get("pname")),
+                'send_data_time': data.get("send_data_time"),
+                'pnums': abs(int(data.get("pnums"))),
+                'data_source': data.get("data_source"),
+                'scene': data.get("scene"),
+                'send_reason': data.get("send_reason"),
+                'key_frame_extracted_methods': data.get("key_frame_extracted_methods"),
+                'wb_name': models.Waibaos.objects.get(name=data.get("wb_name")),
+                'created_time': datetime.now().strftime("%Y-%m-%d")
+        }
+        try:
+            models.Supplier.objects.create(**dataone)
+            # dingtalk("添加","",data.get("user"),"","","","","","","","","外包",{"项目名字": data.get("pname"),"发送数据时间": get_data_time,"图片数量": pnums,"框数": knums,"结算方式": settlement_method,"单价": unit_price,"外包名字": wb_name,},)
             return JsonResponse({"data": "successful"})
-        else:
+        except:
             return JsonResponse({"data": "请检查填写的内容"})
 
 
@@ -592,10 +578,9 @@ def waiabo_data_insert(request):
 def wb_dtdel(request):
     id = request.GET.get("id")
     uname = request.GET.get("n")
-    models.Waibao.objects.get(id=id).delete()
-    dingtalk("删除", id, uname, "", "", "", "", "", "", "", "", "外包", "")
+    models.Supplier.objects.get(id=id).delete()
+    # dingtalk("删除", id, uname, "", "", "", "", "", "", "", "", "外包", "")
     return JsonResponse({"data": "successful"})
-
 
 # 外包数据修改
 @csrf_exempt
@@ -603,65 +588,115 @@ def wb_update(request):
     id = request.GET.get("id")
     if request.method == "POST":
         data = QueryDict(request.body)
-        id = data.get("id")
-        pname = data.get("pname")
-        get_data_time = data.get("get_data_time")
-        pnums = data.get("pnums").strip()
-        knums = data.get("knums").strip()
-        settlement_method = data.get("settlement_method").strip()
-        unit_price = data.get("unit_price").strip()
-        wb_name = data.get("wb_name").strip()
-        print(pname)
+        print(data)
+        data_update = {
+            'user': models.User.objects.get(username=models.User.objects.get(zh_uname=data.get("user")).username),
+            'proname': models.Project.objects.get(pname=data.get("pname")),
+            'send_data_time' : data.get("send_data_time"),
+            'pnums' : abs(int(data.get("pnums"))),
+            'data_source' : data.get("data_source"),
+            'scene' : data.get("scene"),
+            'send_reason' : data.get("send_reason"),
+            'key_frame_extracted_methods' : data.get("key_frame_extracted_methods"),
+            'wb_name': models.Waibaos.objects.get(name=data.get("wb_name"))
+        }
+        if data.get("begin_check_data_time"):
+            data_update['begin_check_data_time'] = data.get("begin_check_data_time")
+        else:
+            data_update['begin_check_data_time'] = None
+        if data.get("last_check_data_time"): 
+            data_update['last_check_data_time'] = data.get("last_check_data_time")
+        else:
+            data_update['last_check_data_time'] = None
+        if data.get("get_data_time"):
+            data_update['get_data_time'] = data.get("get_data_time")
+        else:
+            data_update['get_data_time'] = None
+
+        new_ann_meta_data = []
+        ann_flag = True
+        for item in range(0,3):
+            settlement_method =  data.get(f"ann_meta_data[{item}][settlement_method]")
+            recovery_precision = data.get(f"ann_meta_data[{item}][recovery_precision]")
+            knums = data.get(f"ann_meta_data[{item}][knums]")
+            unit_price = data.get(f"ann_meta_data[{item}][unit_price]")
+
+            if recovery_precision:
+                if float(recovery_precision) < 0  or float(recovery_precision) > 100:
+                    return JsonResponse({"status": "error", "mes": "准去率不能 小于0 大于100 !"})
+                elif settlement_method == "---" or knums == "" or unit_price == "":
+                    return JsonResponse({"status": "error", "mes": "框数,单价,结算方式,准确率 需同时填写!"})
+                else:
+                    try:
+                        ann_tmp_dict = {
+                            "settlement_method": settlement_method,
+                            "recovery_precision": float(recovery_precision),
+                            "knums": abs(int(knums)),
+                            "unit_price": abs(float(unit_price))
+                            }
+                        new_ann_meta_data.append(ann_tmp_dict)
+                    except:
+                        return JsonResponse({"status": "error", "mes": "请检查 框数 和 单价 是否填写正确!"})
+            if unit_price != "": # 单价不为空
+                if float(unit_price) < 1e-6:
+                    return JsonResponse({"status": "error", "mes": "单价 怎么可能是 0 呢!"})
+                if settlement_method == "---" or knums == "":
+                    return JsonResponse({"status": "error", "mes": "框数,单价,结算方式 需同时填写!"})
+            elif settlement_method != "---": # 结算方式不为空
+                if knums == "" or unit_price == "":
+                    return JsonResponse({"status": "error", "mes": "框数,单价,结算方式 需同时填写!"})
+            elif knums != "": # 框数不为空
+                if settlement_method == "---" or unit_price == "":
+                    return JsonResponse({"status": "error", "mes": "框数,单价,结算方式 需同时填写!"})
+            elif settlement_method == "---" and knums == "" and unit_price == "": # 都为空
+                pass
+            else:
+                ann_tmp_dict = {
+                        "settlement_method": settlement_method,
+                        "recovery_precision": None,
+                        "knums": abs(int(knums)),
+                        "unit_price": abs(float(unit_price))
+                        }
+                new_ann_meta_data.append(ann_tmp_dict)
+
+        if new_ann_meta_data:
+            data_update["ann_meta_data"] = new_ann_meta_data
+            money_count = 0
+            for idx  in new_ann_meta_data:
+                money_count += round((idx["knums"] * idx["unit_price"]),2)
+            data_update["total_money"] = money_count
+
+            # 预留 修改后算这个项目的折线趋势图
         try:
-            wb_nupdate(
-                id,
-                pname,
-                get_data_time,
-                pnums,
-                knums,
-                settlement_method,
-                unit_price,
-                wb_name,
-            )
+            models.Supplier.objects.filter(id=data.get('id')).update(**data_update)
+            # dingtalk("修改",id,"郭卫焘","","","","","","","","","外包",{"项目名字": pname,"发送数据时间": get_data_time,"图片数量": pnums,"框数": knums,"结算方式": settlement_method,"单价": unit_price,"外包名字": wb_name,},)
+            return JsonResponse({"status": "successful"})
         except:
             return JsonResponse({"status": "error", "mes": "请检查填写的信息!"})
-        dingtalk(
-            "修改",
-            id,
-            "郭卫焘",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "外包",
-            {
-                "项目名字": pname,
-                "发送数据时间": get_data_time,
-                "图片数量": pnums,
-                "框数": knums,
-                "结算方式": settlement_method,
-                "单价": unit_price,
-                "外包名字": wb_name,
-            },
-        )
-        return JsonResponse({"status": "successful"})
-    res = models.Waibao.objects.filter(id=id)
+
+    res = models.Supplier.objects.filter(id=id)
 
     data = []
     for i in res:
         tmp_dict = {}
         tmp_dict["id"] = i.id
-        tmp_dict["pname"] = i.pname
-        tmp_dict["get_data_time"] = i.get_data_time
+        tmp_dict['user'] = i.user.zh_uname
+        tmp_dict["pname"] = i.proname.pname
+        tmp_dict['send_data_time'] = i.send_data_time
         tmp_dict["pnums"] = i.pnums
-        tmp_dict["knums"] = i.knums
-        tmp_dict["settlement_method"] = i.settlement_method
-        tmp_dict["unit_price"] = i.unit_price
-        tmp_dict["wb_name"] = i.wb_name
+        tmp_dict['data_source'] = i.data_source
+        tmp_dict['scene'] = i.scene
+        tmp_dict['send_reason'] = i.send_reason
+        tmp_dict['key_frame_extracted_methods'] = i.key_frame_extracted_methods
+        tmp_dict['begin_check_data_time'] = i.begin_check_data_time
+        tmp_dict['last_check_data_time'] = i.last_check_data_time
+        tmp_dict["get_data_time"] = i.get_data_time
+        if i.ann_meta_data == None:
+            tmp_dict['ann_meta_data'] = ""
+        else:
+            tmp_dict['ann_meta_data'] = i.ann_meta_data
+        tmp_dict["wb_name"] = i.wb_name.name
+        tmp_dict['total_money'] = i.total_money
         data.append(tmp_dict)
 
     return JsonResponse({"data": data, "status": "successful"})

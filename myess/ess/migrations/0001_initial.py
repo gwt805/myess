@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 (
                     "pname",
                     models.CharField(
-                        blank=True, max_length=125, unique=True, verbose_name="项目名字"
+                        blank=True, max_length=128, unique=True, verbose_name="项目名字"
                     ),
                 ),
             ],
@@ -243,7 +243,7 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("name", models.CharField(max_length=128, verbose_name="外包名字")),
+                ("name", models.CharField(max_length=128, unique=True, verbose_name="外包名字")),
             ],
         ),
         migrations.CreateModel(
