@@ -615,29 +615,43 @@ def wb_update(request):
             recovery_precision = data.get(f"ann_meta_data[{item}][recovery_precision]")
             knums = data.get(f"ann_meta_data[{item}][knums]")
             unit_price = data.get(f"ann_meta_data[{item}][unit_price]")
-            if knums == "" and unit_price == "" and settlement_method == "---" and  recovery_precision == "":
+            if knums == "" and unit_price == "" and settlement_method == "---":
                 continue
-            if knums == "" or unit_price == "" or settlement_method == "---" or  recovery_precision == "":
+            if knums == "" or unit_price == "" or settlement_method == "---":
                 return JsonResponse({"status": "error", "mes": "框数,单价,结算方式,准确率 需同时填写!"})
             else:
-                if float(recovery_precision) < 0  or float(recovery_precision) > 100:
-                    return JsonResponse({"status": "error", "mes": "准确率率不能 小于0 大于100 !"})
-                elif int(knums) < 0:
+                if int(knums) < 0:
                     return JsonResponse({"status": "error", "mes": "框数不可能能 小于0 !"})
                 elif float(unit_price) < 0:
                     return JsonResponse({"status": "error", "mes": "单价不可能能 小于0 !"})
                 else:
-                    try:
-                        ann_tmp_dict = {
-                            "settlement_method": settlement_method,
-                            "recovery_precision": abs(float(recovery_precision)),
-                            "knums": abs(int(knums)),
-                            "unit_price": abs(float(unit_price))
-                            }
-                        new_ann_meta_data.append(ann_tmp_dict)
-                        print(ann_tmp_dict)
-                    except:
-                        return JsonResponse({"status": "error", "mes": "请检查 框数 和 单价 是否填写正确!"})
+                    if recovery_precision != "":
+                        if float(recovery_precision) < 0  or float(recovery_precision) > 100:
+                            return JsonResponse({"status": "error", "mes": "准确率率不能 小于0 大于100 !"})
+                        else:
+                            try:
+                                ann_tmp_dict = {
+                                    "settlement_method": settlement_method,
+                                    "recovery_precision": abs(float(recovery_precision)),
+                                    "knums": abs(int(knums)),
+                                    "unit_price": abs(float(unit_price))
+                                    }
+                                new_ann_meta_data.append(ann_tmp_dict)
+                                print(ann_tmp_dict)
+                            except:
+                                return JsonResponse({"status": "error", "mes": "请检查 框数 和 单价 是否填写正确!"})
+                    else:
+                        try:
+                            ann_tmp_dict = {
+                                "settlement_method": settlement_method,
+                                "recovery_precision": None,
+                                "knums": abs(int(knums)),
+                                "unit_price": abs(float(unit_price))
+                                }
+                            new_ann_meta_data.append(ann_tmp_dict)
+                            print(ann_tmp_dict)
+                        except:
+                            return JsonResponse({"status": "error", "mes": "请检查 框数 和 单价 是否填写正确!"})
 
         if new_ann_meta_data:
             data_update["ann_meta_data"] = new_ann_meta_data
@@ -652,7 +666,7 @@ def wb_update(request):
             # 预留 修改后算这个项目的折线趋势图
         try:
             models.Supplier.objects.filter(id=data.get('id')).update(**data_update)
-            wb_dingtalk(models.User.objects.get(zh_uname=data.get("user")).username, "修改", id, data_update)
+            wb_dingtalk(models.User.objects.get(zh_uname=data.get("user")).username, "修改", data.get('id'), data_update)
             return JsonResponse({"status": "successful"})
         except:
             return JsonResponse({"status": "error", "mes": "请检查填写的信息!"})
