@@ -690,6 +690,9 @@
             else if (pnums <= 0) {
                 warning_alert("样本数量不允许小于等于 <b>0<b/> !");
             }
+            else if (data_source == "---") {
+                warning_alert("数据来源不允许为空!");
+            }
             else if (scene == "") {
                 warning_alert("场景分布不允许为空!");
             }
