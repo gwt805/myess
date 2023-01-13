@@ -116,6 +116,7 @@
                         <tr>
                             <th>研发名字</th>
                             <th>项目名字</th>
+                            <th>送标批次</th>
                             <th>送标时间</th>
                             <th>送标样本数量</th>
                             <th>数据来源</th>
@@ -130,6 +131,7 @@
                                 <input type="text" class="form-control" name="user_insert" id="user_insert" disabled>
                             </td>
                             <td><select class="form-control" name="pname" id="pname_insert"><option value="---">---</option></select></td>
+                            <td><input type="text" class="form-control" name="send_data_batch_insert" id="send_data_batch_insert"></td>
                             <td><input type="date" class="form-control" name="send_data_time_insert" id="send_data_time_insert"></td>
                             <td><input type="number" name="pnums" min="0" class="form-control" id="pnums_insert"></td>
                             <td>
@@ -260,31 +262,33 @@
                                     <th>ID</th>
                                     <th>研发名字</th>
                                     <th>项目名字</th>
-                                    <th>送标时间</th>
+                                    <th>送标批次</th>
                                 </tr>
                                 <tr>
                                     <td><input type="number" min="0" class="form-control" name="id" disabled id="id_update"></td>
                                     <td><input type="text" class="form-control" id="user_update" disabled></td>
                                     <td><select class="form-control" name="pname" id="pname_update" disabled></select></td>
-                                    <td><input type="date" class="form-control" name="send_data_time" id="send_data_time_update" disabled></td>
+                                    <td><input type="text" class="form-control" name="send_data_batch_update" id="send_data_batch_update" disabled></td>
                                 </tr>
                                 <tr>
+                                    <th>送标时间</th>
                                     <th>送标样本数量</th>
                                     <th>数据来源</th>
                                     <th>场景分布</th>
-                                    <th>送标原因</th>
                                 </tr>
                                 <tr>
+                                    <td><input type="date" class="form-control" name="send_data_time" id="send_data_time_update" disabled></td>
                                     <td><input type="number" class="form-control" min="0" name="pnums" id="pnums_update" disabled></td>
                                     <td><select class="form-control" name="data_source" id="data_source_update" disabled></select></td>
                                     <td><input type="text" class="form-control" name="scene_update" id="scene_update" disabled></td>
-                                    <td><input type="text" class="form-control" name="send_reason_update" id="send_reason_update" disabled></td>
                                 </tr>
                                 <tr>
+                                    <th>送标原因</th>
                                     <th>关键帧抽取方式</th>
                                     <th>外包名字</th>
                                 </tr>
                                 <tr>
+                                    <td><input type="text" class="form-control" name="send_reason_update" id="send_reason_update" disabled></td>
                                     <td><input type="text" class="form-control" name="key_frame_extracted_methods_update" id="key_frame_extracted_methods_update" disabled></td>
                                     <td><select class="form-control" name="wb_name" id="wb_name_update" disabled></select></td>
                                 </tr>
@@ -451,9 +455,10 @@
         cols: [[               //设置列标签、标题、宽度、是否排序等
             // {checkbox:true}, // 复选框
             { field: 'id', title: 'ID', fixed: left },
-            { field: 'user', title:'研发', width: 80},
-            { field: 'pname', title: '项目名字', width: 220},
-            { field: 'send_data_time', title: "送标时间", width: 110},
+            { field: 'user', title:'研发', width: 80, fixed: left},
+            { field: 'pname', title: '项目名字', width: 220, fixed: left},
+            { field: 'send_data_batch', title: '送标批次', width: 120, fixed: left},
+            { field: 'send_data_time', title: "送标时间", width: 110, fixed: left},
             { field: 'pnums', title: "送标样本数量", width: 130},
             { field: 'data_source', title: "数据来源", width: 110},
             { field: 'scene', title: "场景分布", width: 110},
@@ -571,6 +576,7 @@
                         const id = res.data[0].id;
                         const user = res.data[0].user;
                         const pname = res.data[0].pname;
+                        const send_data_batch = res.data[0].send_data_batch
                         const send_data_time = res.data[0].send_data_time;
                         const pnums = res.data[0].pnums;
                         const data_source = res.data[0].data_source;
@@ -586,6 +592,7 @@
                         $("#id_update").val(id);
                         $("#user_update").val(user);
                         $("#pname_update").html("<option value=" + pname + ">" + pname + "</option>");
+                        $("#send_data_batch_update").val(send_data_batch);
                         $("#send_data_time_update").val(send_data_time);
                         $("#pnums_update").val(pnums);
                         $("#data_source_update").html("<option value=" + data_source + ">" + data_source + "</option>");
@@ -664,6 +671,7 @@
         else {
             const user = $("#user_insert").val();
             const pname = $("#pname_insert option:selected").val();
+            const send_data_batch = $("#send_data_batch_insert").val();
             const send_data_time = $("#send_data_time_insert").val();
             const pnums = $("#pnums_insert").val();
             const data_source = $("#data_source_insert option:selected").val();
@@ -675,8 +683,11 @@
             if (send_data_time == "") {
                 warning_alert("送标时间不允许为空!");
             }
-            else if  (pname == "---") {
+            else if (pname == "---") {
                 warning_alert("项目名字不允许为空!");
+            }
+            else if (send_data_batch == ""){
+                warning_alert("送标批次不允许为空!");
             }
             else if (scene == "---") {
                 warning_alert("数据来源不允许为空!");
@@ -710,6 +721,7 @@
                     data: {
                         user: user,
                         pname: pname,
+                        send_data_batch: send_data_batch,
                         send_data_time: send_data_time,
                         pnums: pnums,
                         data_source: data_source,
@@ -745,7 +757,9 @@
     $("#btn-update").click(function () {
         const id = $("#id_update").val();
         const user = $("#user_update").val();
+        const main_user = $("#name").text();
         const pname = $("#pname_update option:selected").val();
+        const send_data_batch = $("#send_data_batch_update").val();
         const send_data_time = $("#send_data_time_update").val();
         const pnums = $("#pnums_update").val();
         const data_source = $("#data_source_update option:selected").val();
@@ -796,7 +810,9 @@
             data: {
                 id: id,
                 user: user,
+                main_user: main_user,
                 pname: pname,
+                send_data_batch: send_data_batch,
                 send_data_time: send_data_time,
                 pnums: pnums,
                 data_source: data_source,

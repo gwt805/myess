@@ -495,6 +495,7 @@ def wballdata(request):
             tmp_dict["id"] = i.id
             tmp_dict['user'] = i.user.zh_uname
             tmp_dict["pname"] = i.proname.pname
+            tmp_dict["send_data_batch"] = i.send_data_batch
             tmp_dict['send_data_time'] = i.send_data_time
             tmp_dict["pnums"] = i.pnums
             tmp_dict['data_source'] = i.data_source
@@ -554,6 +555,7 @@ def waiabo_data_insert(request):
         dataone = {
                 'user': models.User.objects.get(username=models.User.objects.get(zh_uname=data.get("user")).username),
                 'proname': models.Project.objects.get(pname=data.get("pname")),
+                "send_data_batch": data.get("send_data_batch"),
                 'send_data_time': data.get("send_data_time"),
                 'pnums': abs(int(data.get("pnums"))),
                 'data_source': data.get("data_source"),
@@ -588,6 +590,7 @@ def wb_update(request):
         data_update = {
             'user': models.User.objects.get(username=models.User.objects.get(zh_uname=data.get("user")).username),
             'proname': models.Project.objects.get(pname=data.get("pname")),
+            'send_data_batch': data.get("send_data_batch"),
             'send_data_time' : data.get("send_data_time"),
             'pnums' : abs(int(data.get("pnums"))),
             'data_source' : data.get("data_source"),
@@ -664,9 +667,10 @@ def wb_update(request):
             data_update["total_money"] = None
 
             # 预留 修改后算这个项目的折线趋势图
+
         try:
             models.Supplier.objects.filter(id=data.get('id')).update(**data_update)
-            wb_dingtalk(models.User.objects.get(zh_uname=data.get("user")).username, "修改", data.get('id'), data_update)
+            wb_dingtalk(models.User.objects.get(zh_uname=data.get("main_user")).username, "修改", data.get('id'), data_update)
             return JsonResponse({"status": "successful"})
         except:
             return JsonResponse({"status": "error", "mes": "请检查填写的信息!"})
@@ -679,6 +683,7 @@ def wb_update(request):
         tmp_dict["id"] = i.id
         tmp_dict['user'] = i.user.zh_uname
         tmp_dict["pname"] = i.proname.pname
+        tmp_dict["send_data_batch"] = i.send_data_batch
         tmp_dict['send_data_time'] = i.send_data_time
         tmp_dict["pnums"] = i.pnums
         tmp_dict['data_source'] = i.data_source

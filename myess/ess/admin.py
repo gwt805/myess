@@ -73,6 +73,7 @@ class ControlSupplier(admin.ModelAdmin):
     list_display = (
         "user",
         "proname_id",
+        "send_data_batch",
         "send_data_time",
         "pnums",
         "data_source",
@@ -92,6 +93,7 @@ class ControlSupplier(admin.ModelAdmin):
     search_fields = [
                     "user__username",
                     "proname__pname",
+                    "send_data_batch",
                     "send_data_time",
                     "pnums",
                     "data_source",

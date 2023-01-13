@@ -320,6 +320,7 @@ def waibao_search(pname, bzf, begin_time, over_time):
         tmp_dict["id"] = i.id
         tmp_dict['user'] = i.user.zh_uname
         tmp_dict["pname"] = i.proname.pname
+        tmp_dict["send_data_batch"] = i.send_data_batch
         tmp_dict['send_data_time'] = i.send_data_time
         tmp_dict["pnums"] = i.pnums
         tmp_dict['data_source'] = i.data_source
