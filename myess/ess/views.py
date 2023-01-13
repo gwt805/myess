@@ -487,7 +487,7 @@ def wballdata(request):
         ).strftime("%Y-%m-%d")
         now_time = now_time.strftime("%Y-%m-%d")
 
-        data_object = models.Supplier.objects.all().filter(created_time__range=[before_time, now_time])
+        data_object = models.Supplier.objects.all().filter(send_data_time__range=[before_time, now_time])
 
         data = []
         for i in data_object:
