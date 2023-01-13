@@ -86,13 +86,13 @@ class Supplier(models.Model):
     send_reason = models.TextField(null=False, verbose_name="送标原因", default="未知") # 送标原因
     key_frame_extracted_methods = models.TextField(null=False, verbose_name="关键帧抽取方式", default="未知") # 关键帧抽取方式
     # ========================================================================================================================
-    begin_check_data_time = models.DateField(null=True, verbose_name="开始验收时间")
-    last_check_data_time = models.DateField(null=True, verbose_name="结束验收时间")
-    get_data_time = models.DateField(null=True, max_length=20, verbose_name="收到标注结果时间")  # 收到标注结果时间
-    ann_meta_data = models.JSONField(null=True,verbose_name="准确率,框数,结算方式,单价")
+    begin_check_data_time = models.DateField(null=True, verbose_name="开始验收时间", blank=True)
+    last_check_data_time = models.DateField(null=True, verbose_name="结束验收时间", blank=True)
+    get_data_time = models.DateField(null=True, max_length=20, verbose_name="收到标注结果时间", blank=True)  # 收到标注结果时间
+    ann_meta_data = models.JSONField(null=True,verbose_name="准确率,框数,结算方式,单价", blank=True)
     wb_name = models.ForeignKey(to="Waibaos", on_delete=models.CASCADE, to_field="name", verbose_name="供应商") #CharField(null=False, max_length=128, verbose_name="外包名字", blank=True)  # 外包名字
     created_time = models.DateField(null=False,auto_created=True, default="1999-01-01")
-    total_money = models.FloatField(null=True, verbose_name="总金钱")
+    total_money = models.FloatField(null=True, verbose_name="总金钱", blank=True)
 
     class Meta:
         verbose_name_plural = "供应商数据列表新"
