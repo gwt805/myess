@@ -665,7 +665,7 @@ def wb_update(request):
             # 预留 修改后算这个项目的折线趋势图
         try:
             models.Supplier.objects.filter(id=data.get('id')).update(**data_update)
-            wb_dingtalk(models.User.objects.get(zh_uname=data.get("user")).username, "修改", id, data_update)
+            wb_dingtalk(models.User.objects.get(zh_uname=data.get("user")).username, "修改", data.get('id'), data_update)
             return JsonResponse({"status": "successful"})
         except:
             return JsonResponse({"status": "error", "mes": "请检查填写的信息!"})
