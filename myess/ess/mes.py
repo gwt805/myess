@@ -545,7 +545,7 @@ def wb_dingtalk(uname, kind, id, wbdata):
         else:
             if kind == "修改":
                 tmp = f"项目名字: {wbdata['proname'].pname}\r发送数据时间: {wbdata['send_data_time']}\r发送样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r送标原因: {wbdata['send_reason']}\r键帧提取方式: {wbdata['key_frame_extracted_methods']}\r开始验收时间: {wbdata['begin_check_data_time']}\r结束验收时间: {wbdata['last_check_data_time']}\r标注结果返回时间: {wbdata['get_data_time']}\r供应商: {wbdata['wb_name'].name}\r"
-                if "ann_meta_data" in wbdata:
+                if wbdata['ann_meta_data']:
                     ann_meta_data = wbdata['ann_meta_data']
                     for k in ann_meta_data:
                         tmp += f'结算方式: {k["settlement_method"]}\r\t准确率: {k["recovery_precision"]}\r\t框数: {k["knums"]}\r\t单价: {k["unit_price"]}\r'

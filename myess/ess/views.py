@@ -610,50 +610,34 @@ def wb_update(request):
             data_update['get_data_time'] = None
 
         new_ann_meta_data = []
-        ann_flag = True
         for item in range(0,3):
             settlement_method =  data.get(f"ann_meta_data[{item}][settlement_method]")
             recovery_precision = data.get(f"ann_meta_data[{item}][recovery_precision]")
             knums = data.get(f"ann_meta_data[{item}][knums]")
             unit_price = data.get(f"ann_meta_data[{item}][unit_price]")
-
-            if recovery_precision:
+            if knums == "" and unit_price == "" and settlement_method == "---" and  recovery_precision == "":
+                continue
+            if knums == "" or unit_price == "" or settlement_method == "---" or  recovery_precision == "":
+                return JsonResponse({"status": "error", "mes": "框数,单价,结算方式,准确率 需同时填写!"})
+            else:
                 if float(recovery_precision) < 0  or float(recovery_precision) > 100:
-                    return JsonResponse({"status": "error", "mes": "准去率不能 小于0 大于100 !"})
-                elif settlement_method == "---" or knums == "" or unit_price == "":
-                    return JsonResponse({"status": "error", "mes": "框数,单价,结算方式,准确率 需同时填写!"})
+                    return JsonResponse({"status": "error", "mes": "准确率率不能 小于0 大于100 !"})
+                elif int(knums) < 0:
+                    return JsonResponse({"status": "error", "mes": "框数不可能能 小于0 !"})
+                elif float(unit_price) < 0:
+                    return JsonResponse({"status": "error", "mes": "单价不可能能 小于0 !"})
                 else:
                     try:
                         ann_tmp_dict = {
                             "settlement_method": settlement_method,
-                            "recovery_precision": float(recovery_precision),
+                            "recovery_precision": abs(float(recovery_precision)),
                             "knums": abs(int(knums)),
                             "unit_price": abs(float(unit_price))
                             }
                         new_ann_meta_data.append(ann_tmp_dict)
+                        print(ann_tmp_dict)
                     except:
                         return JsonResponse({"status": "error", "mes": "请检查 框数 和 单价 是否填写正确!"})
-            if unit_price != "": # 单价不为空
-                if float(unit_price) < 1e-6:
-                    return JsonResponse({"status": "error", "mes": "单价 怎么可能是 0 呢!"})
-                if settlement_method == "---" or knums == "":
-                    return JsonResponse({"status": "error", "mes": "框数,单价,结算方式 需同时填写!"})
-            elif settlement_method != "---": # 结算方式不为空
-                if knums == "" or unit_price == "":
-                    return JsonResponse({"status": "error", "mes": "框数,单价,结算方式 需同时填写!"})
-            elif knums != "": # 框数不为空
-                if settlement_method == "---" or unit_price == "":
-                    return JsonResponse({"status": "error", "mes": "框数,单价,结算方式 需同时填写!"})
-            elif settlement_method == "---" and knums == "" and unit_price == "": # 都为空
-                pass
-            else:
-                ann_tmp_dict = {
-                        "settlement_method": settlement_method,
-                        "recovery_precision": None,
-                        "knums": abs(int(knums)),
-                        "unit_price": abs(float(unit_price))
-                        }
-                new_ann_meta_data.append(ann_tmp_dict)
 
         if new_ann_meta_data:
             data_update["ann_meta_data"] = new_ann_meta_data
@@ -661,11 +645,14 @@ def wb_update(request):
             for idx  in new_ann_meta_data:
                 money_count += round((idx["knums"] * idx["unit_price"]),2)
             data_update["total_money"] = money_count
+        else:
+            data_update["ann_meta_data"] = None
+            data_update["total_money"] = None
 
             # 预留 修改后算这个项目的折线趋势图
         try:
             models.Supplier.objects.filter(id=data.get('id')).update(**data_update)
-            wb_dingtalk(models.User.objects.get(zh_uname=data.get("user")).username, "修改", data.get('id'), data_update)
+            wb_dingtalk(models.User.objects.get(zh_uname=data.get("user")).username, "修改", id, data_update)
             return JsonResponse({"status": "successful"})
         except:
             return JsonResponse({"status": "error", "mes": "请检查填写的信息!"})
