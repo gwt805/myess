@@ -16,7 +16,6 @@ from .mes import (
     pnw,
     search,
     waibao_search,
-    wbdata_tj,
     gs_data_add,
     dingtalk,
     wb_dingtalk
@@ -640,7 +639,6 @@ def wb_update(request):
                                     "unit_price": abs(float(unit_price))
                                     }
                                 new_ann_meta_data.append(ann_tmp_dict)
-                                print(ann_tmp_dict)
                             except:
                                 return JsonResponse({"status": "error", "mes": "请检查 框数 和 单价 是否填写正确!"})
                     else:
@@ -652,7 +650,6 @@ def wb_update(request):
                                 "unit_price": abs(float(unit_price))
                                 }
                             new_ann_meta_data.append(ann_tmp_dict)
-                            print(ann_tmp_dict)
                         except:
                             return JsonResponse({"status": "error", "mes": "请检查 框数 和 单价 是否填写正确!"})
 
@@ -706,66 +703,43 @@ def wb_update(request):
 
 # 外包数据统计
 def wbdata_count(request):
-    if request.method == "POST":
-        btime = request.POST.get("btime")
-        otime = request.POST.get("otime")
-        (
-            bzf_price_and_pnum_total,
-            bzf_total_list,
-            bzf_pnames_list,
-            bzf_pnums_list,
-            bzf_knums_list,
-            bzf_money_list,
-            bzf,
-        ) = wbdata_tj(btime, otime)
-        pname_list_json, pnums_list_json, knums_list_json, money_list_json, bzf_json = (
-            json.dumps(bzf_pnames_list),
-            json.dumps(bzf_pnums_list),
-            json.dumps(bzf_knums_list),
-            json.dumps(bzf_money_list),
-            json.dumps(bzf),
-        )
-        return render(
-            request,
-            "tasks/wbdata_count.html",
-            {
-                "bzf_price_and_pnum_total": bzf_price_and_pnum_total,
-                "bzf_total_list": bzf_total_list,
-                "bzf": bzf,
-                "bzf_json": bzf_json,
-                "pname_list_json": pname_list_json,
-                "pnums_list_json": pnums_list_json,
-                "knums_list_json": knums_list_json,
-                "money_list_json": money_list_json,
-            },
-        )
-    (
-        bzf_price_and_pnum_total,
-        bzf_total_list,
-        bzf_pnames_list,
-        bzf_pnums_list,
-        bzf_knums_list,
-        bzf_money_list,
-        bzf,
-    ) = wbdata_tj("", "")
-    pname_list_json, pnums_list_json, knums_list_json, money_list_json, bzf_json = (
-        json.dumps(bzf_pnames_list),
-        json.dumps(bzf_pnums_list),
-        json.dumps(bzf_knums_list),
-        json.dumps(bzf_money_list),
-        json.dumps(bzf),
-    )
-    return render(
-        request,
-        "tasks/wbdata_count.html",
-        {
-            "bzf_price_and_pnum_total": bzf_price_and_pnum_total,
-            "bzf_total_list": bzf_total_list,
-            "bzf": bzf,
-            "bzf_json": bzf_json,
-            "pname_list_json": pname_list_json,
-            "pnums_list_json": pnums_list_json,
-            "knums_list_json": knums_list_json,
-            "money_list_json": money_list_json,
-        },
-    )
+    year = datetime.now().strftime('%Y')
+    init_data = models.Supplier.objects.filter(send_data_time__range=[year + '-01-01', year + "-12-31"])
+    if init_data:
+        proname_list = []
+        for item in init_data:
+            if item.proname.pname not in proname_list:
+                proname_list.append(item.proname.pname)
+
+        pie_chart_knums_data = []
+        pie_chart_money_data = []
+        line_chart_list = [] # [[],[],[]] time,kuang,qian [zhun]
+        for proidx in proname_list:
+            time_list = []
+            kuang_list = []
+            money_list = []
+            for modidx in init_data:
+                if modidx.proname.pname == proidx:
+                    if modidx.ann_meta_data:
+                        time_list.append(modidx.send_data_time.strftime('%Y-%m-%d'))
+                        if len(kuang_list) == 0:
+                            kuang_list.append(sum([idx["knums"] for idx in modidx.ann_meta_data]))
+                        else:
+                            kuang_list.append( kuang_list[-1] + sum([idx["knums"] for idx in modidx.ann_meta_data]))
+                        if len(money_list) == 0:
+                            money_list.append(modidx.total_money)
+                        else:
+                            money_list.append(round(money_list[-1] + modidx.total_money,3))
+            line_chart_list.append([time_list, kuang_list, money_list])
+            pie_chart_knums_data.append({"name": proidx, "value": kuang_list[-1]})
+            pie_chart_money_data.append({"name": proidx, "value": money_list[-1]})
+        char_list = [pie_chart_knums_data, pie_chart_money_data]
+    else:
+        # 为查询到数据先返回空，后面加提示
+        proname_list = []
+        char_list = [[{}], [{}]]
+        line_chart_list = [[[0],[0],[0]]]
+
+    chart_pie = json.dumps(char_list,ensure_ascii=False)
+    chart_line = json.dumps(line_chart_list, ensure_ascii=False)
+    return render(request, "tasks/wbdata_count.html", {"proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })

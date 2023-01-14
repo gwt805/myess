@@ -11,19 +11,8 @@
     <link rel="stylesheet" href="/static/css/index1.css">
     <script src="/static/lib/jquery/2.1.4/jquery.min.js"></script>
     <script src="/static/lib/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script src="/static/lib/echarts.min.js"></script>
+    <script src="/static/lib/echarts/5.4.1/dist/echarts.min.js"></script>
     <title>外包各项目数据统计</title>
-    <style>
-        .stb {
-            table-layout: fixed;
-        }
-
-        .stb thead tr th {
-            position: sticky;
-            background-color: #bdbdbd;
-            top: 0;
-        }
-    </style>
 </head>
 
 <body>
@@ -89,7 +78,7 @@
     <div class="alert alert-danger hide" id="alert_div"
         style="width: 300px; position: fixed; top: 40%;left: 45%; right: 50%;z-index: 1; font-size: 22px;">
     </div> <!-- 警告弹出框 -->
-    <div id="search" style="background-color: #bdbdbd; margin-top: 55px;">
+    <div id="search" style="background-color: #bdbdbd;display: none; margin-top: 55px;">
         <form class='form-register' action="/wbdata_count/" method="post">
             {% csrf_token %}
             <table class="table">
@@ -107,75 +96,15 @@
             </table>
         </form>
     </div>
-    <div id="show_bg"
-        style="position: fixed; width: 100%; height: 80%; overflow-y: auto; background-color: #bdbdbd; margin-top: -20px; display: none; border-top: 1px solid white;">
-        {% for k,v in bzf_total_list.items %}
-        <div id="beisai_table"
-            style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white; overflow-y: auto;">
-            <b>
-                <p
-                    style="font-size: 18px; text-align: center; color: rgb(38, 150, 255); margin-top: 20px; border-bottom: 1px solid white;">
-                    {{ k }} 各项目数据统计表
-                </p>
-            </b>
-            <table class="table table-hover stb">
-                <thead>
-                    <tr>
-                        <th>项目名字</th>
-                        <th>图片数量</th>
-                        <th>框数</th>
-                        <th>金额</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for j in v %}
-                    <tr>
-                        <td>{{ j.0 }}</td>
-                        <td>{{ j.1 }}</td>
-                        <td>{{ j.2 }}</td>
-                        <td>{{ j.3 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% endfor %}
-        <div id="beisai_table"
-            style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white; overflow-y: auto;">
-            <b>
-                <p
-                    style="font-size: 18px; text-align: center; color: rgb(38, 150, 255); margin-top: 20px; border-bottom: 1px solid white;">
-                    各供应商总统计表
-                </p>
-            </b>
-            <table class="table table-hover stb">
-                <thead>
-                    <tr>
-                        <th>标注商</th>
-                        <th>图片数量</th>
-                        <th>金额</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for p in bzf_price_and_pnum_total %}
-                    <tr>
-                        <td>{{ p.0 }}</td>
-                        <td>{{ p.1 }}</td>
-                        <td>{{ p.2 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div id="main"
-        style="position: fixed; width: 100%; height:80%; margin-top: -20px; background-color: #bdbdbd; overflow-y: auto; border-top: 1px solid white;">
-        {% for i in bzf %}
-        <div id="{{ i }}"
-            style="width: 50%; height:50%; float: left; border-width: 0px 1px 1px 0px; border-style: solid; border-color: white;">
-        </div>
+    <!-- 图表start -->
+    <div style="width: 100%; height: 94.7%; position: absolute; top: 50px; overflow-y: auto; overflow-x: hidden;">
+        <div id="chart_knums" style="width: 50%; height: 50%; float: left; border-right: 1px solid #fff;"></div>
+        <div id="char_money" style="width: 50%; height: 50%; float: left;"></div>
+        {% for i in proname %}
+        <div id="{{ i }}" style="width: 100%; height: 50%; float: left; border-top: 1px solid #fff;"></div>
         {% endfor %}
     </div>
+    <!-- 图表end -->
     <!-- 弹窗之ESS-Info -->
     <div class="modal fade" tabindex="-1" role="dialog" id="ess_info" style="margin: 200px 0 0 500px; ">
         <div class="modal-dialog" role="document">
@@ -269,17 +198,161 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-    <!-- 切换按钮 -->
-    <div style="width: 100%; height: 4.5%; position: fixed; bottom: 0px; background-color: #bdbdbd;">
-        <button onclick="show_bg()" class="btn btn-default pull-left"
-            style="margin-left: 30%; margin-top: 0.2%;">表格展示</button>
-        <button onclick="show_pt()" class="btn btn-default pull-left"
-            style="margin-left: 30%; margin-top: 0.2%;">图形展示</button>
-    </div>
 </body>
 <script src="/static/js/disable.js"></script>
 <script src="/static/js/click_yh.js"></script>
 <script type="text/javascript">
+    const pname = JSON.parse('{{ proname_json|safe }}');
+    const chart_pie = JSON.parse('{{ chart_pie|safe }}');
+    const chart_line = JSON.parse('{{ chart_line|safe }}');
+
+    // 窗口变化时，用刷新当前窗口 来解决图表没有自动resize操作
+    // window.onresize = function (){
+    //     window.location.reload();
+    // }
+
+    // 饼图
+    const chart_list = [echarts.init(document.getElementById("chart_knums"), 'dark'), echarts.init(document.getElementById("char_money"), 'dark')]
+    const chart_pie_info = ['总框数', "已用金额"]
+    for (let pie = 0; pie < chart_pie.length; pie++) {
+        const option = {
+            title: {
+                text: '今年各项目' + chart_pie_info[pie] + '情况', // 一级标题
+                // subtext: 'Fake Data', // 二级标题
+                left: 'center' // 标题居中显示
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: { show: true },
+                    dataView: { show: true, readOnly: false, lang: ['数据视图', '关闭', '刷新'] },
+                    restore: { show: true },
+                    saveAsImage: { show: true }
+                }
+            },
+            // legend: {
+            //     type: 'scroll',
+            //     orient: 'horizontal',
+            //     left: 'center',
+            //     top: 35,
+            // },
+            series: [
+                {
+                    name: '项目名字 - 框数/金额 - 占比',
+                    type: 'pie',
+                    radius: '50%',
+                    label: {
+                        normal: {
+                            show: true,
+                            formatter: '{b}: {c}({d}%)'
+                        },
+                        textStyle: {
+                            fontWeight: 'normal',
+                            fontSize: 15
+                        }, labelLine: { show: true }
+                    },
+                    data: chart_pie[pie],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        }
+        chart_list[pie].setOption(option);
+    }
+    // 饼图end
+
+    // 折线图 start
+    for (let line = 0; line < chart_line.length; line++) {
+        var dom = document.getElementById(pname[line]);
+        var chart_lines = echarts.init(dom, 'dark')
+        var option = {
+            title: {
+                text: pname[line] + ' 框数,金额 走势图'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['框数', '金额']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '12%',
+                containLabel: true
+            },
+            dataZoom: [
+                {
+                    show: true,
+                    realtime: true,
+                    start: 0,
+                    end: 100,
+                    xAxisIndex: [0, 1]
+                }
+            ],
+            toolbox: {
+                show: true,
+                feature: {
+                    dataZoom: {
+                        yAxisIndex: 'none'
+                    },
+                    dataView: { readOnly: false, lang: ['数据视图', '关闭', '刷新'] },
+                    magicType: { type: ['line', 'bar'] },
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: chart_line[line][0]
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name: '框数',
+                    type: 'line',
+                    stack: 'Total',
+                    smooth: true,
+                    data: chart_line[line][1],
+                    // lineStyle: {color: 'yellow'} // 可以设置折线的颜色
+                },
+                {
+                    name: '金额',
+                    type: 'line',
+                    stack: 'Total',
+                    smooth: true,
+                    markPoint: {
+                        data: [
+                            {
+                                type: 'max',
+                                name: '最大值',
+                            },
+                            {
+                                type: 'min',
+                                name: '最小值',
+                            }
+                        ]
+                    },
+                    data: chart_line[line][2]
+                }
+            ]
+        };
+        chart_lines.setOption(option);
+    }
+    // 折线图 end
+
     function help() {
         $(".alert-danger").html("请联系卫龙!");
         $(".alert-danger").addClass("show");
@@ -304,129 +377,7 @@
         window.location.href = '/login'
     }
 
-    let pname = JSON.parse('{{ pname_list_json|safe }}'); // 项目名字 列表 ==> 字典形式
-    let pnums = JSON.parse('{{ pnums_list_json|safe }}'); // 图片数量 列表 ==> 字典形式
-    let knums = JSON.parse('{{ knums_list_json|safe }}'); // 框数 列表 ==> 字典形式
-    let money = JSON.parse('{{ money_list_json|safe }}'); // 金额 列表 ==> 字典形式
-    let pid = JSON.parse('{{ bzf_json|safe }}'); // 标注方 列表
 
-    let mapObj = new Map();
-    for (let i = 0; i < pid.length; i++) {
-        mapObj.set(pid[i], pid[i]);
-    };
-    mapObj.forEach(function (value, key) {
-        var key1 = echarts.init(document.getElementById(value));
-        key1.setOption({
-            toolbox: {
-                show: true,
-                feature: {
-                    dataZoom: {
-                        yAxisIndex: 'none'
-                    },
-                    dataView: { readOnly: false },
-                    magicType: { type: ['line', 'bar'] },
-                    restore: {},
-                    saveAsImage: {}
-                }
-            },
-            title: { text: value + ' 各项目数据统计图' },
-            tooltip: {},
-            legend: {
-                data: ['图片数量', '框数', '金额'],
-                // right:'10%'
-                textStyle: {
-                    fontSize: 14,
-                    // color: "#333",
-                    // padding: [0, 0, 0, -8], // 修改文字和图标距离
-                },
-            },
-            xAxis: {
-                data: pname[value],
-                axisLabel: { //X轴文字控制
-                    interval: 0,
-                    rotate: -30  //倾斜的程度
-                },
-            },
-            grid: { // 画布位置
-                left: '7%',
-                // right:'2%',
-                // bottom:'10%'
-            },
-            yAxis: {},
-            series: [
-                {
-                    name: '图片数量',
-                    type: 'bar',
-                    stack: '图片数',
-                    data: pnums[value],
-                    itemStyle: {
-                        normal: {
-                            label: {
-                                // show:true, //开启显示
-                                position: 'top', //在上方显示
-                                textStyle: { //数值样式
-                                    color: 'black',
-                                    fontSize: 12
-                                }
-                            }
-                        }
-                    },
-                },
-                {
-                    name: '框数',
-                    type: 'bar',
-                    stack: '框数',
-                    data: knums[value],
-                    itemStyle: {
-                        normal: {
-                            label: {
-                                // show:true, //开启显示
-                                position: 'top', //在上方显示
-                                textStyle: { //数值样式
-                                    color: 'black',
-                                    fontSize: 12
-                                }
-                            }
-                        }
-                    },
-                },
-                {
-                    name: '金额',
-                    type: 'bar',
-                    stack: '金额',
-                    data: money[value],
-                    itemStyle: {
-                        normal: {
-                            label: {
-                                // show:true, //开启显示
-                                position: 'top', //在上方显示
-                                textStyle: { //数值样式
-                                    color: 'black',
-                                    fontSize: 12
-                                }
-                            }
-                        }
-                    },
-                },
-            ]
-        });
-    });
-
-    // 表格和图形按钮显示操作
-    function show_bg() {
-        if ($('#main').css('display') == 'block') {
-            $('#main').css("display", "none");
-            $('#show_bg').css("display", "block");
-        };
-    };
-
-    function show_pt() {
-        if ($('#show_bg').css('display') == 'block') {
-            $('#show_bg').css("display", "none");
-            $('#main').css("display", "block");
-
-        };
-    };
 </script>
 
 </html>

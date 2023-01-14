@@ -47,20 +47,20 @@ class ControlTkinds(admin.ModelAdmin):
     search_fields = ('kinds',)
     list_per_page = 10  # 每页展示5条记录
 
-@admin.register(models.Waibao)
-class ControlWaibao(admin.ModelAdmin):
-    list_display = (
-        "pname",
-        "get_data_time",
-        "pnums",
-        "knums",
-        "settlement_method",
-        "unit_price",
-        "wb_name",
-    )
-    ordering = ("-get_data_time",)
-    search_fields = ('pname', 'get_data_time', 'pnums', 'knums', 'settlement_method', 'unit_price', 'wb_name')
-    list_per_page = 100  # 每页展示5条记录
+# @admin.register(models.Waibao)
+# class ControlWaibao(admin.ModelAdmin):
+#     list_display = (
+#         "pname",
+#         "get_data_time",
+#         "pnums",
+#         "knums",
+#         "settlement_method",
+#         "unit_price",
+#         "wb_name",
+#     )
+#     ordering = ("-get_data_time",)
+#     search_fields = ('pname', 'get_data_time', 'pnums', 'knums', 'settlement_method', 'unit_price', 'wb_name')
+#     list_per_page = 100  # 每页展示5条记录
 
 @admin.register(models.Waibaos)
 class ControlWaibaos(admin.ModelAdmin):
