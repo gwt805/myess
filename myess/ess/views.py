@@ -713,15 +713,21 @@ def wbdata_count(request):
 
         pie_chart_knums_data = []
         pie_chart_money_data = []
+        pie_chart_pnums_data = []
         line_chart_list = [] # [[],[],[]] time,kuang,qian [zhun]
         for proidx in proname_list:
             time_list = []
             kuang_list = []
             money_list = []
+            pnums_list = []
             for modidx in init_data:
                 if modidx.proname.pname == proidx:
+                    time_list.append(modidx.send_data_time.strftime('%Y-%m-%d'))
+                    if len(pnums_list) == 0:
+                        pnums_list.append(modidx.pnums)
+                    else:
+                        pnums_list.append(pnums_list[-1] + modidx.pnums)
                     if modidx.ann_meta_data:
-                        time_list.append(modidx.send_data_time.strftime('%Y-%m-%d'))
                         if len(kuang_list) == 0:
                             kuang_list.append(sum([idx["knums"] for idx in modidx.ann_meta_data]))
                         else:
@@ -730,10 +736,12 @@ def wbdata_count(request):
                             money_list.append(modidx.total_money)
                         else:
                             money_list.append(round(money_list[-1] + modidx.total_money,3))
-            line_chart_list.append([time_list, kuang_list, money_list])
+
+            line_chart_list.append([time_list, kuang_list, money_list, pnums_list])
             pie_chart_knums_data.append({"name": proidx, "value": kuang_list[-1]})
             pie_chart_money_data.append({"name": proidx, "value": money_list[-1]})
-        char_list = [pie_chart_knums_data, pie_chart_money_data]
+            pie_chart_pnums_data.append({"name": proidx, "value": pnums_list[-1]})
+        char_list = [pie_chart_pnums_data, pie_chart_knums_data, pie_chart_money_data]
     else:
         # 为查询到数据先返回空，后面加提示
         proname_list = []

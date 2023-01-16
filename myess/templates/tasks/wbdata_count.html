@@ -98,8 +98,9 @@
     </div>
     <!-- 图表start -->
     <div style="width: 100%; height: 94.7%; position: absolute; top: 50px; overflow-y: auto; overflow-x: hidden;">
-        <div id="chart_knums" style="width: 50%; height: 50%; float: left; border-right: 1px solid #fff;"></div>
-        <div id="char_money" style="width: 50%; height: 50%; float: left;"></div>
+        <div id="chart_pnums" style="width: 50%; height: 50%; float: left; border-right: 1px solid #fff;"></div>
+        <div id="chart_knums" style="width: 50%; height: 50%; float: left;"></div>
+        <div id="char_money" style="width: 100%; height: 50%; float: left; border-top: 1px solid #fff;"></div>
         {% for i in proname %}
         <div id="{{ i }}" style="width: 100%; height: 50%; float: left; border-top: 1px solid #fff;"></div>
         {% endfor %}
@@ -212,8 +213,8 @@
     // }
 
     // 饼图
-    const chart_list = [echarts.init(document.getElementById("chart_knums"), 'dark'), echarts.init(document.getElementById("char_money"), 'dark')]
-    const chart_pie_info = ['总框数', "已用金额"]
+    const chart_list = [echarts.init(document.getElementById("chart_pnums"), 'dark'), echarts.init(document.getElementById("chart_knums"), 'dark'), echarts.init(document.getElementById("char_money"), 'dark')]
+    const chart_pie_info = ["总样本数", '总标注数', "已用金额"]
     for (let pie = 0; pie < chart_pie.length; pie++) {
         const option = {
             title: {
@@ -282,7 +283,7 @@
                 trigger: 'axis'
             },
             legend: {
-                data: ['框数', '金额']
+                data: ['标注数', '金额', '样本数']
             },
             grid: {
                 left: '3%',
@@ -321,10 +322,22 @@
             },
             series: [
                 {
-                    name: '框数',
+                    name: '标注数',
                     type: 'line',
                     stack: 'Total',
                     smooth: true,
+                    markPoint: {
+                        data: [
+                            {
+                                type: 'max',
+                                name: '最大值',
+                            },
+                            // {
+                            //     type: 'min',
+                            //     name: '最小值',
+                            // }
+                        ]
+                    },
                     data: chart_line[line][1],
                     // lineStyle: {color: 'yellow'} // 可以设置折线的颜色
                 },
@@ -339,13 +352,33 @@
                                 type: 'max',
                                 name: '最大值',
                             },
-                            {
-                                type: 'min',
-                                name: '最小值',
-                            }
+                            // {
+                            //     type: 'min',
+                            //     name: '最小值',
+                            // }
                         ]
                     },
                     data: chart_line[line][2]
+                },
+                {
+                    name: '样本数',
+                    type: 'line',
+                    stack: 'Total',
+                    smooth: true,
+                    markPoint: {
+                        data: [
+                            {
+                                type: 'max',
+                                name: '最大值',
+                            },
+                            // {
+                            //     type: 'min',
+                            //     name: '最小值',
+                            // }
+                        ]
+                    },
+                    data: chart_line[line][3],
+                    // lineStyle: {color: 'yellow'} // 可以设置折线的颜色
                 }
             ]
         };
