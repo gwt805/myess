@@ -42,6 +42,7 @@
                     <li class="active">
                         <a href="/waibao" style="color: #fff; background-color: rgb(68, 147, 199);">外包数据</a>
                     </li>
+                    <li class="active" id="cronjob"><a href="/cronjob">定时任务</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li style="border-right: 1px solid #bdbdbd; margin-right: 20px; cursor: pointer;"><a
@@ -203,6 +204,10 @@
 <script src="/static/js/disable.js"></script>
 <script src="/static/js/click_yh.js"></script>
 <script type="text/javascript">
+    if (sessionStorage.getItem("power") != '1'){
+        $("#cronjob").css('display','none');
+    }
+    
     const pname = JSON.parse('{{ proname_json|safe }}');
     const chart_pie = JSON.parse('{{ chart_pie|safe }}');
     const chart_line = JSON.parse('{{ chart_line|safe }}');

@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "ess",
+    "django_apscheduler", # 定时任务
+    "ess", # 统计app
+    "cronjob", # 定时app
 ]
 
 MIDDLEWARE = [

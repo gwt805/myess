@@ -330,6 +330,7 @@ def waibao_search(pname, bzf, begin_time, over_time):
         tmp_dict['begin_check_data_time'] = i.begin_check_data_time
         tmp_dict['last_check_data_time'] = i.last_check_data_time
         tmp_dict["get_data_time"] = i.get_data_time
+        tmp_dict["ann_field_flag"] = i.ann_field_flag
 
         if i.ann_meta_data == None:
             tmp_dict['ann_meta_data'] = ""
@@ -460,7 +461,7 @@ def wb_dingtalk(uname, kind, id, wbdata):
             msg_text = f"@{uname} {kind} 了ID为 {id} 的供应商数据"
         else:
             if kind == "修改":
-                tmp = f"项目名字: {wbdata['proname'].pname}\r发送数据时间: {wbdata['send_data_time']}\r发送样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r送标原因: {wbdata['send_reason']}\r键帧提取方式: {wbdata['key_frame_extracted_methods']}\r开始验收时间: {wbdata['begin_check_data_time']}\r结束验收时间: {wbdata['last_check_data_time']}\r标注结果返回时间: {wbdata['get_data_time']}\r供应商: {wbdata['wb_name'].name}\r"
+                tmp = f"项目名字: {wbdata['proname'].pname}\r送标批次: {wbdata['send_data_batch']}\r发送数据时间: {wbdata['send_data_time']}\r发送样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r送标原因: {wbdata['send_reason']}\r键帧提取方式: {wbdata['key_frame_extracted_methods']}\r开始验收时间: {wbdata['begin_check_data_time']}\r结束验收时间: {wbdata['last_check_data_time']}\r标注结果返回时间: {wbdata['get_data_time']}\r是否首次标注: {wbdata['ann_field_flag']}\r供应商: {wbdata['wb_name'].name}\r"
                 if wbdata['ann_meta_data']:
                     ann_meta_data = wbdata['ann_meta_data']
                     for k in ann_meta_data:
@@ -471,7 +472,7 @@ def wb_dingtalk(uname, kind, id, wbdata):
                     tmp += "结算方式: 无 , 准确率: 无 , 框数: 无 , 单价: 无"
                     msg_text = f"@{uname} {kind} 了一条ID为{id}的供应商数据,具体内容如下:\r{tmp}"
             else:
-                tmp = f"项目名字: {wbdata['proname'].pname}\r发送数据时间: {wbdata['send_data_time']}\r发送样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r送标原因: {wbdata['send_reason']}\r键帧提取方式: {wbdata['key_frame_extracted_methods']}\r供应商:{wbdata['wb_name'].name}"
+                tmp = f"项目名字: {wbdata['proname'].pname}\r送标批次: {wbdata['send_data_batch']}\r发送数据时间: {wbdata['send_data_time']}\r发送样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r送标原因: {wbdata['send_reason']}\r键帧提取方式: {wbdata['key_frame_extracted_methods']}\r是否首次标注: {wbdata['ann_field_flag']}\r供应商:{wbdata['wb_name'].name}"
                 msg_text = f"@{uname} {kind} 了一条供应商数据,具体内容如下:\r{tmp}"
         
         states = msgs.send_text(msg=(msg_text), is_at_all=False)

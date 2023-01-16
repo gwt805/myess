@@ -11,9 +11,9 @@ admin.site.index_title = "信息管理"
 
 @admin.register(models.User)
 class ControlUser(UserAdmin):
-    list_display = ("username", "zh_uname", "email", "password", "power")
+    list_display = ("username", "zh_uname", "email", "power")
     list_editable = ["zh_uname", "power"]
-    search_fields = ('username', 'zh_uname', 'email', 'power')  # 过滤器
+    search_fields = ('username', 'zh_uname', 'email')  # 过滤器
     list_per_page = 10  # 每页展示5条记录
 
 @admin.register(models.Task)
@@ -47,20 +47,6 @@ class ControlTkinds(admin.ModelAdmin):
     search_fields = ('kinds',)
     list_per_page = 10  # 每页展示5条记录
 
-# @admin.register(models.Waibao)
-# class ControlWaibao(admin.ModelAdmin):
-#     list_display = (
-#         "pname",
-#         "get_data_time",
-#         "pnums",
-#         "knums",
-#         "settlement_method",
-#         "unit_price",
-#         "wb_name",
-#     )
-#     ordering = ("-get_data_time",)
-#     search_fields = ('pname', 'get_data_time', 'pnums', 'knums', 'settlement_method', 'unit_price', 'wb_name')
-#     list_per_page = 100  # 每页展示5条记录
 
 @admin.register(models.Waibaos)
 class ControlWaibaos(admin.ModelAdmin):

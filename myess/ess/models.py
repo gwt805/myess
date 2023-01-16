@@ -59,7 +59,7 @@ class Tkinds(models.Model):
         verbose_name_plural = "任务类型列表"
 
 class Waibaos(models.Model):
-    name = models.CharField(max_length=128, unique=True, verbose_name="外包1名字")
+    name = models.CharField(max_length=128, unique=True, verbose_name="外包名字")
     
     class Meta:
         verbose_name_plural = "供应商列表"
@@ -79,6 +79,7 @@ class Supplier(models.Model):
     user = models.ForeignKey(to="User", on_delete=models.CASCADE, verbose_name="研发") # CharField(null=False, max_length=256,verbose_name='研发名字', default=None) # 研发名字
     proname = models.ForeignKey(to='Project',on_delete=models.CASCADE, to_field='pname', verbose_name="项目名字") #(to="Project", to_field="id", on_delete=models.CASCADE) #CharField(null=False, max_length=128, verbose_name="项目名字", blank=True)  # 项目名字
     send_data_batch = models.TextField(null=False, verbose_name="送标批次", default=None)
+    ann_field_flag = models.CharField(null=False, max_length=128, default=None, verbose_name="首次标注or返修标注")
     send_data_time = models.DateField(null=False, verbose_name="送标时间", default="1999-01-01") # 送标时间
     pnums = models.IntegerField(null=False, verbose_name="送标样本数量", blank=True)  # 送标样本数量
     data_source = models.CharField(null=False, max_length=256, choices=(("人工采集",  "人工采集"), ("数据回流", "数据回流"), ("未知", "未知")), verbose_name="数据来源", default="未知") # 数据来源

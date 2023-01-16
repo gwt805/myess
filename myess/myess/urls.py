@@ -17,10 +17,16 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 from django.views import static
 from django.conf import settings
-from ess import views
-import ess
+import ess, cronjob
 
 urlpatterns = [
     path("sites/", admin.site.urls),
     path("", include("ess.urls")),
+    path("", include("cronjob.urls")),
+    re_path(
+        "^static/(?P<path>.*)$",
+        static.serve,
+        {"document_root": settings.STATIC_ROOT},
+        name="static",
+    ),  # if debug is False
 ]

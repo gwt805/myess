@@ -469,7 +469,8 @@ def waibao(request):
     )  # 数据库里所有的项目名字
     data_source_list = json.dumps(["---",'人工采集',"回流数据"])
     js_methods = json.dumps(['矩形框',"多边形", "线段", "筛选", "3D框", "3D分割"])
-    return render(request, "tasks/waibao.html", {"projects": projects, "bzf": bzf, "data_source": data_source_list, "js_methods": js_methods})
+    ann_field_flag = json.dumps(['首次标注', '返修标注'])
+    return render(request, "tasks/waibao.html", {"projects": projects, "bzf": bzf, "data_source": data_source_list, "js_methods": js_methods, "ann_field": ann_field_flag})
 
 
 def wballdata(request):
@@ -504,6 +505,7 @@ def wballdata(request):
             tmp_dict['begin_check_data_time'] = i.begin_check_data_time
             tmp_dict['last_check_data_time'] = i.last_check_data_time
             tmp_dict["get_data_time"] = i.get_data_time
+            tmp_dict["ann_field_flag"] = i.ann_field_flag
             
             if i.ann_meta_data == None:
                 tmp_dict['ann_meta_data'] = ""
@@ -561,6 +563,7 @@ def waiabo_data_insert(request):
                 'scene': data.get("scene"),
                 'send_reason': data.get("send_reason"),
                 'key_frame_extracted_methods': data.get("key_frame_extracted_methods"),
+                'ann_field_flag': data.get("ann_field_flag"),
                 'wb_name': models.Waibaos.objects.get(name=data.get("wb_name")),
                 'created_time': datetime.now().strftime("%Y-%m-%d")
         }
@@ -596,6 +599,7 @@ def wb_update(request):
             'scene' : data.get("scene"),
             'send_reason' : data.get("send_reason"),
             'key_frame_extracted_methods' : data.get("key_frame_extracted_methods"),
+            'ann_field_flag': data.get("ann_field_flag"),
             'wb_name': models.Waibaos.objects.get(name=data.get("wb_name"))
         }
         if data.get("begin_check_data_time"):
@@ -690,6 +694,7 @@ def wb_update(request):
         tmp_dict['begin_check_data_time'] = i.begin_check_data_time
         tmp_dict['last_check_data_time'] = i.last_check_data_time
         tmp_dict["get_data_time"] = i.get_data_time
+        tmp_dict["ann_field_flag"] = i.ann_field_flag
         if i.ann_meta_data == None:
             tmp_dict['ann_meta_data'] = ""
         else:
@@ -736,10 +741,16 @@ def wbdata_count(request):
                             money_list.append(modidx.total_money)
                         else:
                             money_list.append(round(money_list[-1] + modidx.total_money,3))
-
             line_chart_list.append([time_list, kuang_list, money_list, pnums_list])
-            pie_chart_knums_data.append({"name": proidx, "value": kuang_list[-1]})
-            pie_chart_money_data.append({"name": proidx, "value": money_list[-1]})
+            
+            if len(kuang_list) == 0:
+                pie_chart_knums_data.append({"name": proidx, "value": [0]})
+            else:
+                pie_chart_knums_data.append({"name": proidx, "value": kuang_list[-1]})
+            if len(money_list) == 0:
+                pie_chart_money_data.append({"name": proidx, "value": [0]})
+            else:
+                pie_chart_money_data.append({"name": proidx, "value": money_list[-1]})
             pie_chart_pnums_data.append({"name": proidx, "value": pnums_list[-1]})
         char_list = [pie_chart_pnums_data, pie_chart_knums_data, pie_chart_money_data]
     else:

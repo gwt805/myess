@@ -56,6 +56,7 @@
                     <li class="active">
                         <a style="color: #fff; background-color: rgb(68, 147, 199);">外包数据</a>
                     </li>
+                    <li class="active" id="cronjob"><a href="/cronjob">定时任务</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li style="border-right: 1px solid #bdbdbd; margin-right: 20px; cursor: pointer;"><a
@@ -123,6 +124,7 @@
                             <th>场景分布</th>
                             <th>送标原因</th>
                             <th>关键帧抽取方式</th>
+                            <th>是否首次标注</th>
                             <th>外包名字</th>
                             <th>操作</th>
                         </tr>
@@ -140,6 +142,7 @@
                             <td><input type="text" class="form-control" name="scene_insert" id="scene_insert"></td>
                             <td><input type="text" class="form-control" name="send_reason_insert" id="send_reason_insert"></td>
                             <td><input type="text" class="form-control" name="key_frame_extracted_methods_insert" id="key_frame_extracted_methods_insert"></td>
+                            <td><select name="ann_field" id="ann_field" class="form-control"><option value="---">---</option></select></td>
                             <td><select class="form-control" name="wb_name" id="wb_name_insert"><option value="---">---</option></select></td>
                             <td>
                                 <button class="btn btn-primary" id="btn_insert">
@@ -286,11 +289,13 @@
                                     <th>送标原因</th>
                                     <th>关键帧抽取方式</th>
                                     <th>外包名字</th>
+                                    <th>是否首次标注</th>
                                 </tr>
                                 <tr>
                                     <td><input type="text" class="form-control" name="send_reason_update" id="send_reason_update" disabled></td>
                                     <td><input type="text" class="form-control" name="key_frame_extracted_methods_update" id="key_frame_extracted_methods_update" disabled></td>
                                     <td><select class="form-control" name="wb_name" id="wb_name_update" disabled></select></td>
+                                    <td><select class="form-control" name="ann_field_flag_update" id="ann_field_flag_update" disabled></select></td>
                                 </tr>
                                 <tr>
                                     <th>开始验收时间</th>
@@ -394,10 +399,15 @@
 <script src="/static/js/disable.js"></script>
 <script src="/static/js/click_yh.js"></script>
 <script type="text/javascript">
+    if (sessionStorage.getItem("power") != '1'){
+        $("#cronjob").css('display','none');
+    }
+    
     const projects = JSON.parse('{{ projects|safe }}'); // 项目名字 列表
     const bzf = JSON.parse('{{ bzf|safe }}'); // 外包列表
     const data_source_list = JSON.parse('{{ data_source|safe }}'); // 数据来源列表
     const js_methods = JSON.parse('{{ js_methods|safe }}'); // 结算方式
+    const ann_field = JSON.parse('{{ ann_field|safe }}'); // 是否首次标注
     search();
     
     function clean_insert_data(){
@@ -457,7 +467,7 @@
             { field: 'id', title: 'ID', fixed: left },
             { field: 'user', title:'研发', width: 80, fixed: left},
             { field: 'pname', title: '项目名字', width: 220, fixed: left},
-            { field: 'send_data_batch', title: '送标批次', width: 120, fixed: left},
+            { field: 'send_data_batch', title: '送标批次', width: 150, fixed: left},
             { field: 'send_data_time', title: "送标时间", width: 110, fixed: left},
             { field: 'pnums', title: "送标样本数量", width: 130},
             { field: 'data_source', title: "数据来源", width: 110},
@@ -468,8 +478,9 @@
             { field: 'last_check_data_time', title: "结束验收时间", width: 120},
             { field: 'get_data_time', title: '标注结果返回时间', width: 150},
             { field: 'ann_meta_data', title:'准确率&框数&结算方式&单价', width: 230},
-            { field: 'wb_name', title: '外包名字', width: 90 },
             { field: 'total_money', title: "总价", width: 110},
+            { field: 'ann_field_flag', title: "是否首次标注", width: 120 },
+            { field: 'wb_name', title: '外包名字', width: 90, fixed: 'right' },
             { fixed: 'right', title: '操作', toolbar: '#barDemo',width:150 },//设置每行的工具栏以及其容器
         ]],
     });
@@ -586,6 +597,7 @@
                         const begin_check_data_time = res.data[0].begin_check_data_time;
                         const last_check_data_time = res.data[0].last_check_data_time;
                         const get_data_time = res.data[0].get_data_time;
+                        const ann_field_flag = res.data[0].ann_field_flag;
                         const wb_name = res.data[0].wb_name;
                         const ann_meta_data = res.data[0].ann_meta_data;
 
@@ -602,6 +614,7 @@
                         $("#begin_check_data_time_update").val(begin_check_data_time);
                         $("#last_check_data_time_update").val(last_check_data_time);
                         $("#get_data_time_update").val(get_data_time);
+                        $("#ann_field_flag_update").html("<option value=" + ann_field_flag + ">" + ann_field_flag + "</option>");
                         $("#wb_name_update").html("<option value=" + wb_name + ">" + wb_name + "</option>");
                     
                         // 给结算方式 添加下拉框
@@ -678,10 +691,14 @@
             const scene = $("#scene_insert").val();
             const send_reason = $("#send_reason_insert").val();
             const key_frame_extracted_methods = $("#key_frame_extracted_methods_insert").val();
+            const ann_field_sel = $("#ann_field option:selected").val();
             const wb_name = $("#wb_name_insert option:selected").val();
             console.log(pnums)
             if (send_data_time == "") {
                 warning_alert("送标时间不允许为空!");
+            }
+            else if (ann_field_sel == "---") {
+                warning_alert("是否首次标注不允许为空!");
             }
             else if (pname == "---") {
                 warning_alert("项目名字不允许为空!");
@@ -728,6 +745,7 @@
                         scene: scene,
                         send_reason: send_reason,
                         key_frame_extracted_methods: key_frame_extracted_methods,
+                        ann_field_flag: ann_field_sel,
                         wb_name: wb_name
                     },
                 }).done(function (res) {
@@ -769,6 +787,7 @@
         const begin_check_data_time = $("#begin_check_data_time_update").val();
         const last_check_data_time = $("#last_check_data_time_update").val();
         const get_data_time = $("#get_data_time_update").val();
+        const ann_field = $("#ann_field_flag_update option:selected").val();
         const wb_name = $("#wb_name_update option:selected").val();
         
         const recovery_precision1 = $("#recovery_precision_update1").val();
@@ -819,6 +838,7 @@
                 scene: scene,
                 send_reason: send_reason,
                 key_frame_extracted_methods: key_frame_extracted_methods,
+                ann_field_flag: ann_field,
                 wb_name: wb_name,
                 begin_check_data_time: begin_check_data_time,
                 last_check_data_time: last_check_data_time,
@@ -876,15 +896,11 @@
             $('#search').css("display", "none");
             $('#ginsert').css("display", "block");
         }
-        // $("#knums_insert").tagsinput();
-        // $("#unit_price_insert").tagsinput();
-        // $('.selectpicker').selectpicker();
-
         document.getElementById("user_insert").value = $("#name").text();
         // 给项目名字 添加下拉框
         var p_s = document.getElementById('pname_insert');
         for (var i = 0; i < projects.length; i++) {
-            if (p_s.length < projects.length) { // 这里不判断的话会一直添加
+            if (p_s.length < projects.length+1) { // 这里不判断的话会一直添加
                 if (projects[i] != p_s.value) {
                     var objOption = document.createElement("option");
                     objOption.value = projects[i];
@@ -905,7 +921,18 @@
                 }
             }
         }
-
+        // 给是否是首次标注赋值
+        var ann_field_sel = document.getElementById("ann_field");
+        for (var i = 0; i < ann_field.length; i++){
+            if (ann_field_sel.length < ann_field.length+1){
+                if (ann_field[i] != ann_field_sel.value){
+                    var objOption = document.createElement("option");
+                    objOption.value = ann_field[i];
+                    objOption.text = ann_field[i];
+                    ann_field_sel.add(objOption);
+                }
+            }
+        }
         // 给外包 添加下拉框
         var bzf_insert = document.getElementById("wb_name_insert");
         for (var i = 0; i < bzf.length; i++) {
