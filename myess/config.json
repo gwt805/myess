@@ -9,5 +9,6 @@
     "ding_access_token": "",
     "ding_secret": "",
     "send_qqEmail": "",
-    "send_qqEmail_pwd": ""
+    "send_qqEmail_pwd": "",
+    "public_ip": ""
 }

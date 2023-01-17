@@ -706,10 +706,18 @@ def wb_update(request):
     return JsonResponse({"data": data, "status": "successful"})
 
 
-# 外包数据统计
-def wbdata_count(request):
+def wbdata_count_public_code(wb_name, start_time, end_time):
     year = datetime.now().strftime('%Y')
-    init_data = models.Supplier.objects.filter(send_data_time__range=[year + '-01-01', year + "-12-31"])
+    if wb_name == "---":
+        if start_time and end_time:
+            init_data = models.Supplier.objects.filter(send_data_time__range=[start_time, end_time])
+        else:
+            init_data = models.Supplier.objects.filter(send_data_time__range=[year + '-01-01', year + "-12-31"])
+    else:
+        if start_time and end_time:
+            init_data = models.Supplier.objects.filter(send_data_time__range=[start_time, end_time], wb_name=models.Waibaos.objects.get(name=wb_name))
+        else:
+            init_data = models.Supplier.objects.filter(send_data_time__range=[year + '-01-01', year + "-12-31"], wb_name=models.Waibaos.objects.get(name=wb_name))
     if init_data:
         proname_list = []
         for item in init_data:
@@ -758,7 +766,27 @@ def wbdata_count(request):
         proname_list = []
         char_list = [[{}], [{}]]
         line_chart_list = [[[0],[0],[0]]]
+    
+    return proname_list, char_list, line_chart_list
 
+
+# 外包数据统计
+def wbdata_count(request):
+    wb_name_list = [i[0] for i in models.Waibaos.objects.values_list("name")]
+
+    if request.method == "POST":
+        wb_name = request.POST.get("wb_name_search")
+        start_time = request.POST.get("start_time_search")
+        end_time = request.POST.get("end_time_search")
+        proname_list, char_list, line_chart_list = wbdata_count_public_code(wb_name, start_time, end_time)
+
+        chart_pie = json.dumps(char_list,ensure_ascii=False)
+        chart_line = json.dumps(line_chart_list, ensure_ascii=False)
+        return render(request, "tasks/wbdata_count.html", {"wb_name_list": wb_name_list, "wb_selc": json.dumps(wb_name),"time_start": json.dumps(start_time),"time_end": json.dumps(end_time), "proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })
+    
+    proname_list, char_list, line_chart_list = wbdata_count_public_code("---", "", "")
+    print("项目名字",proname_list)
+    print("饼图",char_list)
     chart_pie = json.dumps(char_list,ensure_ascii=False)
     chart_line = json.dumps(line_chart_list, ensure_ascii=False)
-    return render(request, "tasks/wbdata_count.html", {"proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })
+    return render(request, "tasks/wbdata_count.html", {"wb_name_list": wb_name_list, "wb_selc": json.dumps("---"), "time_start": json.dumps(""),"time_end": json.dumps(""), "proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })

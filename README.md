@@ -20,6 +20,8 @@ pip install django
 pip install loguru
 pip install mysqlclient or pip install pymysql
 pip install DingtalkChatbot
+pip install pyecharts
+pip install snapshot-selenium
 python manage.py demo --convert_data # 数据转移，慎用
 ```
 

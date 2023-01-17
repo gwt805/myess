@@ -257,7 +257,9 @@
         data: data,
         elem: '#job_log_table',         //设置容器
         height: 'full-260',    //高度为屏幕高度-20
-        page: false,
+        page: true,
+        limit: 20,
+        limits: [20, 50, 100],
         skin: 'row', //表格风格
         even: true,    //隔行换色
         cols: [[               //设置列标签、标题、宽度、是否排序等
@@ -340,7 +342,7 @@
                     $(".alert-danger").addClass("show");
                     window.setTimeout(function () {
                         $(".alert-danger").removeClass("show");
-                    }, 1000);//显示的时间
+                    }, 2000);//显示的时间
                     window.location.reload();
                 }
                 else {
