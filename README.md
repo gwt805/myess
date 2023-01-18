@@ -22,6 +22,8 @@ pip install mysqlclient or pip install pymysql
 pip install DingtalkChatbot
 pip install pyecharts
 pip install snapshot-selenium
+
+enable_local_echarts 本地调试为false，服务器为true
 python manage.py demo --convert_data # 数据转移，慎用
 ```
 

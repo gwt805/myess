@@ -2,7 +2,7 @@ from django_apscheduler.jobstores import DjangoJobStore,register_events
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.views.decorators.csrf import csrf_exempt
 from dingtalkchatbot.chatbot import DingtalkChatbot
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse,FileResponse
 from myess.settings import CONFIG, BASE_DIR
 from pyecharts.render import make_snapshot
 from snapshot_phantomjs import snapshot
@@ -23,23 +23,20 @@ import json
 import os
 import cv2
 import numpy as np
-
+from django.views import View
 
 # Create your views here.
 scheduler = BackgroundScheduler(timezone='Asia/Shanghai')  # 实例化调度器
 scheduler.add_jobstore(DjangoJobStore(), "default") # 调度器使用默认的DjangoJobStore()
-'''
-[
-    [{'name': '50-行人扶梯一米栏', 'value': 34524}, {'name': 'S线-可通行区域', 'value': 21458}, {'name': '50-巡检', 'value': 9327}, {'name': '50-杂物', 'value': 123}], 总样本
-    [{'name': '50-行人扶梯一米栏', 'value':132909}, {'name': 'S线-可通行区域', 'value': 60629}, {'name': '50-巡检', 'value': [0]}, {'name': '50-杂物', 'value': [0]}], 
-    [{'name': '50-行人扶梯一米栏', 'value': 10632.72}, {'name': 'S线-可通行区域', 'value': 7275.48}, {'name': '50-巡检', 'value': [0]}, {'name': '50-杂物', 'value': [0]}]
-]
 
-'''
 def make_report_form_img(chart_pie):
     save_path = os.path.join(BASE_DIR,"cronjob/ding_day_report_form/")
+    if not CONFIG["enable_local_echarts"]:
+        js_path = ""
+    else:
+        js_path = os.path.join(BASE_DIR, 'script/')
     pie_knums_info = (
-        Pie()
+        Pie(init_opts=opts.InitOpts(js_host=js_path))
         .add(
             "",
             [[p['name'], p['value']]  for p in chart_pie[0]],
@@ -54,7 +51,7 @@ def make_report_form_img(chart_pie):
     )
     make_snapshot(snapshot,pie_knums_info.render(),save_path+"pie_knums_info.png")
     pie_anno_info = (
-        Pie()
+        Pie(init_opts=opts.InitOpts(js_host=js_path))
         .add(
             "",
             [[p['name'], p['value']]  for p in chart_pie[1]],
@@ -69,7 +66,8 @@ def make_report_form_img(chart_pie):
     )
     make_snapshot(snapshot,pie_anno_info.render(),save_path+"pie_anno_info.png")
     pie_money_info = (
-        Pie()
+        # 
+        Pie(init_opts=opts.InitOpts(js_host=js_path))
         .add(
             "",
             [[p['name'], p['value']]  for p in chart_pie[2]],
@@ -99,13 +97,17 @@ def make_report_form_img(chart_pie):
     h_line = np.ones((4, hori_width, 3)) * 255
     hori_ver_contact_pie = np.vstack((hori_pie_concat,h_line, pie_money_resize_image))
     cv2.imwrite(save_path + 'hori_ver_contact_pie.png', hori_ver_contact_pie)
+    logger.info("ding_day_report_form_pie---生成完成")
 
 
-def make_report_form_url(request):
-    img_dir = os.path.join(BASE_DIR,"cronjob/ding_day_report_form/")
-    img = img_dir + "/" + "hori_ver_contact_pie.png"
-    f = open(img,'rb').read()
-    return HttpResponse(f, content_type='image/png')
+class ReportImage(View):
+    def get(self,request, *args, **kwargs):
+        filepath = request.path
+        if filepath.split("/")[-1] != "" and filepath.split("/")[-1] != "hori_ver_contact_pie.png":
+            return HttpResponse(404)
+        img_dir = os.path.join(BASE_DIR,"cronjob/ding_day_report_form/")
+        img = img_dir + "/" + "hori_ver_contact_pie.png"
+        return FileResponse(open(img,'rb'), content_type='image/png')
 
 def ding_day_report_form():
     def ding_mes():
@@ -121,10 +123,13 @@ def ding_day_report_form():
         ).digest()
         sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
         # 引用钉钉群消息通知的Webhook地址：
+        '''
+        f<img src="http://{CONFIG['public_ip']}/report_img" alt="测试"></img>
+        '''
         webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
         # 初始化机器人小丁,方式一：通常初始化
         msgs = DingtalkChatbot(webhook)
-        picture1 = f"### 截止今年各项目报表详情\n\n![各个报表](http://{CONFIG['public_ip']}/report_img)"
+        picture1 = f"### 截止今年各项目报表详情\n\n![各个报表](http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png)"
         picture_total = picture1
         states = msgs.send_markdown(title="截止今日今年各报表详情", text=picture_total, is_at_all=False)
         logger.info(states)
