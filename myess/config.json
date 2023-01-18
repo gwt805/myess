@@ -10,6 +10,6 @@
     "ding_secret": "",
     "send_qqEmail": "",
     "send_qqEmail_pwd": "",
-    "enable_local_echarts": false,
+    "enable_local_echarts": false, 
     "public_ip": ""
 }
