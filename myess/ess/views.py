@@ -785,8 +785,6 @@ def wbdata_count(request):
         return render(request, "tasks/wbdata_count.html", {"wb_name_list": wb_name_list, "wb_selc": json.dumps(wb_name),"time_start": json.dumps(start_time),"time_end": json.dumps(end_time), "proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })
     
     proname_list, char_list, line_chart_list = wbdata_count_public_code("---", "", "")
-    print("项目名字",proname_list)
-    print("饼图",char_list)
     chart_pie = json.dumps(char_list,ensure_ascii=False)
     chart_line = json.dumps(line_chart_list, ensure_ascii=False)
     return render(request, "tasks/wbdata_count.html", {"wb_name_list": wb_name_list, "wb_selc": json.dumps("---"), "time_start": json.dumps(""),"time_end": json.dumps(""), "proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })
