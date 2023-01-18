@@ -4,5 +4,7 @@ pymysql==1.0.2
 DingtalkChatbot==1.3.0
 loguru==0.6.0
 django-apscheduler
-snapshot-selenium
+snapshot-phantomjs
 pyecharts
+opencv-python
+numpy

@@ -5,7 +5,7 @@ from dingtalkchatbot.chatbot import DingtalkChatbot
 from django.http import JsonResponse, HttpResponse
 from myess.settings import CONFIG, BASE_DIR
 from pyecharts.render import make_snapshot
-from snapshot_selenium import snapshot
+from snapshot_phantomjs import snapshot
 from pyecharts import options as opts
 from django.shortcuts import render
 from pyecharts.charts import Pie
@@ -21,29 +21,91 @@ import time
 import hmac
 import json
 import os
+import cv2
+import numpy as np
+
 
 # Create your views here.
 scheduler = BackgroundScheduler(timezone='Asia/Shanghai')  # 实例化调度器
 scheduler.add_jobstore(DjangoJobStore(), "default") # 调度器使用默认的DjangoJobStore()
+'''
+[
+    [{'name': '50-行人扶梯一米栏', 'value': 34524}, {'name': 'S线-可通行区域', 'value': 21458}, {'name': '50-巡检', 'value': 9327}, {'name': '50-杂物', 'value': 123}], 总样本
+    [{'name': '50-行人扶梯一米栏', 'value':132909}, {'name': 'S线-可通行区域', 'value': 60629}, {'name': '50-巡检', 'value': [0]}, {'name': '50-杂物', 'value': [0]}], 
+    [{'name': '50-行人扶梯一米栏', 'value': 10632.72}, {'name': 'S线-可通行区域', 'value': 7275.48}, {'name': '50-巡检', 'value': [0]}, {'name': '50-杂物', 'value': [0]}]
+]
 
-def make_report_form_img(proname_list, chart_pie):
+'''
+def make_report_form_img(chart_pie):
     save_path = os.path.join(BASE_DIR,"cronjob/ding_day_report_form/")
+    pie_knums_info = (
+        Pie()
+        .add(
+            "",
+            [[p['name'], p['value']]  for p in chart_pie[0]],
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+        .set_global_opts(
+            title_opts=opts.TitleOpts(title="今年各项目 总送标情况"),
+            legend_opts=opts.LegendOpts(orient="vertical", pos_top="15%", pos_left="2%", is_show=False),
+        )
+        .set_dark_mode()
+        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}({d}%)"))
+    )
+    make_snapshot(snapshot,pie_knums_info.render(),save_path+"pie_knums_info.png")
+    pie_anno_info = (
+        Pie()
+        .add(
+            "",
+            [[p['name'], p['value']]  for p in chart_pie[1]],
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+        .set_global_opts(
+            title_opts=opts.TitleOpts(title="今年各项目 总标注情况"),
+            legend_opts=opts.LegendOpts(orient="vertical", pos_top="15%", pos_left="2%", is_show=False),
+        )
+        .set_dark_mode()
+        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}({d}%)"))
+    )
+    make_snapshot(snapshot,pie_anno_info.render(),save_path+"pie_anno_info.png")
+    pie_money_info = (
+        Pie()
+        .add(
+            "",
+            [[p['name'], p['value']]  for p in chart_pie[2]],
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+        .set_global_opts(
+            title_opts=opts.TitleOpts(title="今年各项目 已用金额情况"),
+            legend_opts=opts.LegendOpts(orient="vertical", pos_top="15%", pos_left="2%", is_show=False),
+        )
+        .set_dark_mode()
+        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}({d}%)"))
+    )
+    make_snapshot(snapshot,pie_money_info.render(),save_path+"pie_money_info.png")
+
+    pie_knums_image = cv2.imread(save_path + 'pie_knums_info.png')
+    pie_ann_image = cv2.imread(save_path + 'pie_anno_info.png')
+    pie_money_image = cv2.imread(save_path + 'pie_money_info.png')
+
+    v_height, _, _ = pie_knums_image.shape
+    v_line = np.ones((v_height, 4, 3)) * 255
+    hori_pie_concat = np.hstack((pie_knums_image,v_line, pie_ann_image))
+    _, hori_width, _ = hori_pie_concat.shape
+    pie_money_image_height, pie_money_image_width, _ = pie_money_image.shape
+    ratio = hori_width / pie_money_image_width
+    pie_money_now_height = int(ratio * pie_money_image_height)
+    pie_money_resize_image =  cv2.resize(pie_money_image, (hori_width, pie_money_now_height))
+    h_line = np.ones((4, hori_width, 3)) * 255
+    hori_ver_contact_pie = np.vstack((hori_pie_concat,h_line, pie_money_resize_image))
+    cv2.imwrite(save_path + 'hori_ver_contact_pie.png', hori_ver_contact_pie)
+
 
 def make_report_form_url(request):
-    flag = request.GET.get("flag")
     img_dir = os.path.join(BASE_DIR,"cronjob/ding_day_report_form/")
-    if flag == "pnums":
-        img = img_dir + "/" + "pie_pnums_info.png"
-        f = open(img,'rb').read()
-        return HttpResponse(f, content_type='image/png')
-    if flag == "anno":
-        img = img_dir + "/" + "pie_anno_info.png"
-        f = open(img,'rb').read()
-        return HttpResponse(f, content_type='image/png')
-    if flag == "money":
-        img = img_dir + "/" + "pie_money_info.ong"
-        f = open(img,'rb').read()
-        return HttpResponse(f, content_type='image/png')
+    img = img_dir + "/" + "hori_ver_contact_pie.png"
+    f = open(img,'rb').read()
+    return HttpResponse(f, content_type='image/png')
 
 def ding_day_report_form():
     def ding_mes():
@@ -62,10 +124,8 @@ def ding_day_report_form():
         webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
         # 初始化机器人小丁,方式一：通常初始化
         msgs = DingtalkChatbot(webhook)
-        picture1 = f"### 截止今年各项目报表详情\n\n![截止今日各项目 总样本数情况](http://{CONFIG['public_ip']}/report_img?flag=pnums)"
-        picture2 = f"\n\n![截止今日各项目 标注数量情况](http://{CONFIG['public_ip']}/report_img?flag=anno)"
-        picture3 = f"\n\n![截止今日各项目 已用金额情况](http://{CONFIG['public_ip']}/report_img?flag=money)"
-        picture_total = picture1 + picture2 + picture3
+        picture1 = f"### 截止今年各项目报表详情\n\n![各个报表](http://{CONFIG['public_ip']}/report_img)"
+        picture_total = picture1
         states = msgs.send_markdown(title="截止今日今年各报表详情", text=picture_total, is_at_all=False)
         logger.info(states)
     
@@ -78,13 +138,9 @@ def ding_day_report_form():
 
 def every_day_ding_send_report_form():
     pass
-    # proname_list, char_list, _ = views.wbdata_count_public_code("---", "", "")
-    # print(proname_list)
-    # print(char_list)
-    # chart_pie = json.dumps(char_list,ensure_ascii=False)
-    # proname_json = json.dumps(proname_list, ensure_ascii=False)
-    # make_report_form_img(proname_list, char_list)
-    # ding_day_report_form()
+    _, char_list, _ = views.wbdata_count_public_code("---", "", "")
+    make_report_form_img(char_list)
+    ding_day_report_form()
     
 
 @csrf_exempt
@@ -92,7 +148,7 @@ def job_add(request):
     if request.method == "POST":
         hour = int(QueryDict(request.body).get("hour"))
         try:
-            scheduler.add_job(every_day_ding_send_report_form, "cron", id='ding_day_report', hour=hour, minute=25, second=0)
+            scheduler.add_job(every_day_ding_send_report_form, "cron", id='ding_day_report', hour=hour, minute=0, second=0)
             return JsonResponse({"status": "successful", "mes": "定时任务添加成功了"})
         except:
             return JsonResponse({"status": "error", "mes": "定时任务添加出问题了"})
