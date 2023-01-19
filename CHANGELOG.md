@@ -8,7 +8,7 @@
 
 <img src="./myess/asserts/2022-12-12.gif" />
 
----
+
 
 # 2022-12-22
 ### Changed
@@ -29,7 +29,7 @@
 
 <img src="./myess/asserts/2022-12-22.gif" />
 
----
+
 
 # 2022-12-23
 ### Added
@@ -47,34 +47,39 @@
 
 - 绩效页面展示优化
 <img src="./myess/asserts/2022-12-23-ess-jx.png">
----
+
+
 
 # 2023-01-05
 ### Changed
 - 修复项目名字中有 '&' 检索不出来的问题
----
+
+
 
 # 2023-01-12
 ### Changed
 - 将原有外包栏功能更改为数据送标统计通能
 <img src="./myess/asserts/2023-01-12-ess-gysc.png">
 <img src="./myess/asserts/2023-01-12-ess-gysc-change.png">
----
+
+
 
 # 2023-01-13
 ### Changed
 - 修复数据添加后，修改框数等为 None 的问题
 - 修复每次修改数据后，钉钉通知用户名为该条数据记录中的用户名问题
 - 添加送标批次 来方便 验收和研发 明确修改目标是哪个
-<img src="./myess/asserts/2023-01-14-ess-gysc.png">
----
+<img src="./myess/asserts/2023-01-13-ess-gysc.png">
+
+
 
 # 2023-01-14
 ### Changed
 - 把原来的图表样式和逻辑做了更改
 <img src="./myess/asserts/2023-01-14-ess-pie.png">
 <img src="./myess/asserts/2023-01-14-ess-line.png">
----
+
+
 
 # 2023-01-16
 ### Added
@@ -86,7 +91,8 @@
 
 ### Changed
 - 修复 添加新数据 图表没有正常工作的bug
----
+
+
 
 # 2023-01-18
 ### Added
@@ -98,30 +104,24 @@
 - 修复折线图显示不正确的问题
 - 图表搜索样式调整
 <img src="./myess/asserts/2023-01-18-ess-ding.png">
----
+
+
 
 # 2023-01-19
-### Changee
+### Added
 - 添加 修改数据时 提示修改数据的ID为多少
 - About 内容新增
-- 取消修改密码功能
+### Changee
 - 只有管理员账号才能看见 Setting
 - 定时任务执行日志只展示正常执行的，异常的任务需要到后台去看
+### Removed
+- 取消修改密码功能
 <img src="./myess/asserts/2023-01-19-ess-change-result-tip.png">
----
+
+
 
 # 2023-01-20
 ### Added
 - 外包栏添加当前表格中的所有数据导出功能
     - 右侧的导出为 仅导出当前页的数据
 <img src="./myess/asserts/2023-01-20-ess-export-table-alldata.gif">
----
-
-# Template: Date
-### Added
- - xxx
-### Changed
-- xxx
-### Removed
-- xx
----
