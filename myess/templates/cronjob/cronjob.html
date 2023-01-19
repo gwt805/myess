@@ -56,7 +56,7 @@
                             <span class="caret" style="margin-left: 10px;"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li style="border-bottom: 1px solid gray;">
+                            <li style="border-bottom: 1px solid gray;" id="nav_setting">
                                 <a href="/sites/" target="black">
                                     <i class="fa fa-gear"></i>
                                     <span style="margin-left: 10px;">设置</span>
@@ -66,12 +66,6 @@
                                 <a>
                                     <i class="fa fa-info-circle"></i>
                                     <span style="margin-left: 10px;">关于</span>
-                                </a>
-                            </li>
-                            <li style="border-bottom: 1px solid gray;">
-                                <a onclick="pwd_upd()">
-                                    <i class="fa fa-compass"></i>
-                                    <span style="margin-left: 10px;">修改密码</span>
                                 </a>
                             </li>
                             <li onclick="logout()">
@@ -92,7 +86,7 @@
         </div><!-- 弹窗告警 -->
         <!-- 顶部的工具栏 -->
         <script type="text/html" id="toolbar">
-            <button class="layui-btn" onclick="addcronjob()"><i class="fa fa-plus-square" aria-hidden="true"></i>&nbsp;&nbsp;添加任务</button>
+            <button class="layui-btn layui-btn-sm" lay-event="getData"><i class="fa fa-plus-square" aria-hidden="true"></i>&nbsp;&nbsp;添加任务</button>
         </script>
         <!--工具栏(每行)-->
         <script type="text/html" id="barDemo">
@@ -165,41 +159,6 @@
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
-        <!-- 弹窗之密码修改 -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="pwd_update">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h3 class="modal-title">修改密码</h3>
-                    </div>
-                    <div class="modal-body">
-                        <form class='form-register' action="/pwd_update/" method="post" onsubmit="return update_pwd()">
-                            {% csrf_token %}
-                            <div class="alert alert-danger" id="err_msg" style="display: none;"></div>
-                            <div class="form-group">
-                                <label for="recipient-name" class="control-label">用户名:</label>
-                                <input type="text" class="form-control zh_uname" name="uname" readonly="readonly">
-                            </div>
-                            <div class="form-group">
-                                <label for="recipient-name" class="control-label">请输入新密码:</label>
-                                <input type="password" class="form-control" name="new_pwd1" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="message-text" class="control-label">再次输入新密码:</label>
-                                <input type="password" class="form-control" name="new_pwd2" required>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                                <button type="submit" class="btn btn-primary">确认</button>
-                            </div>
-                        </form>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-
         <!-- 弹窗之添加定时任务 -->
         <div class="modal fade" tabindex="-1" role="dialog" id="cronjobadd" style="margin: 200px 0 0 500px; ">
             <div class="modal-dialog" role="document">
@@ -316,12 +275,26 @@
             }
         }
     });
-
+    // 工具栏事件
+    table.on('toolbar(job_task_add)', function(obj){
+        var id = obj.config.id;
+        if (obj.event == 'getData'){
+            var getData = table.getData(id);
+            const table_data = layui.util.escape(JSON.stringify(getData))
+            if (table_data === '[]') {
+                $('#cronjobadd').modal('show');
+            }
+            else {
+                $(".alert-danger").html("定时任务已经存在, 不允许重复添加!");
+                $(".alert-danger").addClass("show");
+                window.setTimeout(function () {
+                    $(".alert-danger").removeClass("show");
+                }, 2000);//显示的时间
+            }
+        }
+    });
 
     // 添加定时任务
-    function addcronjob() {
-        $('#cronjobadd').modal('show');
-    }
     function addjob() {
         const hour = Number($("#time").val());
         if (hour < 0 || hour > 24) {
@@ -361,37 +334,23 @@
             $(".alert-danger").removeClass("show");
         }, 1000);//显示的时间
     };
+    // setting
+    if (sessionStorage.getItem("power") != '1'){
+        $("#nav_setting").css('display', 'none')
+    }
+    else {
+        $("#nav_setting").css('display', 'block')
+    }
     // 关于
     function info() {
         $('#ess_info').modal('show');
     }
-
-    // 修改密码模态框展示
-    function pwd_upd() {
-        $('#pwd_update').modal('show');
-        $(".zh_uname").val($("#name").text());
-    };
-
     // 退出登录
     function logout() {
         sessionStorage.setItem("isLogin", "");
         sessionStorage.setItem("zhuname", "");
         sessionStorage.setItem("power", "");
         window.location.href = '/login'
-    }
-
-    // 更新密码
-    function update_pwd() {
-        const new_pwd1 = $(".new_pwd1").val();
-        const new_pwd2 = $(".new_pwd2").val();
-
-        if (new_pwd1 != new_pwd2) {
-            $("#err_msg").html("两个密码不一致!");
-            return false;
-        }
-        else {
-            return true;
-        }
     }
 </script>
 

@@ -9,22 +9,17 @@
 
 ### 项目启动时间
 ```
-2021-12-18启动,2021-12-27上线,目前持续维护中
+2021-12-18启动, 2021-12-27上线, 目前持续维护中
 ```
 
 ### 环境
 ```Bash
-安装mysql并创建数据库，数据库名字为myess
-python >= 3.6
-pip install django
-pip install loguru
-pip install mysqlclient or pip install pymysql
-pip install DingtalkChatbot
-pip install pyecharts
-pip install snapshot-selenium
+# mysql8
+# python >= 3.6
+# node@18
 
-enable_local_echarts 本地调试为false，服务器为true
-python manage.py demo --convert_data # 数据转移，慎用
+pip install -r requirements.txt
+npm install phantomjs-prebuilt -g
 ```
 
 ### 启动项目
@@ -41,11 +36,14 @@ python manage.py demo --convert_data # 数据转移，慎用
     "ding_secret": "" ——————————————— 钉群机器人的secret
     "send_qqEmail": "" —————————————— 发邮件的邮箱
     "send_qqEmail_pwd": "" —————————— 邮箱的授权码
+    "enable_local_echarts": false ——— 本地为false，服务器为true
+    "public_ip": "ip:port" —————————— 公网地址, 定时任务发报表用
 cd myess
 python manage.py makemigrations
 python manage.py migrate
 python manage.py collectstatic # 如果DEBUG为False时(root_stati文件夹已存在时,先删除在执行)
 python manage.py runserver 0.0.0.0:8088
+python manage.py demo --convert_data # 自定义命令, 老数据转移, 现已转移, 请勿用
 ```
 
 ### 权限说明
@@ -60,12 +58,13 @@ python manage.py runserver 0.0.0.0:8088
 - [x] 注册后会发邮件到注册者邮箱
 - [x] 团队整体效率展示
 - [x] 绩效查询
-- [x] 外包数据展示
-- [x] GS/外包数据统计柱状图显示
+- [x] 供应商数据展示
+- [x] GS/供应商数据统计图
 - [x] 图表展示页面用按钮控制显示内容
 - [x] 添加/修改/删除数据时,有钉钉消息通知
 - [x] 每家供应商的项目数据详情展示
 - [x] admin 页面支持修改用户密码等各种操作
+- [x] 添加定时任务, 每日定时发送报表
 
 ### 版本更新
 [查看更新日志请使劲点我](./CHANGELOG.md)

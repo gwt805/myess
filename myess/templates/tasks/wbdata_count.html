@@ -42,7 +42,6 @@
                     <li class="active">
                         <a href="/waibao" style="color: #fff; background-color: rgb(68, 147, 199);">外包数据</a>
                     </li>
-                    <li class="active" id="cronjob"><a href="/cronjob">定时任务</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li style="border-right: 1px solid #bdbdbd; margin-right: 20px; cursor: pointer;"><a
@@ -58,16 +57,18 @@
                                 style="margin-left: 10px;"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li style="border-bottom: 1px solid gray;"><a href="/sites/" target="black"><i
-                                        class="fa fa-gear"></i><span style="margin-left: 10px;">设置</span></a></li>
+                            <li style="border-bottom: 1px solid gray;" id="nav_setting">
+                                <a href="/sites/" target="black">
+                                    <i class="fa fa-gear"></i>
+                                    <span style="margin-left: 10px;">设置</span>
+                                </a>
+                            </li>
                             <li style="border-bottom: 1px solid gray;" onclick="info()">
                                 <a>
                                     <i class="fa fa-info-circle"></i>
                                     <span style="margin-left: 10px;">关于</span>
                                 </a>
                             </li>
-                            <li style="border-bottom: 1px solid gray;"><a href="#" onclick="pwd_upd()"><i
-                                        class="fa fa-compass"></i><span style="margin-left: 10px;">修改密码</span></a></li>
                             <li onclick="logout()"><a><i class="fa fa-sign-out"></i><span
                                         style="margin-left: 10px;">注销</span></a></li>
                         </ul>
@@ -85,17 +86,17 @@
             <form action="/wbdata_count/" method="post" onsubmit="return pie_line_search()" style="margin: 10px 0;">
                 {% csrf_token %}
                 <label for="wb_name_search" style="margin: auto 5px; padding: 6px 0 0 10px; float: left;">供应商</label>
-                <select class="form-control" name="wb_name_search" id="wb_name_search" style="width: 100px; border-radius: 10px; float: left;">
+                <select class="form-control" name="wb_name_search" id="wb_name_search" style="width: 100px; border-radius: 5px; float: left;">
                     <option value="---">---</option>
                     {% for wb in wb_name_list %}
                     <option value="{{ wb }}">{{ wb }}</option>
                     {% endfor %}
                 </select>
                 <label for="start_time_search" style="margin: auto 5px;  padding: 6px 0 0 10px; float: left;">开始时间</label>
-                <input type="date" class="form-control" name="start_time_search" id="start_time_search" style="width: 230px; border-radius: 10px; float: left;" value="{{ start_time }}">
+                <input type="date" class="form-control" name="start_time_search" id="start_time_search" style="width: 230px; border-radius: 5px; float: left;" value="{{ start_time }}">
                 <label for="start_time_search" style="margin: auto 5px;  padding: 6px 0 0 10px; float: left;">结束时间</label>
-                <input type="date" class="form-control" name="end_time_search" id="end_time_search" style="width: 230px; border-radius: 10px; float: left; margin-right: 50px;" value="{{ end_time }}">
-                <button class="btn btn-primary" type="submit" style="width: 80px; border-radius: 10px; float: left;"><i class="fa fa-search" aria-hidden="true" style="margin-right: 5px;"></i>查询</button>
+                <input type="date" class="form-control" name="end_time_search" id="end_time_search" style="width: 230px; border-radius: 5px; float: left; margin-right: 50px;" value="{{ end_time }}">
+                <button class="btn btn-primary" type="submit" style="width: 80px; border-radius: 5px; float: left;"><i class="fa fa-search" aria-hidden="true" style="margin-right: 5px;"></i>查询</button>
             </form>
         </div>
         <div id="chart_pnums" style="width: 50%; height: 50%; float: left; border-right: 1px dashed gray;"></div>
@@ -165,48 +166,10 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-    <!-- 弹窗之密码修改 -->
-    <div class="modal fade" tabindex="-1" role="dialog" id="pwd_update">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <h3 class="modal-title">修改密码</h3>
-                </div>
-                <div class="modal-body">
-                    <form class='form-register' action="/pwd_update/" method="post">
-                        {% csrf_token %}
-                        <div class="alert alert-warning" id="err_msg" style="display: none;"></div>
-                        <div class="form-group">
-                            <label for="recipient-name" class="control-label">用户名:</label>
-                            <input type="text" class="form-control zh_uname" name="uname" readonly="readonly">
-                        </div>
-                        <div class="form-group">
-                            <label for="recipient-name" class="control-label">请输入新密码:</label>
-                            <input type="password" class="form-control" name="new_pwd1" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="message-text" class="control-label">再次输入新密码:</label>
-                            <input type="password" class="form-control" name="new_pwd2" required>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                            <button type="submit" class="btn btn-primary">确认</button>
-                        </div>
-                    </form>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
 </body>
 <script src="/static/js/disable.js"></script>
 <script src="/static/js/click_yh.js"></script>
 <script type="text/javascript">
-    if (sessionStorage.getItem("power") != '1'){
-        $("#cronjob").css('display','none');
-    }
-
     const pname = JSON.parse('{{ proname_json|safe }}');
     const chart_pie = JSON.parse('{{ chart_pie|safe }}');
     const chart_line = JSON.parse('{{ chart_line|safe }}');
@@ -449,16 +412,17 @@
             $(".alert-danger").removeClass("show");
         }, 1000);//显示的时间
     };
+    // setting
+    if (sessionStorage.getItem("power") != '1'){
+        $("#nav_setting").css('display', 'none')
+    }
+    else {
+        $("#nav_setting").css('display', 'block')
+    }
     // 关于
     function info() {
         $('#ess_info').modal('show');
     }
-
-    function pwd_upd() {
-        $('#pwd_update').modal('show');
-        $(".zh_uname").val($("#name").text());
-    };
-
     function logout() {
         sessionStorage.setItem("isLogin", "");
         sessionStorage.setItem("zhuname", "");

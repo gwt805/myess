@@ -202,16 +202,17 @@ def jog_log(request):
     if len(data_info) != 0:
         job_task_log = []
         for i in data_info:
-            tmp = {}
-            tmp["id"] = i[0]
-            tmp["status"] = i[1]
-            tmp["run_time"] = i[2].strftime('%Y-%m-%d %H:%M:%S')
-            tmp["duration"] = float(i[3])
-            tmp["finished"] = float(i[4])
-            tmp["exception"] = i[5]
-            tmp["traceback"] = i[6]
-            tmp["job_id"] = i[7]
-            job_task_log.append(tmp)
+            if i[1] == "Executed":
+                tmp = {}
+                tmp["id"] = i[0]
+                tmp["status"] = i[1]
+                tmp["run_time"] = i[2].strftime('%Y-%m-%d %H:%M:%S')
+                tmp["duration"] = float(i[3])
+                tmp["finished"] = float(i[4])
+                tmp["exception"] = i[5]
+                tmp["traceback"] = i[6]
+                tmp["job_id"] = i[7]
+                job_task_log.append(tmp)
     else:
         job_task_log = []
     return render(request, "cronjob/cronjob.html", {"data": json.dumps(job_task_log,ensure_ascii=False), "job_task": json.dumps(job_task_list,ensure_ascii=False)})
