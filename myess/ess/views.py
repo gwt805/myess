@@ -67,20 +67,6 @@ def sendEmail(username: str, password: str, email: str):
         task.start()
 
 
-def pwd_update(request):
-    if request.method == "POST":
-        uname = request.POST.get("uname")
-        new_pwd = request.POST.get("new_pwd1").strip()
-        user_fliter = models.User.objects.get(zh_uname=uname)
-        user_fliter.set_password(new_pwd)
-        user_fliter.save()
-        logger.info(f"用户 {uname} 密码修改成功!")
-        username = user_fliter.username
-        email = user_fliter.email
-        sendEmail(username, new_pwd, email)
-        return redirect("/login")
-
-
 @csrf_exempt
 def regist(request):
     if request.method == "POST":
@@ -523,7 +509,7 @@ def wballdata(request):
         context = pageInator.page(pageIndex)
         for item in context:
             res.append(item)
-        return JsonResponse({"code": 0, "msg": "查询成功", "count": len(data), "data": res})
+        return JsonResponse({"code": 0, "msg": "查询成功", "count": len(data), "data": res, "source": data})
     else:
         
         pname = request.GET.get("pname").strip()
@@ -540,7 +526,7 @@ def wballdata(request):
         for item in context:
             res.append(item)
         return JsonResponse(
-            {"code": 0, "message": "查询成功", "count": len(data), "data": res}
+            {"code": 0, "message": "查询成功", "count": len(data), "data": res, "source": data}
         )
 
 

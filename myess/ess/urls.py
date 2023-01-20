@@ -9,7 +9,6 @@ urlpatterns = [
     path("login/", views.login),
     path("index/", views.index),
     path("regist/", views.regist),
-    path("pwd_update/", views.pwd_update),
     path("gsalldata/", views.gsalldata),
     path("insert/", views.insert),
     path("efficiency/", views.efficiency),

@@ -112,7 +112,7 @@
             <p>© gwt 2021.12.18</p>
         </div>
         <div id="right">
-            <div id="toolbar" style="height: 80px;">
+            <div style="height: 80px;">
                 <div class="alert alert-danger hide" id="alert_div"
                     style="width: 300px; position: fixed; top: 40%;left: 45%; right: 50%;z-index: 1; font-size: 22px;">
                 </div> <!-- 警告弹出框 -->
@@ -188,6 +188,9 @@
                     </table>
                 </div>
             </div>
+            <script type="text/html" id="toolbars">
+                <button class="layui-btn layui-btn-sm" lay-event="export_btn">数据导出</button>
+            </script>
             <!--工具栏(每行)-->
             <script type="text/html" id="barDemo">
                 <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="fa fa-pencil"></i> 编辑</a>
@@ -387,6 +390,8 @@
     const data_source_list = JSON.parse('{{ data_source|safe }}'); // 数据来源列表
     const js_methods = JSON.parse('{{ js_methods|safe }}'); // 结算方式
     const ann_field = JSON.parse('{{ ann_field|safe }}'); // 是否首次标注
+    let is_search = false; // 数据导出flag
+    let is_search_url = '' // 数据来源url
     search();
     
     function clean_insert_data(){
@@ -412,11 +417,11 @@
     }
     const table = layui.table;
     //渲染表格
-    table.render({//渲染table
+    var ins1 = table.render({//渲染table
         url: '/wballdata',     //数据获取url
         method: 'GET',         //数据传输方式为post
         elem: '#test',         //设置容器
-        toolbar: "default",    // 工具栏
+        toolbar: "#toolbars",    // 工具栏
         height: 'full-155',    //高度为屏幕高度-20
         page: true,
         request: {
@@ -462,7 +467,12 @@
             { field: 'wb_name', title: '外包名字', width: 90, fixed: 'right' },
             { fixed: 'right', title: '操作', toolbar: '#barDemo',width:150 },//设置每行的工具栏以及其容器
         ]],
+        done: function (res, curr, count) {
+            is_search = false;
+            is_search_url = "/wballdata?pageIndex=1&pageSize=20";
+        }
     });
+    
     // 表格后台过滤
     $('#serch').click(function () {
         // var pname_search = $("#pname_search option:selected").val().replace("&","%26");
@@ -475,6 +485,10 @@
             url: url,
             page: {
                 curr: 1 //重新从第 1 页开始
+            },
+            done: function (res, curr, count) {
+                is_search = true;
+                is_search_url = '/wballdata?pageIndex=1&pageSize=20&pname=' + pname_search + '&bzf=' + bzf_search + "&begin_time=" + begin_time_search + "&last_time=" + last_time_search;
             }
         });
     });
@@ -485,6 +499,10 @@
             url: url,
             page: {
                 curr: 1 //重新从第 1 页开始
+            },
+            done: function (res, curr, count) {
+                is_search = false;
+                is_search_url = "/wballdata";
             }
         });
         $('#pname_search').find('option:first').prop("selected", "selected");
@@ -672,7 +690,6 @@
             const key_frame_extracted_methods = $("#key_frame_extracted_methods_insert").val();
             const ann_field_sel = $("#ann_field option:selected").val();
             const wb_name = $("#wb_name_insert option:selected").val();
-            console.log(pnums)
             if (send_data_time == "") {
                 warning_alert("送标时间不允许为空!");
             }
@@ -980,6 +997,120 @@
         sessionStorage.setItem("power", "");
         window.location.href = '/login'
     }
+
+    //头工具栏事件
+    table.on('toolbar(test)', function(obj){
+        if (obj.event == "export_btn"){
+            if (is_search){
+                $.ajax(is_search_url, {
+                    method: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                }).done(function (res) {
+                    if (res && res.message == "查询成功") {
+                        warning_alert("正在导出数据中,请耐心等待!")
+                        const source_data = res.source;
+                        let export_data_list = []
+                        const table_title = ["ID","研发","项目名字","送标批次","送标时间","送标样本数量","数据来源","场景分布","送标原因","关键帧抽取方式","开始验收时间","结束验收时间","标注结果返回时间","标注详情","总价","是否首次标注","外包名字"];
+                        for (const idx in source_data) {
+                            let tmp_list = [];
+                            const data_idx = source_data[idx];
+                            tmp_list.push(data_idx['id'])
+                            tmp_list.push(data_idx['user'])
+                            tmp_list.push(data_idx['pname'])
+                            tmp_list.push(data_idx['send_data_batch'])
+                            tmp_list.push(data_idx['send_data_time'])
+                            tmp_list.push(data_idx['pnums'])
+                            tmp_list.push(data_idx['data_source'])
+                            tmp_list.push(data_idx['scene'])
+                            tmp_list.push(data_idx['send_reason'])
+                            tmp_list.push(data_idx['key_frame_extracted_methods'])
+                            tmp_list.push(data_idx['begin_check_data_time'])
+                            tmp_list.push(data_idx['last_check_data_time'])
+                            tmp_list.push(data_idx['get_data_time'])
+                            let anno = ""
+                            if (data_idx['ann_meta_data'] != ""){
+                                for (const idx in data_idx['ann_meta_data']) {
+                                    if (data_idx['ann_meta_data'][idx] == ","){
+                                        anno = anno + "&"
+                                    }
+                                    else{
+                                        anno = anno + data_idx['ann_meta_data'][idx]
+                                    }
+                                }
+                            }
+                            else{
+                                console.log('为空')
+                            }
+                            tmp_list.push(anno)
+                            tmp_list.push(data_idx['total_money'])
+                            tmp_list.push(data_idx['ann_field_flag'])
+                            tmp_list.push(data_idx['wb_name'])
+                            export_data_list.push(tmp_list)
+                            
+                        }
+                        table.exportFile(table_title, export_data_list, 'xls');
+                        // table.exportFile(ins1.config.id, source_data); 没有逗号的话可以直接用这个
+                        warning_alert("导出完成!");
+                    }
+                });
+            }
+            else{
+                $.ajax(is_search_url, {
+                    method: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                }).done(function (res) {
+                    if (res && res.msg == "查询成功") {
+                        warning_alert("正在导出数据中,请耐心等待!")
+                        const source_data = res.source;
+                        let export_data_list = []
+                        const table_title = ["ID","研发","项目名字","送标批次","送标时间","送标样本数量","数据来源","场景分布","送标原因","关键帧抽取方式","开始验收时间","结束验收时间","标注结果返回时间","标注详情","总价","是否首次标注","外包名字"];
+                        for (const idx in source_data) {
+                            let tmp_list = [];
+                            const data_idx = source_data[idx];
+                            tmp_list.push(data_idx['id'])
+                            tmp_list.push(data_idx['user'])
+                            tmp_list.push(data_idx['pname'])
+                            tmp_list.push(data_idx['send_data_batch'])
+                            tmp_list.push(data_idx['send_data_time'])
+                            tmp_list.push(data_idx['pnums'])
+                            tmp_list.push(data_idx['data_source'])
+                            tmp_list.push(data_idx['scene'])
+                            tmp_list.push(data_idx['send_reason'])
+                            tmp_list.push(data_idx['key_frame_extracted_methods'])
+                            tmp_list.push(data_idx['begin_check_data_time'])
+                            tmp_list.push(data_idx['last_check_data_time'])
+                            tmp_list.push(data_idx['get_data_time'])
+                            let anno = ""
+                            if (data_idx['ann_meta_data'] != ""){
+                                for (const idx in data_idx['ann_meta_data']) {
+                                    if (data_idx['ann_meta_data'][idx] == ","){
+                                        anno = anno + "&"
+                                    }
+                                    else{
+                                        anno = anno + data_idx['ann_meta_data'][idx]
+                                    }
+                                }
+                            }
+                            else{
+                                console.log('为空')
+                            }
+                            tmp_list.push(anno)
+                            tmp_list.push(data_idx['total_money'])
+                            tmp_list.push(data_idx['ann_field_flag'])
+                            tmp_list.push(data_idx['wb_name'])
+                            export_data_list.push(tmp_list)
+                            
+                        }
+                        table.exportFile(table_title, export_data_list, 'xls');
+                        // table.exportFile(ins1.config.id, source_data); 没有逗号的话可以直接用这个
+                        warning_alert("导出完成!");
+                    }
+                });
+            }
+        }
+    });
 </script>
 
 </html>
