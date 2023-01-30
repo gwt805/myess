@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from ess import models
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt

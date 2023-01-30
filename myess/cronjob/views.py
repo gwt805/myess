@@ -142,7 +142,6 @@ def ding_day_report_form():
 
 
 def every_day_ding_send_report_form():
-    pass
     _, char_list, _ = views.wbdata_count_public_code("---", "", "")
     make_report_form_img(char_list)
     ding_day_report_form()
