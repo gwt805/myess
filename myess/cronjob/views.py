@@ -150,9 +150,12 @@ def every_day_ding_send_report_form():
 @csrf_exempt
 def job_add(request):
     if request.method == "POST":
+        week = int(QueryDict(request.body).get("week"))
         hour = int(QueryDict(request.body).get("hour"))
+        minute = int(QueryDict(request.body).get("minute"))
+        second = int(QueryDict(request.body).get("second"))
         try:
-            scheduler.add_job(every_day_ding_send_report_form, "cron", id='ding_day_report', hour=hour, minute=0, second=0)
+            scheduler.add_job(every_day_ding_send_report_form, "cron", id='ding_day_report', day_of_week = week, hour=hour, minute=minute, second=second)
             return JsonResponse({"status": "successful", "mes": "定时任务添加成功了"})
         except:
             return JsonResponse({"status": "error", "mes": "定时任务添加出问题了"})
@@ -185,16 +188,7 @@ def jog_log(request):
             tmp["id"] = i[0]
             tmp['time'] = i[1].strftime('%Y-%m-%d %H:%M:%S')
             job_task_list.append(tmp)
-        cur.close()
 
-    conn = pymysql.connect(
-        host=CONFIG["mysql_host"],
-        user=CONFIG["mysql_user"],
-        password=CONFIG["mysql_pwd"],  # 密码
-        db=CONFIG["mysql_db"],  # 数据库名
-        charset="utf8mb4",
-    )
-    cur = conn.cursor()
     sql = "select * from django_apscheduler_djangojobexecution;"
     cur.execute(sql)
     data_info = cur.fetchall()
@@ -214,6 +208,8 @@ def jog_log(request):
                 job_task_log.append(tmp)
     else:
         job_task_log = []
+    cur.close()
+    conn.close()
     return render(request, "cronjob/cronjob.html", {"data": json.dumps(job_task_log,ensure_ascii=False), "job_task": json.dumps(job_task_list,ensure_ascii=False)})
 
 

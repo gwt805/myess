@@ -180,10 +180,31 @@
                     </div>
                     <div class="modal-body">
                         <div class="alert alert-danger" id="err_msg" style="display: none;"></div>
+                        <div class="alert alert-danger">
+                            <label>都不填 默认为每天 零点
+                        </div>
                         <div class="form-group">
                             <p>
-                                <label for="time">开始执行时间(h)</label>
-                                <input type="number" class="form-control" name="time" id="time" min="0" max="24">
+                                <label for="time">每周的第几天执行(0-6 即 周一 ~ 周日)</label>
+                                <input type="number" class="form-control" name="time" id="time" min="0" max="6" onfocus="clean_cronjob_warning()">
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <p>
+                                <label for="hour">开始执行时间(小时: 0-23)</label>
+                                <input type="number" class="form-control" name="hour" id="hour" min="0" max="24" onfocus="clean_cronjob_warning()">
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <p>
+                                <label for="minute">开始执行时间(分钟: 0-59)</label>
+                                <input type="number" class="form-control" name="minute" id="minute" min="0" max="59" onfocus="clean_cronjob_warning()">
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <p>
+                                <label for="second">开始执行时间(秒: 0-59)</label>
+                                <input type="number" class="form-control" name="second" id="second" min="0" max="59" onfocus="clean_cronjob_warning()">
                             </p>
                         </div>
                         <div class="modal-footer" style="display: flex; justify-self: center;">
@@ -265,11 +286,11 @@
                         },
                     }).done(function (res) {
                         if (res && res.data == "successful") {
-                            window.location.reload();
                             $(".alert-danger").html("ID: " + obj.data.id + " 删除成功!");
                             $(".alert-danger").addClass("show");
                             window.setTimeout(function () {
                                 $(".alert-danger").removeClass("show");
+                                window.location.reload();
                             }, 1000);//显示的时间
                         }
                         else {
@@ -304,19 +325,60 @@
         }
     });
 
+    // 定时任务告警
+    function add_cronjob_warning(msg) {
+        $("#err_msg").html(msg);
+        $("#err_msg").css("display","block");
+    }
+    function clean_cronjob_warning() {
+        $("#err_msg").css("display","none");
+    }
     // 添加定时任务
     function addjob() {
-        const hour = Number($("#time").val());
-        if (hour < 0 || hour > 24) {
-            alert("时间点不能 小于0 大于24");
+        const week = Number($("#time").val());
+        const hour = Number($("#hour").val());
+        const minute = Number($("#minute").val());
+        const second = Number($("#second").val());
+        let add_cronjob_flag = false;
+        if ($("#time").val() == "" || $("#hour").val() == "" ||  $("#minute").val() == "" || $("#second").val() == "") {
+            add_cronjob_flag = false;
+            add_cronjob_warning("参数不允许为空!");
         }
         else {
+            // 星期
+            if (week < 0 || week > 6) {
+                add_cronjob_flag = false;
+                add_cronjob_warning("每周不可能有 小于0 大于7 天");
+            }
+            else {
+                // 小时
+                if (hour < 0 || hour > 23 ) {
+                    add_cronjob_flag = false;
+                    add_cronjob_warning("小时不可能 小于0 大于23");
+                }
+                else {
+                    // 分钟
+                    if (minute < 0 || minute > 59 || second < 0 || second > 59) {
+                        add_cronjob_flag = false;
+                        add_cronjob_warning("分钟/秒 不可能 小于0 大于59");
+                    }
+                    else {
+                        add_cronjob_flag = true;
+                    }
+                }
+            }
+        }
+        // 添加
+        if (add_cronjob_flag) {
             $.ajax("/job_add/", {
                 method: "POST",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: {
-                    hour: hour
+                    week: week,
+                    hour: hour,
+                    minute: minute,
+                    second: second
                 },
             }).done(function (res) {
                 if (res && res.status == "successful") {
@@ -325,13 +387,12 @@
                     $(".alert-danger").addClass("show");
                     window.setTimeout(function () {
                         $(".alert-danger").removeClass("show");
-                    }, 2000);//显示的时间
-                    window.location.reload();
+                        window.location.reload();
+                    }, 1000);//显示的时间
                 }
                 else {
                     $("#err_msg").css("display", 'block');
                     $("#err_msg").html(res.mes);
-
                 }
             });
         }
