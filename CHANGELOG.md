@@ -3,7 +3,10 @@
 - 用户信息新增 部门/组
 ### Changed
 - 把原来首页中图表的展示美化
-<img src="./myess/asserts/2023-01-31-ess-gs-chart-show.gif">
+    <img src="./myess/asserts/2023-01-31-ess-gs-chart-show.gif">
+- 修改供应商页面表格展示样式
+    - 单元格内容过多,原来需点击然后弹出内容, 现在只需鼠标滑动滑轮
+    <img src="./myess/asserts/2023-01-31-ess-wb-table-show-style.png">
 
 
 
