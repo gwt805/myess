@@ -12,6 +12,7 @@ class User(AbstractUser):
     )
     email = models.EmailField(max_length=256, null=False, verbose_name="邮箱", blank=True)
     password = models.CharField(max_length=128, verbose_name="密码")
+    group = models.CharField(max_length=256, null=True, verbose_name="部门", blank=True)
     power = models.CharField(
         max_length=1, choices=powerGender, default=4, verbose_name="权限", blank=True
     )

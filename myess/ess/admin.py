@@ -11,9 +11,9 @@ admin.site.index_title = "信息管理"
 
 @admin.register(models.User)
 class ControlUser(UserAdmin):
-    list_display = ("username", "zh_uname", "email", "power")
-    list_editable = ["zh_uname", "power"]
-    search_fields = ('username', 'zh_uname', 'email')  # 过滤器
+    list_display = ("username", "zh_uname", "email", "group", "power")
+    list_editable = ["zh_uname", "group", "power"]
+    search_fields = ('username', 'zh_uname', "group", 'email')  # 过滤器
     list_per_page = 10  # 每页展示5条记录
 
 @admin.register(models.Task)

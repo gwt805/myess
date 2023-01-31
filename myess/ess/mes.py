@@ -344,51 +344,96 @@ def waibao_search(pname, bzf, begin_time, over_time):
 
 
 # GS 数据统计
-def gsdata_tj(btime, otime):
-    if btime == otime == "":
-        all_data = models.Task.objects.filter(
-            kinds__in=["2D分割标注", "2.5D点云标注", "视频标注", "属性标注", "2D框标注"]
-        )
-        pname = []
-        for i in all_data:
-            if i.pname not in pname:
-                pname.append(i.pname)
-    elif btime != "" and otime != "":
-        all_data = models.Task.objects.filter(
-            dtime__range=[btime, otime],
-            kinds__in=["2D分割标注", "2.5D点云标注", "视频标注", "属性标注", "2D框标注"],
-        )
-        pname = []
-        for i in all_data:
-            if i.pname not in pname:
-                pname.append(i.pname)
-    data_list = []
-    pname_list = []
-    pnums_list = []
-    knums_list = []
-    for i in pname:
-        one_data = []
-        pnums = 0
-        knums = 0
-        video_flag = False
-        for j in all_data.filter(pname=i):
-            pnums += j.pnums
-            if j.kinds == "视频标注":
-                knums += str2sec(j.knums)
-                video_flag = True
-            else:
-                knums += int(j.knums)
-        one_data.append(i)  # 项目名字,图片/视频数量,框数/时长
-        one_data.append(pnums)  # 图片/视频数量
-        if video_flag:  # 框数/时长
-            one_data.append(strftime("%H时%M分%S秒", gmtime(knums)))
-        else:
-            one_data.append(knums)
-        pname_list.append(i)
-        pnums_list.append(pnums)
-        knums_list.append(knums)
-        data_list.append(one_data)
-    return data_list, pname_list, pnums_list, knums_list
+def gsdata_count_public_code(user, wb_name, start_time, end_time):
+    year = datetime.now().strftime('%Y')
+    query_filter = {}
+    if user != "---":
+        query_filter["uname"] = user
+    if wb_name != "---":
+        query_filter["waibao"] = wb_name
+    if start_time and end_time:
+        query_filter["dtime__range"] = [start_time, end_time]
+    
+    
+    if user == "---" and wb_name == "---" and start_time == "" and end_time == "":
+        init_data = models.Task.objects.filter(dtime__range=[year + '-01-01', year + "-12-31"])
+    else:
+        init_data = models.Task.objects.filter(**query_filter)
+    
+    if init_data:
+        check_data_pname_list = list(set([i[0] for i in init_data.filter(kinds="审核").values_list("pname")]))
+        anno_data_pname_list = list(set([i.pname for i in init_data if i.kinds != "审核"]))
+        
+        bar_chart_check_list = [check_data_pname_list] # [[],[]] pname, tu
+        bar_chart_anno_list = [anno_data_pname_list] # [[],[]] pname, tu, kuang
+
+        line_chart_check_list = [] # [[],[]] time, tu
+        line_chart_anno_list = [] # [[],[],[]] time, tu, kuang
+
+        check_data_pnums_bar_list = []
+        for pidx in check_data_pname_list:
+            tmp_time_list = []
+            tmp_pnums_list = []
+            for idx in init_data:
+                if idx.pname == pidx:
+                    if idx.kinds == "审核":
+                        tmp_time_list.append(idx.dtime)
+                        if tmp_pnums_list == []:
+                            tmp_pnums_list.append(idx.pnums)
+                        else:
+                            tmp_pnums_list.append(idx.pnums + tmp_pnums_list[-1])
+            if tmp_time_list and tmp_pnums_list:
+                line_chart_check_list.append([tmp_time_list, tmp_pnums_list])
+                check_data_pnums_bar_list.append(tmp_pnums_list[-1])
+        bar_chart_check_list.append(check_data_pnums_bar_list)
+
+        anno_data_pnums_bar_list = []
+        anno_data_knums_bar_list = []
+        for pidx in anno_data_pname_list:
+            tmp_time_list = []
+            tmp_pnums_list = []
+            tmp_knums_list = []
+            for idx in init_data:
+                if idx.pname == pidx:
+                    if idx.kinds != "审核":
+                        tmp_time_list.append(idx.dtime)
+                        if tmp_pnums_list == []:
+                            tmp_pnums_list.append(idx.pnums)
+                        else:
+                            tmp_pnums_list.append(idx.pnums + tmp_pnums_list[-1])
+
+                        if idx.kinds == "视频标注":
+                            if tmp_knums_list == []:
+                                tmp_knums_list.append(idx.pnums)
+                            else:
+                                tmp_knums_list.append(idx.pnums + tmp_knums_list[-1])
+                        else:
+                            if idx.kinds == "筛选":
+                                if tmp_knums_list == []:
+                                    tmp_knums_list.append(0)
+                                else:
+                                    tmp_knums_list.append(0 + tmp_knums_list[-1])
+                            else:
+                                if tmp_knums_list == []:
+                                    tmp_knums_list.append(int(idx.knums))
+                                else:
+                                    tmp_knums_list.append(int(idx.knums) + tmp_knums_list[-1])
+            if tmp_time_list and tmp_pnums_list:
+                line_chart_anno_list.append([tmp_time_list, tmp_pnums_list, tmp_knums_list])
+                anno_data_pnums_bar_list.append(tmp_pnums_list[-1])
+                anno_data_knums_bar_list.append(tmp_knums_list[-1])
+        bar_chart_anno_list.append(anno_data_pnums_bar_list)
+        bar_chart_anno_list.append(anno_data_knums_bar_list)
+    else:
+        # 没查询到数据先返回空
+        check_data_pname_list = []
+        anno_data_pname_list = []
+        bar_chart_check_list = []
+        bar_chart_anno_list = []
+        line_chart_check_list = []
+        line_chart_anno_list = []
+    
+    return check_data_pname_list,anno_data_pname_list,bar_chart_check_list,bar_chart_anno_list,line_chart_check_list,line_chart_anno_list
 
 
 # 钉通知

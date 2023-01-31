@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
 from django.http import QueryDict
 from .mes import (
-    gsdata_tj,
+    gsdata_count_public_code,
     nupdate,
     nw,
     lw,
@@ -154,7 +154,7 @@ def login(request):
 def index(request):
     uname_list = [
         i[0]
-        for i in models.User.objects.filter(power__range=[1, 2]).values_list("zh_uname")
+        for i in models.User.objects.filter(power__range=[1, 2], group='数据标注组').values_list("zh_uname")
     ]
     unames = json.dumps(uname_list)
     projects = json.dumps(
@@ -406,42 +406,70 @@ def getperformancedata(request):
 
 # GS数据统计
 def gsdata_count(request):
+    wb_name_list = [i[0] for i in models.Waibaos.objects.values_list("name")]
+    user_list = [i[0] for i in models.User.objects.filter(group='数据标注组').values_list("zh_uname")]
+
     if request.method == "POST":
-        btime = request.POST.get("btime")
-        otime = request.POST.get("otime")
-        tj, pname_list, pnums_list, knums_list = gsdata_tj(btime, otime)
-        pname_list_json, pnums_list_json, knums_list_json = (
-            json.dumps(pname_list),
-            json.dumps(pnums_list),
-            json.dumps(knums_list),
-        )
+        user = request.POST.get("user_search")
+        wb_name = request.POST.get("wb_name_search")
+        start_time = request.POST.get("start_time_search")
+        end_time = request.POST.get("end_time_search")
+        check_data_pname_list,anno_data_pname_list,bar_chart_check_list,bar_chart_anno_list,line_chart_check_list,line_chart_anno_list = gsdata_count_public_code(user, wb_name, start_time, end_time)
+        
+        if bar_chart_check_list == bar_chart_anno_list == line_chart_check_list == line_chart_anno_list == []:
+            no_data = "false"
+        else:
+            no_data = "true"
+
         return render(
             request,
             "tasks/gsdata_count.html",
             {
-                "tj": tj,
-                "btime": btime,
-                "otime": otime,
-                "pname_list_json": pname_list_json,
-                "pnums_list_json": pnums_list_json,
-                "knums_list_json": knums_list_json,
-            },
-        )
-    tj, pname_list, pnums_list, knums_list = gsdata_tj("", "")
-    pname_list_json, pnums_list_json, knums_list_json = (
-        json.dumps(pname_list),
-        json.dumps(pnums_list),
-        json.dumps(knums_list),
+                "wb_name_list": wb_name_list,
+                "user_list": user_list,
+                "check_data_pname_list_div": check_data_pname_list,
+                "anno_data_pname_list_div": anno_data_pname_list,
+                "check_data_pname_list": json.dumps(check_data_pname_list),
+                "anno_data_pname_list": json.dumps(anno_data_pname_list),
+                "bar_chart_check_list": json.dumps(bar_chart_check_list),
+                "bar_chart_anno_list": json.dumps(bar_chart_anno_list),
+                "line_chart_check_list": json.dumps(line_chart_check_list),
+                "line_chart_anno_list": json.dumps(line_chart_anno_list),
+                "user": json.dumps(user),
+                "wb_name": json.dumps(wb_name),
+                "start_time": json.dumps(start_time),
+                "end_time": json.dumps(end_time),
+                "no_data" : json.dumps(no_data)
+            }
     )
+
+    check_data_pname_list,anno_data_pname_list,bar_chart_check_list,bar_chart_anno_list,line_chart_check_list,line_chart_anno_list = gsdata_count_public_code("---", "---","","")
+    
+    if bar_chart_check_list == bar_chart_anno_list == line_chart_check_list == line_chart_anno_list == []:
+        no_data = "false"
+    else:
+        no_data = "true"
+
     return render(
         request,
         "tasks/gsdata_count.html",
         {
-            "tj": tj,
-            "pname_list_json": pname_list_json,
-            "pnums_list_json": pnums_list_json,
-            "knums_list_json": knums_list_json,
-        },
+            "wb_name_list": wb_name_list,
+            "user_list": user_list,
+            "check_data_pname_list_div": check_data_pname_list,
+            "anno_data_pname_list_div": anno_data_pname_list,
+            "check_data_pname_list": json.dumps(check_data_pname_list),
+            "anno_data_pname_list": json.dumps(anno_data_pname_list),
+            "bar_chart_check_list": json.dumps(bar_chart_check_list),
+            "bar_chart_anno_list": json.dumps(bar_chart_anno_list),
+            "line_chart_check_list": json.dumps(line_chart_check_list),
+            "line_chart_anno_list": json.dumps(line_chart_anno_list),
+            "user": json.dumps("---"),
+            "wb_name": json.dumps("---"),
+            "start_time": json.dumps("2021-12-27"),
+            "end_time": json.dumps(""),
+            "no_data" : json.dumps(no_data)
+        }
     )
 
 
@@ -773,4 +801,4 @@ def wbdata_count(request):
     proname_list, char_list, line_chart_list = wbdata_count_public_code("---", "", "")
     chart_pie = json.dumps(char_list,ensure_ascii=False)
     chart_line = json.dumps(line_chart_list, ensure_ascii=False)
-    return render(request, "tasks/wbdata_count.html", {"wb_name_list": wb_name_list, "wb_selc": json.dumps("---"), "time_start": json.dumps(""),"time_end": json.dumps(""), "proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })
+    return render(request, "tasks/wbdata_count.html", {"wb_name_list": wb_name_list, "wb_selc": json.dumps("---"), "time_start": json.dumps("2021-01-01"),"time_end": json.dumps(""), "proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })

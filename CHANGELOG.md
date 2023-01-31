@@ -1,3 +1,12 @@
+# 2023-01-31
+### Added
+- 用户信息新增 部门/组
+### Changed
+- 把原来首页中图表的展示美化
+<img src="./myess/asserts/2023-01-31-ess-gs-chart-show.gif">
+
+
+
 # 2023-01-30
 ### Changed
 - 定时任务执行时间修改
