@@ -1,3 +1,11 @@
+# 2023-02-02
+### Changed
+- 动态添加结算方式等，可删除指定行(首行除外)
+- table 点击指定行，该行高亮显示
+<img src="./myess/asserts/2023-02-02-ess-supplier-table-changed-show-style.gif">
+
+
+
 # 2023-01-31
 ### Added
 - 用户信息新增 部门/组

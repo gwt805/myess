@@ -630,15 +630,16 @@ def wb_update(request):
             data_update['get_data_time'] = None
 
         new_ann_meta_data = []
-        for item in range(0,3):
+        for item in range(0,(len(data)-16)//4):
             settlement_method =  data.get(f"ann_meta_data[{item}][settlement_method]")
             recovery_precision = data.get(f"ann_meta_data[{item}][recovery_precision]")
             knums = data.get(f"ann_meta_data[{item}][knums]")
             unit_price = data.get(f"ann_meta_data[{item}][unit_price]")
-            if knums == "" and unit_price == "" and settlement_method == "---":
+            if knums == 0 or unit_price == 0 or settlement_method == "---":
                 continue
-            if knums == "" or unit_price == "" or settlement_method == "---":
-                return JsonResponse({"status": "error", "mes": "框数,单价,结算方式,准确率 需同时填写!"})
+            if knums == 0 or unit_price == 0 or settlement_method == "---":
+                print(knums, unit_price, settlement_method)
+                return JsonResponse({"status": "error", "mes": "框数,单价,结算方式 需同时填写!"})
             else:
                 if int(knums) < 0:
                     return JsonResponse({"status": "error", "mes": "框数不可能能 小于0 !"})
@@ -680,9 +681,6 @@ def wb_update(request):
         else:
             data_update["ann_meta_data"] = None
             data_update["total_money"] = None
-
-            # 预留 修改后算这个项目的折线趋势图
-
         try:
             models.Supplier.objects.filter(id=data.get('id')).update(**data_update)
             wb_dingtalk(models.User.objects.get(zh_uname=data.get("main_user")).username, "修改", data.get('id'), data_update)

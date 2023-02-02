@@ -28,6 +28,15 @@
             background-color: #fff;
             top: 0;
         }
+        .modrm:hover {
+            color: red !important;
+        }
+        .border_update:hover {
+            border: 1px solid rgb(29, 126, 184) !important;
+        }
+        .form-group {
+            margin-left: 65px !important;
+        }
     </style>
 </head>
 
@@ -198,9 +207,9 @@
             </script>
             <div><table class="layui-hide table-bordered" id="test" lay-filter="test"></table></div>
             <!-- 弹窗之ESS-Info -->
-            <div class="modal fade" tabindex="-1" role="dialog" id="ess_info" style="margin: 200px 0 0 500px; ">
+            <div class="modal fade" tabindex="-1" role="dialog" id="ess_info">
                 <div class="modal-dialog" role="document">
-                    <div class="modal-content  modal-sm">
+                    <div class="modal-content">
                         <div class="modal-header">
                             <h3 class="modal-title" style="color: rgb(68, 147, 199);">
                                 <i class="fa fa-info-circle"></i> ESS-INFO
@@ -271,7 +280,7 @@
             </div><!-- /.modal -->
             <!-- 弹窗之数据修改 -->
             <div class="modal fade" tabindex="-1" role="dialog" id="gs_update_model">
-                <div class="modal-dialog" role="document">
+                <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -279,95 +288,68 @@
                             <h3 class="modal-title">修改数据</h3>
                         </div>
                         <div class="modal-body">
-                            <div class="alert alert-danger" id="err_msg" style="display: none;"></div>
-                            <table class="table" id="gtable">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>研发名字</th>
-                                    <th>项目名字</th>
-                                    <th>送标批次</th>
-                                </tr>
-                                <tr>
-                                    <td><input type="number" min="0" class="form-control" name="id" disabled id="id_update"></td>
-                                    <td><input type="text" class="form-control" id="user_update" disabled></td>
-                                    <td><select class="form-control" name="pname" id="pname_update" disabled></select></td>
-                                    <td><input type="text" class="form-control" name="send_data_batch_update" id="send_data_batch_update" disabled></td>
-                                </tr>
-                                <tr>
-                                    <th>送标时间</th>
-                                    <th>送标样本数量</th>
-                                    <th>数据来源</th>
-                                    <th>场景分布</th>
-                                </tr>
-                                <tr>
-                                    <td><input type="date" class="form-control" name="send_data_time" id="send_data_time_update" disabled></td>
-                                    <td><input type="number" class="form-control" min="0" name="pnums" id="pnums_update" disabled></td>
-                                    <td><select class="form-control" name="data_source" id="data_source_update" disabled></select></td>
-                                    <td><input type="text" class="form-control" name="scene_update" id="scene_update" disabled></td>
-                                </tr>
-                                <tr>
-                                    <th>送标原因</th>
-                                    <th>关键帧抽取方式</th>
-                                    <th>外包名字</th>
-                                    <th>是否首次标注</th>
-                                </tr>
-                                <tr>
-                                    <td><input type="text" class="form-control" name="send_reason_update" id="send_reason_update" disabled></td>
-                                    <td><input type="text" class="form-control" name="key_frame_extracted_methods_update" id="key_frame_extracted_methods_update" disabled></td>
-                                    <td><select class="form-control" name="wb_name" id="wb_name_update" disabled></select></td>
-                                    <td><select class="form-control" name="ann_field_flag_update" id="ann_field_flag_update" disabled></select></td>
-                                </tr>
-                                <tr>
-                                    <th>开始验收时间</th>
-                                    <th>结束验收时间</th>
-                                    <th>收到标注结果时间</th>
-                                </tr>
-                                <tr>
-                                    <td><input type="date" class="form-control" name="begin_check_data_time_update" id="begin_check_data_time_update"></td>
-                                    <td><input type="date" class="form-control" name="last_check_data_time_update" id="last_check_data_time_update"></td>
-                                    <td><input type="date" class="form-control" name="get_data_time" id="get_data_time_update"></td>
-                                </tr>
-                                <tr>
-                                    <th>结算方式</th>
-                                    <th>交付准确率</th>
-                                    <th>框数</th>
-                                    <th>单价</th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <select class="form-control settlement_method_update" id="settlement_method_update1"><option value="---">---</option></select>
-                                    </td>
-                                    <td><input type="number" class="form-control" min="0" max="100" name="recovery_precision_update" id="recovery_precision_update1"></td>
-                                    <td><input type="number" min="0" class="form-control" name="knums_update" id="knums_update1"></td>
-                                    <td><input type="number" min="0" step="0.01" class="form-control" name="unit_price_update" id="unit_price_update1"></td>
-                                </tr>
-                                <tr>
-                                    <th>结算方式</th>
-                                    <th>交付准确率</th>
-                                    <th>框数</th>
-                                    <th>单价</th>
-                                </tr>
-                                <tr>
-                                    <td><select class="form-control settlement_method_update"  id="settlement_method_update2"><option value="---">---</option></select></td>
-                                    <td><input type="number" class="form-control" min="0" max="100" name="recovery_precision_update" id="recovery_precision_update2"></td>
-                                    <td><input type="number" min="0" class="form-control" name="knums_update" id="knums_update2"></td>
-                                    <td><input type="number" min="0" step="0.01" class="form-control" name="unit_price_update" id="unit_price_update2"></td>
-                                </tr>
-                                <tr>
-                                    <th>结算方式</th>
-                                    <th>交付准确率</th>
-                                    <th>框数</th>
-                                    <th>单价</th>
-                                </tr>
-                                <tr>
-                                    <td><select class="form-control settlement_method_update" id="settlement_method_update3"><option value="---">---</option></select></td>
-                                    <td><input type="number" class="form-control" min="0" max="100" name="recovery_precision_update" id="recovery_precision_update3"></td>
-                                    <td><input type="number" min="0" class="form-control" name="knums_update" id="knums_update3"></td>
-                                    <td><input type="number" min="0" step="0.01" class="form-control" name="unit_price_update" id="unit_price_update3"></td>
-                                </tr>
-                            </table>
+                            <div class="alert alert-danger" id="err_msg" style="display: none; text-align: center;"></div>
+                            <div>
+                                <table class="table" id="gtable">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>研发名字</th>
+                                        <th>项目名字</th>
+                                        <th>送标批次</th>
+                                        <th>送标时间</th>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="number" min="0" class="form-control" name="id" disabled id="id_update"></td>
+                                        <td><input type="text" class="form-control" id="user_update" disabled></td>
+                                        <td><select class="form-control" name="pname" id="pname_update" disabled></select></td>
+                                        <td><input type="text" class="form-control" name="send_data_batch_update" id="send_data_batch_update" disabled></td>
+                                        <td><input type="date" class="form-control" name="send_data_time" id="send_data_time_update" disabled></td>
+                                    </tr>
+                                    <tr>
+                                        <th>送标样本数量</th>
+                                        <th>数据来源</th>
+                                        <th>场景分布</th>
+                                        <th>送标原因</th>
+                                        <th>关键帧抽取方式</th>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="number" class="form-control" min="0" name="pnums" id="pnums_update" disabled></td>
+                                        <td><select class="form-control" name="data_source" id="data_source_update" disabled></select></td>
+                                        <td><input type="text" class="form-control" name="scene_update" id="scene_update" disabled></td>
+                                        <td><input type="text" class="form-control" name="send_reason_update" id="send_reason_update" disabled></td>
+                                        <td><input type="text" class="form-control" name="key_frame_extracted_methods_update" id="key_frame_extracted_methods_update" disabled></td>
+                                    </tr>
+                                    <tr>
+                                        <th>外包名字</th>
+                                        <th>是否首次标注</th>
+                                        <th>开始验收时间</th>
+                                        <th>结束验收时间</th>
+                                        <th>收到标注结果时间</th>
+                                    </tr>
+                                    <tr>
+                                        <td><select class="form-control" name="wb_name" id="wb_name_update" disabled></select></td>
+                                        <td><select class="form-control" name="ann_field_flag_update" id="ann_field_flag_update" disabled></select></td>
+                                        <td><input type="date" class="form-control" name="begin_check_data_time_update" id="begin_check_data_time_update"></td>
+                                        <td><input type="date" class="form-control" name="last_check_data_time_update" id="last_check_data_time_update"></td>
+                                        <td><input type="date" class="form-control" name="get_data_time" id="get_data_time_update"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div style="width: 100; height: 300px; overflow: auto;">
+                                <table class="table table-layout" id="jsfs_table">
+                                    <thead>
+                                        <tr>
+                                            <th>结算方式</th>
+                                            <th>交付准确率</th>
+                                            <th>框数</th>
+                                            <th>单价</th>
+                                            <th style="width: 50px;"></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
                             <div style="display: flex; justify-content: center;">
-                                <button style="margin-bottom: 15px; display: inline; width: 100%;" class="btn btn-warning">
+                                <button style="margin-bottom: 15px; display: inline; width: 100%;" class="btn btn-warning" onclick="tableadd(1)">
                                 <i class="fa fa-plus-square" aria-hidden="true" style="margin-right: 10px;"></i>新&nbsp;增</button>
                             </div>
                             <div class="modal-footer">
@@ -390,10 +372,166 @@
     const data_source_list = JSON.parse('{{ data_source|safe }}'); // 数据来源列表
     const js_methods = JSON.parse('{{ js_methods|safe }}'); // 结算方式
     const ann_field = JSON.parse('{{ ann_field|safe }}'); // 是否首次标注
+    let global_jsfs_count = 1;
     let is_search = false; // 数据导出flag
     let is_search_url = '' // 数据来源url
+    let tmpobj=null; // table row 高亮用
     search();
-    
+
+    // 增加行
+    function tableadd(add_row_flag){
+        const update_table_add_line = document.getElementById("jsfs_table");
+        if (add_row_flag != 0) {
+            for (var idx = 0; idx < add_row_flag; idx++) {
+                let rowCount = update_table_add_line.rows.length; //行数
+                const newRow = update_table_add_line.insertRow(rowCount); //添加到最后一行
+                //给第一列添加
+                const newCell1 = newRow.insertCell(0);
+                newCell1.innerHTML = "<select class='form-control settlement_method_update border_update' id='settlement_method_update"+ global_jsfs_count +"'><option value='---'>---</option></select>";
+                //给第二列添加
+                const newCell2 = newRow.insertCell(1);
+                newCell2.innerHTML = "<input type='number' class='form-control border_update' min='0' max='100' name='recovery_precision_update' id='recovery_precision_update"+ global_jsfs_count + "'>";
+                //给第三列添加
+                const newCell3 = newRow.insertCell(2);
+                newCell3.innerHTML = "<input type='number' min='0' class='form-control border_update' name='knums_update' id='knums_update"+ global_jsfs_count +"'>";
+                //给第四列添加
+                const newCell4 = newRow.insertCell(3);
+                newCell4.innerHTML = "<input type='number' min='0' step='0.01' class='form-control border_update' name='unit_price_update' id='unit_price_update"+ global_jsfs_count +"'>";
+                // 给第五列添加 删除X-icon
+                if (rowCount != 1){
+                    const newCell5 = newRow.insertCell(4);
+                    newCell5.innerHTML = "<i class='fa fa-remove fa-2x modrm' style='margin: auto; color: gray;' title='删除' onclick='rmrows(this)'></i>";
+                }
+                // 给结算方式 添加下拉框
+                let jss = document.getElementById('settlement_method_update' + global_jsfs_count);
+                for (var i = 0; i < js_methods.length; i++) {
+                    if (jss.length < js_methods.length+1) { // 这里不判断的话会一直添加
+                        if (js_methods[i] != jss.value) {
+                            var objOption = document.createElement("option");
+                            objOption.value = js_methods[i];
+                            objOption.text = js_methods[i];
+                            jss.add(objOption);
+                        };
+                    };
+                };
+                global_jsfs_count += 1;
+            }
+        }
+        else {
+            let rowCount = update_table_add_line.rows.length; //行数
+            const newRow = update_table_add_line.insertRow(rowCount); //添加到最后一行
+            
+            //给第一列添加
+            const newCell1 = newRow.insertCell(0);
+            newCell1.innerHTML = "<select class='form-control settlement_method_update border_update' id='settlement_method_update"+ global_jsfs_count +"'><option value='---'>---</option></select>";
+            //给第二列添加
+            const newCell2 = newRow.insertCell(1);
+            newCell2.innerHTML = "<input type='number' class='form-control border_update' min='0' max='100' name='recovery_precision_update' id='recovery_precision_update"+ global_jsfs_count + "'>";
+            //给第三列添加
+            const newCell3 = newRow.insertCell(2);
+            newCell3.innerHTML = "<input type='number' min='0' class='form-control border_update' name='knums_update' id='knums_update"+ global_jsfs_count +"'>";
+            //给第四列添加
+            const newCell4 = newRow.insertCell(3);
+            newCell4.innerHTML = "<input type='number' min='0' step='0.01' class='form-control border_update' name='unit_price_update' id='unit_price_update"+ global_jsfs_count +"'>";
+            // 给结算方式 添加下拉框
+            let jss = document.getElementById('settlement_method_update' + global_jsfs_count);
+            for (var i = 0; i < js_methods.length; i++) {
+                if (jss.length < js_methods.length+1) { // 这里不判断的话会一直添加
+                    if (js_methods[i] != jss.value) {
+                        var objOption = document.createElement("option");
+                        objOption.value = js_methods[i];
+                        objOption.text = js_methods[i];
+                        jss.add(objOption);
+                    };
+                };
+            };
+            global_jsfs_count += 1;
+        }
+    }
+    // 删除指定行
+    function rmrows(r){
+        let tab_row = r.parentNode.parentNode.rowIndex;
+        document.getElementById("jsfs_table").deleteRow(tab_row);
+    }
+    // 删除行
+    function table_remove_row(rm_row_idx){
+        const update_table_add_line = document.getElementById("jsfs_table");
+        // 判断多余的空行删掉
+        let remove_table_data_list = [];
+        for(let i=rm_row_idx; i>1; i--){
+            remove_table_data_list.push(i-1);
+        }
+        for (let idx=0; idx<remove_table_data_list.length; idx++){
+            update_table_add_line.deleteRow(remove_table_data_list[idx]);
+        }
+        global_jsfs_count = 1; // 初始化结算方式为 1 条
+    }
+    // 获取行数据
+    //判断行数据提示
+    function modal_alert(mes){
+        $("#err_msg").css("display", 'block');
+        $("#err_msg").html(mes);
+    }
+    function isFloat(num){
+        if(String(num).indexOf('.') > -1) return true;
+        else return false;
+    }
+    function get_table_data(){
+        const update_table_add_line = document.getElementById("jsfs_table");
+        const rowCount = update_table_add_line.rows.length; //行数
+        let ann_meta_data = [];
+        let is_continue = true;
+        for(var i=1; i<rowCount; i++){
+            const jsfs = update_table_add_line.rows[i].cells[0].getElementsByTagName("select")[0].value;
+            const zql = update_table_add_line.rows[i].cells[1].getElementsByTagName("input")[0].value;
+            const ks = Number(update_table_add_line.rows[i].cells[2].getElementsByTagName("input")[0].value);
+            const dj = Number(update_table_add_line.rows[i].cells[3].getElementsByTagName("input")[0].value);
+
+            console.log(jsfs,ks,dj)
+
+            if (zql != ""){
+                if (jsfs == "---" || ks == 0 || dj == 0){
+                    is_continue = false;
+                    modal_alert("框数,单价,结算方式 需同时填写 !");
+                    continue;
+                }
+                else is_continue = true;
+            }
+            else{
+                if (jsfs == "---" && ks == 0 && dj == 0){
+                    is_continue = true;
+                }
+                else{
+                    if (jsfs == "---" || ks == 0 || dj == 0){
+                        modal_alert("框数,单价,结算方式 需同时填写 !");
+                        is_continue = false;
+                        continue;
+                    }
+                    else is_continue = true;
+                }
+            }
+            if (Number(zql) < 0 || Number(zql) > 100){
+                modal_alert("准确率不可能 小于0 / 大于100 !");
+                is_continue = false;
+                continue;
+            }
+            if (ks < 0 || isFloat(ks)){
+                modal_alert("框数不可能 小于0 / 是小数!");
+                is_continue = false;
+                continue;
+            }
+            if (dj < 0) {
+                modal_alert("单价不可能 小于0");
+                is_continue = false;
+                continue;
+            }
+            if (is_continue){
+                ann_meta_data.push({"settlement_method":jsfs, "recovery_precision":zql, "knums":ks, "unit_price":dj});
+            }
+        }
+        return [is_continue, ann_meta_data];
+    }
+
     function clean_insert_data(){
         // end 清除
         $("#pname_insert").find('option:first').prop("selected", "selected");
@@ -474,7 +612,23 @@
             is_search_url = "/wballdata?pageIndex=1&pageSize=20";
         }
     });
-    
+    // 点击行高亮
+    table.on('row(test)', function(obj){
+        $(".active-tr").removeClass("active-tr");
+        obj.tr.addClass("active-tr");
+        //定义单击行改变行的背景颜色
+        if (tmpobj!=null){
+            tmpobj.tr[0].style='background-color: #ffffff;';
+            if (tmpobj.tr[1]){
+                tmpobj.tr[1].style='background-color: #ffffff;';
+            }
+        }
+        tmpobj=obj;
+        obj.tr[0].style='background-color: #b8e2f3;';
+        if (obj.tr[1]){
+            obj.tr[1].style='background-color: #b8e2f3;';
+        }
+    })
     // 表格后台过滤
     $('#serch').click(function () {
         // var pname_search = $("#pname_search option:selected").val().replace("&","%26");
@@ -567,109 +721,78 @@
             }
             else {
                 layer.confirm('真的修改ID为 '+obj.data.id+' 的数据么', function (index) {
+                    // 删除表格只保留 1条记录
+                    const update_table_add_line = document.getElementById("jsfs_table");
+                    const rowCount = update_table_add_line.rows.length; //行数
+                    table_remove_row(rowCount); // 动态删除n行
+
                     $('#gs_update_model').modal('show');
-                $("#err_msg").css("display", 'none');
-                $.ajax("/wb_update", {
-                    method: "GET",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: {
-                        id: obj.data.id
-                    },
-                }).done(function (res) {
-                    if (res && res.status == "successful") {
-                        for(let clean_idx=1; clean_idx<=3; clean_idx++){
-                            $("#settlement_method_update"+clean_idx).find('option:first').prop("selected", "selected");
-                            $("#recovery_precision_update"+clean_idx).val("");
-                            $("#knums_update"+clean_idx).val("");
-                            $("#unit_price_update"+clean_idx).val("");
-                        }
-                        const id = res.data[0].id;
-                        const user = res.data[0].user;
-                        const pname = res.data[0].pname;
-                        const send_data_batch = res.data[0].send_data_batch
-                        const send_data_time = res.data[0].send_data_time;
-                        const pnums = res.data[0].pnums;
-                        const data_source = res.data[0].data_source;
-                        const scene = res.data[0].scene;
-                        const send_reason = res.data[0].send_reason;
-                        const key_frame_extracted_methods = res.data[0].key_frame_extracted_methods;
-                        const begin_check_data_time = res.data[0].begin_check_data_time;
-                        const last_check_data_time = res.data[0].last_check_data_time;
-                        const get_data_time = res.data[0].get_data_time;
-                        const ann_field_flag = res.data[0].ann_field_flag;
-                        const wb_name = res.data[0].wb_name;
-                        const ann_meta_data = res.data[0].ann_meta_data;
+                    $("#err_msg").css("display", 'none');
+                    $.ajax("/wb_update", {
+                        method: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: {
+                            id: obj.data.id
+                        },
+                    }).done(function (res) {
+                        if (res && res.status == "successful") {
+                            for(let clean_idx=1; clean_idx<=3; clean_idx++){
+                                $("#settlement_method_update"+clean_idx).find('option:first').prop("selected", "selected");
+                                $("#recovery_precision_update"+clean_idx).val("");
+                                $("#knums_update"+clean_idx).val("");
+                                $("#unit_price_update"+clean_idx).val("");
+                            }
+                            const id = res.data[0].id;
+                            const user = res.data[0].user;
+                            const pname = res.data[0].pname;
+                            const send_data_batch = res.data[0].send_data_batch
+                            const send_data_time = res.data[0].send_data_time;
+                            const pnums = res.data[0].pnums;
+                            const data_source = res.data[0].data_source;
+                            const scene = res.data[0].scene;
+                            const send_reason = res.data[0].send_reason;
+                            const key_frame_extracted_methods = res.data[0].key_frame_extracted_methods;
+                            const begin_check_data_time = res.data[0].begin_check_data_time;
+                            const last_check_data_time = res.data[0].last_check_data_time;
+                            const get_data_time = res.data[0].get_data_time;
+                            const ann_field_flag = res.data[0].ann_field_flag;
+                            const wb_name = res.data[0].wb_name;
+                            const ann_meta_data = res.data[0].ann_meta_data;
 
-                        $("#id_update").val(id);
-                        $("#user_update").val(user);
-                        $("#pname_update").html("<option value=" + pname + ">" + pname + "</option>");
-                        $("#send_data_batch_update").val(send_data_batch);
-                        $("#send_data_time_update").val(send_data_time);
-                        $("#pnums_update").val(pnums);
-                        $("#data_source_update").html("<option value=" + data_source + ">" + data_source + "</option>");
-                        $("#scene_update").val(scene);
-                        $("#send_reason_update").val(send_reason);
-                        $("#key_frame_extracted_methods_update").val(key_frame_extracted_methods);
-                        $("#begin_check_data_time_update").val(begin_check_data_time);
-                        $("#last_check_data_time_update").val(last_check_data_time);
-                        $("#get_data_time_update").val(get_data_time);
-                        $("#ann_field_flag_update").html("<option value=" + ann_field_flag + ">" + ann_field_flag + "</option>");
-                        $("#wb_name_update").html("<option value=" + wb_name + ">" + wb_name + "</option>");
-                    
-                        // 给结算方式 添加下拉框
-                        let js1 = document.getElementById('settlement_method_update1');
-                        for (var i = 0; i < js_methods.length; i++) {
-                            if (js1.length < js_methods.length+1) { // 这里不判断的话会一直添加
-                                if (js_methods[i] != js1.value) {
-                                    var objOption = document.createElement("option");
-                                    objOption.value = js_methods[i];
-                                    objOption.text = js_methods[i];
-                                    js1.add(objOption);
-                                };
-                            };
-                        };
-                        // 2
-                        let js2 = document.getElementById('settlement_method_update2');
-                        for (var i = 0; i < js_methods.length; i++) {
-                            if (js2.length < js_methods.length+1) { // 这里不判断的话会一直添加
-                                if (js_methods[i] != js2.value) {
-                                    var objOption = document.createElement("option");
-                                    objOption.value = js_methods[i];
-                                    objOption.text = js_methods[i];
-                                    js2.add(objOption);
-                                };
-                            };
-                        };
-                        // 3
-                        let js3 = document.getElementById('settlement_method_update3');
-                        for (var i = 0; i < js_methods.length; i++) {
-                            if (js3.length < js_methods.length+1) { // 这里不判断的话会一直添加
-                                if (js_methods[i] != js3.value) {
-                                    var objOption = document.createElement("option");
-                                    objOption.value = js_methods[i];
-                                    objOption.text = js_methods[i];
-                                    js3.add(objOption);
-                                };
-                            };
-                        };
+                            $("#id_update").val(id);
+                            $("#user_update").val(user);
+                            $("#pname_update").html("<option value=" + pname + ">" + pname + "</option>");
+                            $("#send_data_batch_update").val(send_data_batch);
+                            $("#send_data_time_update").val(send_data_time);
+                            $("#pnums_update").val(pnums);
+                            $("#data_source_update").html("<option value=" + data_source + ">" + data_source + "</option>");
+                            $("#scene_update").val(scene);
+                            $("#send_reason_update").val(send_reason);
+                            $("#key_frame_extracted_methods_update").val(key_frame_extracted_methods);
+                            $("#begin_check_data_time_update").val(begin_check_data_time);
+                            $("#last_check_data_time_update").val(last_check_data_time);
+                            $("#get_data_time_update").val(get_data_time);
+                            $("#ann_field_flag_update").html("<option value=" + ann_field_flag + ">" + ann_field_flag + "</option>");
+                            $("#wb_name_update").html("<option value=" + wb_name + ">" + wb_name + "</option>");
 
-                        if (ann_meta_data != ""){
-                            for (let index = 0; index < ann_meta_data.length; index++) {
-                                const method = ann_meta_data[index]["settlement_method"];
-                                const price = ann_meta_data[index]["unit_price"];
-                                const pricision = ann_meta_data[index]["recovery_precision"];
-                                const knums = ann_meta_data[index]["knums"];
-                                // 结算方式	交付准确率	框数	单价
-                                $("#settlement_method_update"+(index+1)).val(method);
-                                $("#recovery_precision_update"+(index+1)).val(pricision);
-                                $("#knums_update"+(index+1)).val(knums);
-                                $("#unit_price_update"+(index+1)).val(price);
+                            tableadd(ann_meta_data.length); // 动态添加行数
+                            if (ann_meta_data != ""){
+                                if (ann_meta_data.length > 3)tableadd();
+                                for (let index = 0; index < ann_meta_data.length; index++) {
+                                    const method = ann_meta_data[index]["settlement_method"];
+                                    const price = ann_meta_data[index]["unit_price"];
+                                    const pricision = ann_meta_data[index]["recovery_precision"];
+                                    const knums = ann_meta_data[index]["knums"];
+                                    // 结算方式	交付准确率	框数	单价
+                                    $("#settlement_method_update"+(index+1)).val(method);
+                                    $("#recovery_precision_update"+(index+1)).val(pricision);
+                                    $("#knums_update"+(index+1)).val(knums);
+                                    $("#unit_price_update"+(index+1)).val(price);
+                                }
                             }
                         }
-
-                    }
-                });
+                    });
                     layer.close(index);
                 });
             }
@@ -787,82 +910,51 @@
         const get_data_time = $("#get_data_time_update").val();
         const ann_field = $("#ann_field_flag_update option:selected").val();
         const wb_name = $("#wb_name_update option:selected").val();
-        
-        const recovery_precision1 = $("#recovery_precision_update1").val();
-        const knums1 = $("#knums_update1").val();
-        const settlement_method1 = $("#settlement_method_update1  option:selected").val();
-        const unit_price1 = $("#unit_price_update1").val();
-        
-        const recovery_precision2 = $("#recovery_precision_update2").val();
-        const knums2 = $("#knums_update2").val();
-        const settlement_method2 = $("#settlement_method_update2  option:selected").val();
-        const unit_price2 = $("#unit_price_update2").val();
+        const ann_meta_data = get_table_data();
 
-        const recovery_precision3 = $("#recovery_precision_update3").val();
-        const knums3 = $("#knums_update3").val();
-        const settlement_method3 = $("#settlement_method_update3  option:selected").val();
-        const unit_price3 = $("#unit_price_update3").val();
-        
-        const ann_meta_data = [
-                                {'recovery_precision': recovery_precision1,
-                                'knums': knums1, 
-                                "settlement_method": settlement_method1, 
-                                "unit_price": unit_price1
-                                },
-                                {'recovery_precision': recovery_precision2,
-                                    'knums': knums2, 
-                                    "settlement_method": settlement_method2, 
-                                    "unit_price": unit_price2
-                                },
-                                {'recovery_precision': recovery_precision3,
-                                    'knums': knums3, 
-                                    "settlement_method": settlement_method3, 
-                                    "unit_price": unit_price3
-                                }
-                            ]
-        $.ajax("/wb_update/", {
-            method: "POST",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: {
-                id: id,
-                user: user,
-                main_user: main_user,
-                pname: pname,
-                send_data_batch: send_data_batch,
-                send_data_time: send_data_time,
-                pnums: pnums,
-                data_source: data_source,
-                scene: scene,
-                send_reason: send_reason,
-                key_frame_extracted_methods: key_frame_extracted_methods,
-                ann_field_flag: ann_field,
-                wb_name: wb_name,
-                begin_check_data_time: begin_check_data_time,
-                last_check_data_time: last_check_data_time,
-                get_data_time: get_data_time,
-                ann_meta_data: ann_meta_data
-            },
-        }).done(function (res) {
-            if (res && res.status == "successful") {
-                $("#btn-miss").click();
-                $(".alert-danger").html("修改成功!");
-                $(".alert-danger").addClass("show");
-                $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
-                $("#alert_div").css("color", 'rgb(255, 255, 255)');
-                window.setTimeout(function () {
-                    $(".alert-danger").removeClass("show");
-                }, 1000);//显示的时间
+        if (ann_meta_data[0]){
+            $.ajax("/wb_update/", {
+                method: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    id: id,
+                    user: user,
+                    main_user: main_user,
+                    pname: pname,
+                    send_data_batch: send_data_batch,
+                    send_data_time: send_data_time,
+                    pnums: pnums,
+                    data_source: data_source,
+                    scene: scene,
+                    send_reason: send_reason,
+                    key_frame_extracted_methods: key_frame_extracted_methods,
+                    ann_field_flag: ann_field,
+                    wb_name: wb_name,
+                    begin_check_data_time: begin_check_data_time,
+                    last_check_data_time: last_check_data_time,
+                    get_data_time: get_data_time,
+                    ann_meta_data: ann_meta_data[1]
+                },
+            }).done(function (res) {
+                if (res && res.status == "successful") {
+                    $("#btn-miss").click();
+                    $(".alert-danger").html("修改成功!");
+                    $(".alert-danger").addClass("show");
+                    $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
+                    $("#alert_div").css("color", 'rgb(255, 255, 255)');
+                    window.setTimeout(function () {
+                        $(".alert-danger").removeClass("show");
+                    }, 1000);//显示的时间
 
-                let url = '/wballdata'
-                table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
-            }
-            else {
-                $("#err_msg").css("display", 'block');
-                $("#err_msg").html(res.mes);
-
-            }
-        });
+                    let url = '/wballdata'
+                    table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
+                }
+                else {
+                    modal_alert(res.mes);
+                }
+            });
+        }
     })
 
     // insert

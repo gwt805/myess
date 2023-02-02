@@ -348,6 +348,7 @@
     const projects = JSON.parse('{{ projects|safe }}'); // 项目名字
     const tkinds = JSON.parse('{{ tkinds|safe }}'); // 任务类型 列表
     const bzf = JSON.parse('{{ bzf|safe }}'); // 数据标注方
+    let tmpobj=null; // table row 高亮用
     search_show();
     const table = layui.table;
     //渲染表格
@@ -395,6 +396,23 @@
             { fixed: 'right', title: '操作', toolbar: '#barDemo' },//设置每行的工具栏以及其容器
         ]],
     });
+    // 点击行高亮
+    table.on('row(test)', function(obj){
+        $(".active-tr").removeClass("active-tr");
+        obj.tr.addClass("active-tr");
+        //定义单击行改变行的背景颜色
+        if (tmpobj!=null){
+            tmpobj.tr[0].style='background-color: #ffffff;';
+            if (tmpobj.tr[1]){
+                tmpobj.tr[1].style='background-color: #ffffff;';
+            }
+        }
+        tmpobj=obj;
+        obj.tr[0].style='background-color: #b8e2f3;';
+        if (obj.tr[1]){
+            obj.tr[1].style='background-color: #b8e2f3;';
+        }
+    })
     // 表格后台过滤
     $('#serch').click(function () {
         const uname = $('#uname_search').val();
