@@ -6,6 +6,7 @@
     <img src="./myess/asserts/2023-02-03-ess-scrollbar-style.png">
 - echarts 动态调整窗口
     <img src="./myess/asserts/2023-02-03-ess-echarts-resize.gif">
+- 修复首页添加数据不返回当天个人所有数据
 
 # 2023-02-02
 ### Changed
