@@ -640,6 +640,10 @@
         };
     }
     // 添加数据--
+    function month_sw(m){
+        if (Number(m) < 10)return '0' + m;
+        else return m;
+    }
     $("#btn_insert").click(function () {
         if (sessionStorage.getItem("power") == '3') {
             $(".alert-danger").html("您没有权限添加数据!");
@@ -687,7 +691,7 @@
                     if (day < 10) {
                         day = "0" + day;
                     }
-                    today = today + year + '-' + month + '-' + day;
+                    today = today + year + '-' + month_sw(month) + '-' + day;
                     let url = '/gsalldata?uname=' + uname + "&pname=---&bzf=---&taskid=&taskkind=---&begin_time=" + today + "&last_time="; //第一种方法
                     table.reload('test', { url: url, page: { curr: 1 } });//重新从第 1 页开始
 
