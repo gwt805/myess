@@ -266,7 +266,7 @@
     // 折线图 start
     for (let line = 0; line < chart_line.length; line++) {
         var dom = document.getElementById(pname[line]);
-        var chart_lines = echarts.init(dom, 'dark')
+        var chart_lines = echarts.init(dom, 'dark');
         var option = {
             title: {
                 text: pname[line] + ' 框数,金额 走势图'
@@ -375,6 +375,18 @@
         chart_lines.setOption(option);
     }
     // 折线图 end
+
+    // echarts resize
+    window.onresize = function(){
+        for (let pie = 0; pie < chart_pie.length; pie++) {
+            chart_list[pie].resize();
+        }
+        for (let line = 0; line < chart_line.length; line++) {
+            var dom = document.getElementById(pname[line]);
+            var chart_lines = echarts.init(dom, 'dark');
+            chart_lines.resize();
+        }
+    }
 
     // 查询
     function pie_line_search(){

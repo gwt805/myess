@@ -2,9 +2,10 @@
 ### Changed
 - 修改ESS INFO 显示样式
 - 修改滚动条 x&y 轴的样式
-<img src="./myess/asserts/2023-02-03-ess-info-style.png">
-<img src="./myess/asserts/2023-02-03-ess-scrollbar-style.png">
-
+    <img src="./myess/asserts/2023-02-03-ess-info-style.png">
+    <img src="./myess/asserts/2023-02-03-ess-scrollbar-style.png">
+- echarts 动态调整窗口
+    <img src="./myess/asserts/2023-02-03-ess-echarts-resize.gif">
 
 # 2023-02-02
 ### Changed

@@ -570,6 +570,22 @@
         }
     }
 
+    // echarts rsize
+    window.onresize = function(){
+        check_bar.resize();
+        anno_bar.resize();
+        for (let line = 0; line < check_data_pname_list.length; line++) {
+            var dom = document.getElementById("验收" + check_data_pname_list[line]);
+            var chart_lines = echarts.init(dom, 'dark')
+            chart_lines.resize();
+        }
+        for (let line = 0; line < anno_data_pname_list.length; line++) {
+            var dom = document.getElementById("标注" + anno_data_pname_list[line]);
+            var chart_lines = echarts.init(dom, 'dark')
+            chart_lines.resize();
+        }
+    }
+
     // help
     function help() {
         $(".alert-danger").html("请联系卫龙!");
