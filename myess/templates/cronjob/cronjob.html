@@ -14,6 +14,14 @@
     <link href="/static/lib/layui-v2.7.6/layui/css/layui.css" rel="stylesheet">
     <script src="/static/lib/layui-v2.7.6/layui/layui.js"></script>
     <title>定时任务</title>
+    <style>
+        h3 {
+            text-align: center;
+        }
+        .form-group {
+            margin-left: 60px !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -99,9 +107,9 @@
             <table class="table layui-hide table-bordered" id="job_log_table" lay-filter="job_log_table"></table>
         </div>
         <!-- 弹窗之ESS-Info -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="ess_info" style="margin: 200px 0 0 500px; ">
+        <div class="modal fade" tabindex="-1" role="dialog" id="ess_info">
             <div class="modal-dialog" role="document">
-                <div class="modal-content  modal-sm">
+                <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" style="color: rgb(68, 147, 199);">
                             <i class="fa fa-info-circle"></i> ESS-INFO
@@ -159,7 +167,8 @@
                         </div>
                         <div class="modal-footer">
                             <a href="https://github.com/gwt805/myess/tree/master" target="_blank"
-                                style="position: absolute; left: 20px;"><i class="fa fa-github-square fa-2x"></i></a>
+                                style="position: absolute; left: 20px;"><i
+                                    class="fa fa-github-square fa-2x" style="color: black;"></i></a>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"
                                 style="color: blue;">
                                 <span aria-hidden="true">OK</span>
