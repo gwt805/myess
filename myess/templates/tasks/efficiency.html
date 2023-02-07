@@ -93,25 +93,30 @@
         </div><!-- /.container-fluid -->
     </nav>
     <div class="alert alert-danger hide" id="alert_div"
-        style="width: 300px; position: fixed; top: 40%;left: 45%; right: 50%;z-index: 1; font-size: 22px;">
+        style="width: 300px; position: fixed; top: 40%;left: 45%; right: 50%;z-index: 1; font-size: 22px; text-align: center;">
     </div> <!-- 警告弹出框 -->
     <div id="eff_div" style="margin-top: 50px; position: fixed; overflow-y: auto; width: 100%; height: 95.5%;">
-        <table class="table" id="search_tab" style="width: 800px; margin: auto;">
-            <tr>
-                <th style="width: 200px; text-align: center;">本周开始时间</th>
-                <th style="width: 200px; text-align: center;">本周结束时间</th>
-                <th style="width: 200px; text-align: center;">上周开始时间</th>
-                <th style="width: 200px; text-align: center;">上周结束时间</th>
-            </tr>
-            <td><input type="date" name="now-begin-time" id="now-begin-time" class="form-control" ></td>
-            <td><input type="date" name="now-over-time" id="now-over-time" class="form-control"></td>
-            <td><input type="date" name="last-begin-time" id="last-begin-time" class="form-control"></td>
-            <td><input type="date" name="last-over-time" id="last-over-time" class="form-control"></td>
-            <td><button class="btn btn-primary" onclick="search()">查看</button></td>
-        </table>
+        <form action="/efficiency/" method="post">
+            <table class="table" id="search_tab" style="width: 800px; margin: auto;">
+                <tr>
+                    <th style="width: 200px; text-align: center;">本周开始时间</th>
+                    <th style="width: 200px; text-align: center;">本周结束时间</th>
+                    <th style="width: 200px; text-align: center;">上周开始时间</th>
+                    <th style="width: 200px; text-align: center;">上周结束时间</th>
+                </tr>
+                <td><input type="date" name="nbt" class="form-control" value="{{ nbt }}"></td>
+                <td><input type="date" name="nlt" class="form-control" value="{{ nlt }}"></td>
+                <td><input type="date" name="lbt" class="form-control" value="{{ lbt }}"></td>
+                <td><input type="date" name="llt" class="form-control" value="{{ llt }}"></td>
+                <td><button class="btn btn-primary" type="submit">查看</button></td>
+            </table>
+        </form>
         <h3>团队效率</h3>
         <table class="layui-hide" id="eff_team" lay-filter="eff_team"></table>
         <h3>个人效率</h3>
+        {% for item in user_list %}
+        <table class="layui-hide" id="{{ item }}" lay-filter="{{ item }}"></table>
+        {% endfor %}
     </div>
     <!-- 弹窗之ESS-Info -->
     <div class="modal fade" tabindex="-1" role="dialog" id="ess_info">
@@ -189,98 +194,69 @@
 <script src="/static/js/disable.js"></script>
 <script src="/static/js/click_yh.js"></script>
 <script>
-    const apdiv = $("#eff_div");
-    const table = layui.table;
-
-    function search(){
-        const nbt = $("#now-begin-time").val();
-        const nlt = $("#now-over-time").val();
-        const lbt = $("#last-begin-time").val();
-        const llt = $("#last-over-time").val();
-        $.ajax("/efficiency/", {
-            method: "POST",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: {
-                nbt: nbt,
-                nlt: nlt,
-                lbt: lbt,
-                llt: llt
-            },
-        }).done(function (res) {
-            if (res && res.status == "successful") {
-                //渲染表格
-                table.render({//渲染table
-                    data: res.eff_team,
+    try{
+        const status = JSON.parse('{{ status|safe}}');
+        const eff_team = JSON.parse('{{ eff_team|safe }}');
+        const user_list = JSON.parse('{{ user_list_json|safe }}');
+        const eff_person = JSON.parse('{{ eff_person|safe }}');
+        const table = layui.table;
+        if (status == "successful"){
+            $(".alert-danger").html("查询成功!");
+            $(".alert-danger").addClass("show");
+            $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
+            $("#alert_div").css("color", 'rgb(255, 255, 255)');
+            window.setTimeout(function () {
+                $(".alert-danger").removeClass("show");
+            }, 1000);//显示的时间
+            // 团队效率
+            table.render({//渲染table
+                    data: eff_team,
                     elem: '#eff_team',         //设置容器
                     page: true,
                     limit: 20,
                     limits: [20, 50, 100],
                     skin: 'row', //表格风格
                     even: true,    //隔行换色
-                    cols: [
-                        // [{ title: '团队效率', colspan:6, align: 'center' },],
-                        [
-                        { field: 'kinds', title: '任务类型', sort:true },
-                        { field: 'pname', title: '项目名字', sort:true },
-                        { field: 'pnums', title: '样本数量' },
-                        { field: 'knums', title: '标注数量' },
-                        { field: 'neff', title: '本周效率' },
-                        { field: 'leff', title: '上周效率' },
-                    ]],
+                    cols: [[
+                            { field: 'kinds', title: '任务类型', sort:true },
+                            { field: 'pname', title: '项目名字', sort:true },
+                            { field: 'pnums', title: '样本数量' },
+                            { field: 'knums', title: '标注数量' },
+                            { field: 'neff', title: '本周效率' },
+                            { field: 'leff', title: '上周效率' },
+                        ]],
                 });
-                if (res.user_list.length == 0){
-                    $("#alert_div").css("background-color", 'rgb(242, 222, 222)');
-                    $("#alert_div").css("color", 'rgb(169, 68, 66)');
-                    $(".alert-danger").html("个人效率如有数据则忽略!");
-                    $(".alert-danger").addClass("show");
-                }
-                else{
-                    $(".alert-danger").html("查询成功!");
-                    $(".alert-danger").addClass("show");
-                    $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
-                    $("#alert_div").css("color", 'rgb(255, 255, 255)');
-                    window.setTimeout(function () {
-                        $(".alert-danger").removeClass("show");
-                    }, 1000);//显示的时间
-                }
-                for (var i = 0; i < res.user_list.length; i++) {
-                    if (document.getElementById(res.user_list[i]) == null){
-                        apdiv.append('<table class="layui-hide eff_p" id='+ res.user_list[i] +' lay-filter="'+ res.user_list[i] +'"></table>')
-                    }
-                }
-                for (var i = 0; i< res.user_list.length; i++){
-                    //渲染表格
-                    table.render({//渲染table
-                        data: res.eff_person[i],     //数据获取url
-                        elem: '#'+res.user_list[i],         //设置容器
-                        page: true,
-                        limit: 20,
-                        limits: [20, 50, 100],
-                        skin: 'row', //表格风格
-                        even: true,    //隔行换色
-                        cols: [
-                            // [
-                            //     { title: '个人效率', colspan:7, align: 'center', style:'background-color: #009688; color: #fff;' }
-                            // ],
-                            [
-                                { field: 'name', title: '用户名' },
-                                { field: 'kinds', title: '任务类型', sort:true },
-                                { field: 'pname', title: '项目名字', sort:true },
-                                { field: 'pnums', title: '样本数量' },
-                                { field: 'knums', title: '标注数量' },
-                                { field: 'neff', title: '本周效率' },
-                                { field: 'leff', title: '上周效率'}
-                            ]
-                        ],
-                    })
-                }
-            } else {
-                $("#err_msg").css("display", 'block');
-                $("#err_msg").html(res.mes);
-
+            // 个人效率
+            for (var i = 0; i < user_list.length; i++){
+                table.render({//渲染table
+                    data: eff_person[i],     //数据获取url
+                    elem: '#' + user_list[i],         //设置容器
+                    page: true,
+                    limit: 20,
+                    limits: [20, 50, 100],
+                    skin: 'row', //表格风格
+                    even: true,    //隔行换色
+                    cols: [[
+                            { field: 'name', title: '用户名' },
+                            { field: 'kinds', title: '任务类型', sort:true },
+                            { field: 'pname', title: '项目名字', sort:true },
+                            { field: 'pnums', title: '样本数量' },
+                            { field: 'knums', title: '标注数量' },
+                            { field: 'neff', title: '本周效率' },
+                            { field: 'leff', title: '上周效率'}
+                        ]],
+                })
             }
-        });
+        }
+        else {
+            $("#alert_div").css("background-color", 'rgb(242, 222, 222)');
+            $("#alert_div").css("color", 'rgb(169, 68, 66)');
+            $(".alert-danger").html("查询失败!");
+            $(".alert-danger").addClass("show");
+        }
+    }
+    catch{
+        console.log("首次为空!");
     }
     
     function help() {

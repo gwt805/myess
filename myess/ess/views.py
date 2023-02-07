@@ -348,21 +348,37 @@ def dtdel(request):  # 单条数据删除
 @csrf_exempt
 def efficiency(request):  # 效率
     if request.method == "POST":
-        data = QueryDict(request.body)
-        now_begin_time = data.get("nbt")
-        now_over_time = data.get("nlt")
-        last_begin_time = data.get("lbt")
-        last_over_time = data.get("llt")
+        nbt = request.POST.get("nbt")
+        nlt = request.POST.get("nlt")
+        lbt = request.POST.get("lbt")
+        llt = request.POST.get("llt")
         try:
-            eff_team, user_list, eff_person = eff_test(now_begin_time, now_over_time, last_begin_time, last_over_time)
-            return JsonResponse({
-                    "status": "successful",
-                    "eff_team": eff_team,
-                    "user_list": user_list,
-                    "eff_person": eff_person
-                })
+            eff_team, user_list, eff_person = eff_test(nbt, nlt, lbt, llt)
+            return render(
+                request, 
+                "tasks/efficiency.html", 
+                {
+                    "nbt": nbt, "nlt": nlt, "lbt": lbt, "llt": llt,
+                    "status": json.dumps("successful"), 
+                    "eff_team": json.dumps(eff_team), 
+                    "user_list": user_list, 
+                    "user_list_json": json.dumps(user_list), 
+                    "eff_person": json.dumps(eff_person)
+                }
+            )
         except:
-            pass
+            return render(
+                request, 
+                "tasks/efficiency.html", 
+                {
+                    "nbt": nbt, "nlt": nlt, "lbt": lbt, "llt": llt,
+                    "status": json.dumps("error"), 
+                    "eff_team": json.dumps(eff_team), 
+                    "user_list": user_list, 
+                    "user_list_json": json.dumps(user_list), 
+                    "eff_person": json.dumps(eff_person)
+                }
+            )
     return render(request, "tasks/efficiency.html")
 
 
