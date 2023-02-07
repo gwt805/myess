@@ -9,11 +9,8 @@ from django.http import QueryDict
 from .mes import (
     gsdata_count_public_code,
     nupdate,
-    nw,
-    lw,
+    eff_test,
     performanceq,
-    plw,
-    pnw,
     search,
     waibao_search,
     gs_data_add,
@@ -238,7 +235,7 @@ def gsalldata(request):  # 首页数据
         for item in context:
             res.append(item)
         return JsonResponse(
-            {"code": 0, "message": "查询成功", "count": len(data), "data": res}
+            {"code": 0, "msg": "查询成功", "count": len(data), "data": res}
         )
 
 
@@ -348,32 +345,22 @@ def dtdel(request):  # 单条数据删除
 
     return JsonResponse({"data": "successful"})
 
-
+@csrf_exempt
 def efficiency(request):  # 效率
     if request.method == "POST":
-        now_begin_time = request.POST.get("now-begin-time").strip()
-        now_over_time = request.POST.get("now-over-time").strip()
-        last_begin_time = request.POST.get("last-begin-time").strip()
-        last_over_time = request.POST.get("last-over-time").strip()
+        data = QueryDict(request.body)
+        now_begin_time = data.get("nbt")
+        now_over_time = data.get("nlt")
+        last_begin_time = data.get("lbt")
+        last_over_time = data.get("llt")
         try:
-            tks_nw = nw(now_begin_time, now_over_time)
-            tks_lw = lw(last_begin_time, last_over_time)
-            pks_nw = pnw(now_begin_time, now_over_time)
-            pks_lw = plw(last_begin_time, last_over_time)
-            return render(
-                request,
-                "tasks/efficiency.html",
-                {
-                    "now_begin_time": now_begin_time,
-                    "now_over_time": now_over_time,
-                    "last_begin_time": last_begin_time,
-                    "last_over_time": last_over_time,
-                    "tks_nw": tks_nw,
-                    "tks_lw": tks_lw,
-                    "pks_nw": pks_nw,
-                    "pks_lw": pks_lw,
-                },
-            )
+            eff_team, user_list, eff_person = eff_test(now_begin_time, now_over_time, last_begin_time, last_over_time)
+            return JsonResponse({
+                    "status": "successful",
+                    "eff_team": eff_team,
+                    "user_list": user_list,
+                    "eff_person": eff_person
+                })
         except:
             pass
     return render(request, "tasks/efficiency.html")
@@ -408,7 +395,8 @@ def getperformancedata(request):
 def gsdata_count(request):
     wb_name_list = [i[0] for i in models.Waibaos.objects.values_list("name")]
     user_list = [i[0] for i in models.User.objects.filter(group='数据标注组').values_list("zh_uname")]
-
+    year = datetime.now().strftime('%Y')
+    today = datetime.now().strftime('%Y-%m-%d')
     if request.method == "POST":
         user = request.POST.get("user_search")
         wb_name = request.POST.get("wb_name_search")
@@ -466,8 +454,8 @@ def gsdata_count(request):
             "line_chart_anno_list": json.dumps(line_chart_anno_list),
             "user": json.dumps("---"),
             "wb_name": json.dumps("---"),
-            "start_time": json.dumps("2021-12-27"),
-            "end_time": json.dumps(""),
+            "start_time": json.dumps(f"{year}-01-01"),
+            "end_time": json.dumps(f"{today}"),
             "no_data" : json.dumps(no_data)
         }
     )
@@ -638,7 +626,6 @@ def wb_update(request):
             if knums == 0 or unit_price == 0 or settlement_method == "---":
                 continue
             if knums == 0 or unit_price == 0 or settlement_method == "---":
-                print(knums, unit_price, settlement_method)
                 return JsonResponse({"status": "error", "mes": "框数,单价,结算方式 需同时填写!"})
             else:
                 if int(knums) < 0:
@@ -785,7 +772,8 @@ def wbdata_count_public_code(wb_name, start_time, end_time):
 # 外包数据统计
 def wbdata_count(request):
     wb_name_list = [i[0] for i in models.Waibaos.objects.values_list("name")]
-
+    year = datetime.now().strftime('%Y')
+    today = datetime.now().strftime('%Y-%m-%d')
     if request.method == "POST":
         wb_name = request.POST.get("wb_name_search")
         start_time = request.POST.get("start_time_search")
@@ -799,4 +787,4 @@ def wbdata_count(request):
     proname_list, char_list, line_chart_list = wbdata_count_public_code("---", "", "")
     chart_pie = json.dumps(char_list,ensure_ascii=False)
     chart_line = json.dumps(line_chart_list, ensure_ascii=False)
-    return render(request, "tasks/wbdata_count.html", {"wb_name_list": wb_name_list, "wb_selc": json.dumps("---"), "time_start": json.dumps("2021-01-01"),"time_end": json.dumps(""), "proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })
+    return render(request, "tasks/wbdata_count.html", {"wb_name_list": wb_name_list, "wb_selc": json.dumps("---"), "time_start": json.dumps(f"{year}-01-01"),"time_end": json.dumps(f"{today}"), "proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })

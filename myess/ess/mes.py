@@ -13,6 +13,7 @@ import json
 import time
 import hmac
 
+''' 效率计算 开始 '''
 def str2sec(x):
     """
   字符串时分秒转换成秒
@@ -20,8 +21,127 @@ def str2sec(x):
     h, m, s = x.strip().split(":")  # .split()函数将其通过':'分隔开,.strip()函数用来除去空格
     return int(h) * 3600 + int(m) * 60 + int(s)  # int()函数转换成整数运算
 
+def eff_person_public(tdat, names, begin_time, end_time):
+    ggg = []  # 二维矩阵
+    for g in names:
+        tps = []  # 没人一组整体效率
+        k_p = []  # [(kinds1, pname1), (kinds2, pname2)]
+        for kk in models.Task.objects.filter(dtime__range=[begin_time, end_time], uname=g):
+            if (kk.kinds, kk.pname) not in k_p:
+                k_p.append((kk.kinds, kk.pname))
+        for i in k_p:
+            pnum = 0
+            knum = 0
+            ptm = 0.0
+            pp = []
+            gg = tdat.filter(kinds=i[0], pname=i[1], uname=g)
+            pp.append(i[0])
+            pp.append(i[1])
+            if i[0] == "审核" or i[0] == "筛选":
+                for j in gg:
+                    pnum += j.pnums
+                    ptm += j.ptimes
+                pp.append(pnum)
+                pp.append(math.floor(pnum / ptm))
+            elif (
+                i[0] == "2D分割标注"
+                or i[0] == "2.5D点云标注"
+                or i[0] == "属性标注"
+                or i[0] == "2D框标注"
+            ):
+                for j in gg:
+                    pnum += j.pnums
+                    knum += int(j.knums)
+                    ptm += j.ptimes
+                pp.append(pnum)
+                pp.append(knum)
+                pp.append(math.floor(knum / ptm))
+            elif i[0] == "视频标注":
+                for j in gg:
+                    pnum += j.pnums
+                    knum += str2sec(j.knums)
+                    ptm += j.ptimes
+                pp.append(pnum)
+                pp.append(strftime("%H时%M分%S秒", gmtime(knum)))
+                pp.append(strftime("%H时%M分%S秒", gmtime(knum // ptm)))
+            tps.append(pp)
+        ggg.append({g: tps})
+    return ggg
 
-def tims(begin_time, over_time):
+def data_person_compare(l_eff_res, name, nvlue):
+    tmp_list = nvlue
+    for item in l_eff_res:
+        for k,v in item.items():
+            if k == name:
+                for litem in v:
+                    for nitem in nvlue:
+                        if litem[:2] == nitem[:2]:
+                            idx = tmp_list.index(nitem)
+                            tmp_list[idx].append(litem[-1])
+    eff_person_list = []
+    for item in tmp_list:
+        tmp_dict = {}
+        tmp_dict['name'] = name
+        tmp_dict['kinds'] = item[0]
+        tmp_dict['pname'] = item[1]
+        tmp_dict['pnums'] = item[2]
+        if item[0] in ["审核", "筛选"]:
+            if len(item) == 4:
+                tmp_dict['knums'] = None
+                tmp_dict['neff'] = item[3]
+                tmp_dict['leff'] = None
+            else:
+                tmp_dict['knums'] = None
+                tmp_dict['neff'] = item[3]
+                tmp_dict['leff'] = item[4]
+        else:
+            if len(item) == 5:
+                tmp_dict['knums'] = item[3]
+                tmp_dict['neff'] = item[4]
+                tmp_dict['leff'] = None
+            else:
+                tmp_dict['knums'] = item[3]
+                tmp_dict['neff'] = item[4]
+                tmp_dict['leff'] = item[5]
+        eff_person_list.append(tmp_dict)
+    return eff_person_list
+
+def data_team_compare(ndata, ldata):
+    new_eff_list = ndata
+    for litem in ldata:
+        for nitem in ndata:
+            if nitem[:2] == litem[:2]:
+                idx = new_eff_list.index(nitem)
+                new_eff_list[idx].append(litem[-1])
+
+    eff_list_to_json = []
+    for item in new_eff_list:
+        tmp_dict = {}
+        tmp_dict['kinds'] = item[0]
+        tmp_dict['pname'] = item[1]
+        tmp_dict['pnums'] = item[2]
+        if item[0] in ['审核', '筛选']:
+            if len(item) == 4:
+                tmp_dict['knums'] = None
+                tmp_dict['neff'] = item[3]
+                tmp_dict['leff'] = None
+            else:
+                tmp_dict['knums'] = None
+                tmp_dict['neff'] = item[3]
+                tmp_dict['leff'] = item[4]
+        else:
+            if len(item) == 5:
+                tmp_dict['knums'] = item[3]
+                tmp_dict['neff'] = item[4]
+                tmp_dict['leff'] = None
+            else:
+                tmp_dict['knums'] = item[3]
+                tmp_dict['neff'] = item[4]
+                tmp_dict['leff'] = item[5]
+        eff_list_to_json.append(tmp_dict)
+    return eff_list_to_json
+
+def eff_teams(begin_time, over_time):
     tdat = models.Task.objects.filter(dtime__range=[begin_time, over_time])
     k_p = []  # [(kinds1, pname1), (kinds2, pname2)]
     for i in tdat:
@@ -64,82 +184,30 @@ def tims(begin_time, over_time):
         tps.append(pp)
     return tps
 
+def eff_test(nbt, nlt, lbt, llt):
+    logger.info(f'nbt: {nbt}  nlt: {nlt} lbt: {lbt} llt: {llt}')
+    tdat_n = models.Task.objects.filter(dtime__range=[nbt, nlt])
+    names_n = list(set([i.uname for i in tdat_n]))  # [name1,name2,name3]
 
-# 个人效率
-def pppee(begin_time, over_time):
-    tdat = models.Task.objects.filter(dtime__range=[begin_time, over_time])
-    names = []  # [name1,name2,name3]
-    for i in tdat:
-        if i.uname not in names:
-            names.append(i.uname)
-    ggg = []  # 三维矩阵
-    for g in names:
-        tps = []  # 没人一组整体效率
-        k_p = []  # [(kinds1, pname1), (kinds2, pname2)]
-        for kk in models.Task.objects.filter(
-            dtime__range=[begin_time, over_time], uname=g
-        ):
-            if (kk.kinds, kk.pname) not in k_p:
-                k_p.append((kk.kinds, kk.pname))
-        for i in k_p:
-            pnum = 0
-            knum = 0
-            ptm = 0.0
-            pp = []
-            gg = tdat.filter(kinds=i[0], pname=i[1], uname=g)
-            # public code
-            pp.append(g)
-            pp.append(i[0])
-            pp.append(i[1])
-            if i[0] == "审核" or i[0] == "筛选":
-                for j in gg:
-                    pnum += j.pnums
-                    ptm += j.ptimes
-                pp.append(pnum)
-                pp.append(math.floor(pnum / ptm))
-            elif (
-                i[0] == "2D分割标注"
-                or i[0] == "2.5D点云标注"
-                or i[0] == "属性标注"
-                or i[0] == "2D框标注"
-            ):
-                for j in gg:
-                    pnum += j.pnums
-                    knum += int(j.knums)
-                    ptm += j.ptimes
-                pp.append(pnum)
-                pp.append(knum)
-                pp.append(math.floor(knum / ptm))
-            elif i[0] == "视频标注":
-                for j in gg:
-                    pnum += j.pnums
-                    knum += str2sec(j.knums)
-                    ptm += j.ptimes
-                pp.append(pnum)
-                pp.append(strftime("%H时%M分%S秒", gmtime(knum)))
-                pp.append(strftime("%H时%M分%S秒", gmtime(knum // ptm)))
-            tps.append(pp)
-        ggg.append(tps)
-    return ggg
+    tdat_l = models.Task.objects.filter(dtime__range=[lbt, llt])
+    names_l = list(set([i.uname for i in tdat_l]))  # [name1,name2,name3]
 
-
-# 团队效率
-def nw(now_begin_time, now_over_time):
-    return tims(now_begin_time, now_over_time)
-
-
-def lw(last_begin_time, last_over_time):
-    return tims(last_begin_time, last_over_time)
-
-
-# 个人效率
-def pnw(now_begin_time, now_over_time):
-    return pppee(now_begin_time, now_over_time)
-
-
-def plw(last_begin_time, last_over_time):
-    return pppee(last_begin_time, last_over_time)
-
+    n_eff_res = eff_person_public(tdat_n, names_n, nbt, nlt)
+    l_eff_res = eff_person_public(tdat_l, names_l, lbt, llt)
+    
+    n_team_eff_res = eff_teams(nbt, nlt)
+    l_team_eff_res = eff_teams(lbt, llt)
+    
+    eff_team = data_team_compare(n_team_eff_res, l_team_eff_res)
+    eff_person = [] # 每个人效率
+    user_list = []
+    for item in n_eff_res:
+        for k,v in item.items():
+            res = data_person_compare(l_eff_res, k, v)
+            user_list.append(k)
+            eff_person.append(res)
+    return eff_team, user_list, eff_person
+''' 效率计算 结束 '''
 
 # 绩效
 def performanceq(begin_time, over_time, name):
@@ -506,7 +574,8 @@ def wb_dingtalk(uname, kind, id, wbdata):
             msg_text = f"@{uname} {kind} 了ID为 {id} 的供应商数据"
         else:
             if kind == "修改":
-                tmp = f"项目名字: {wbdata['proname'].pname}\r送标批次: {wbdata['send_data_batch']}\r发送数据时间: {wbdata['send_data_time']}\r发送样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r送标原因: {wbdata['send_reason']}\r关键帧提取方式: {wbdata['key_frame_extracted_methods']}\r开始验收时间: {wbdata['begin_check_data_time']}\r结束验收时间: {wbdata['last_check_data_time']}\r标注结果返回时间: {wbdata['get_data_time']}\r是否首次标注: {wbdata['ann_field_flag']}\r供应商: {wbdata['wb_name'].name}\r"
+                
+                tmp = f"研发名字：{wbdata['user'].zh_uname}\r项目名字: {wbdata['proname'].pname}\r送标批次: {wbdata['send_data_batch']}\r送标时间: {wbdata['send_data_time']}\r送标样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r场景分布: {wbdata['scene']}\r送标原因: {wbdata['send_reason']}\r关键帧提取方式: {wbdata['key_frame_extracted_methods']}\r是否首次标注: {wbdata['ann_field_flag']}\r供应商: {wbdata['wb_name'].name}\r开始验收时间: {wbdata['begin_check_data_time']}\r结束验收时间: {wbdata['last_check_data_time']}\r标注结果返回时间: {wbdata['get_data_time']}\r"
                 if wbdata['ann_meta_data']:
                     ann_meta_data = wbdata['ann_meta_data']
                     for k in ann_meta_data:
@@ -517,7 +586,7 @@ def wb_dingtalk(uname, kind, id, wbdata):
                     tmp += "结算方式: 无 , 准确率: 无 , 框数: 无 , 单价: 无"
                     msg_text = f"@{uname} {kind} 了一条ID为{id}的供应商数据,具体内容如下:\r{tmp}"
             else:
-                tmp = f"项目名字: {wbdata['proname'].pname}\r送标批次: {wbdata['send_data_batch']}\r发送数据时间: {wbdata['send_data_time']}\r发送样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r送标原因: {wbdata['send_reason']}\r关键帧提取方式: {wbdata['key_frame_extracted_methods']}\r是否首次标注: {wbdata['ann_field_flag']}\r供应商:{wbdata['wb_name'].name}"
+                tmp = f"研发名字：{wbdata['user'].zh_uname}\r项目名字: {wbdata['proname'].pname}\r送标批次: {wbdata['send_data_batch']}\r送标时间: {wbdata['send_data_time']}\r送标样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r场景分布: {wbdata['scene']}\r送标原因: {wbdata['send_reason']}\r关键帧提取方式: {wbdata['key_frame_extracted_methods']}\r是否首次标注: {wbdata['ann_field_flag']}\r供应商:{wbdata['wb_name'].name}"
                 msg_text = f"@{uname} {kind} 了一条供应商数据,具体内容如下:\r{tmp}"
         
         states = msgs.send_text(msg=(msg_text), is_at_all=False)

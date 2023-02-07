@@ -12,6 +12,8 @@
     <script src="/static/lib/jquery/2.1.4/jquery.min.js"></script>
     <script src="/static/lib/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="/static/lib/echarts.min.js"></script>
+    <link href="/static/lib/layui-v2.7.6/layui/css/layui.css" rel="stylesheet">
+    <script src="/static/lib/layui-v2.7.6/layui/layui.js"></script>
     <title>标注效率</title>
     <style>
         h3 {
@@ -19,6 +21,15 @@
         }
         .form-group {
             margin-left: 60px !important;
+        }
+        
+        /* 鼠标指向表格时,奇数行背景颜色 */
+        table tbody tr:hover {
+            z-index: 1;
+            background-color: rgb(184, 226, 243) !important;
+        }
+        #search_tab tr:hover {
+            background-color: #fff !important;
         }
     </style>
 </head>
@@ -84,300 +95,23 @@
     <div class="alert alert-danger hide" id="alert_div"
         style="width: 300px; position: fixed; top: 40%;left: 45%; right: 50%;z-index: 1; font-size: 22px;">
     </div> <!-- 警告弹出框 -->
-    <div style="margin-top: 50px; position: fixed; width: 100%; height: 10%; background-color: #bdbdbd;">
-        <form class="form-efficiency" action="" method="post">
-            {% csrf_token %}
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>本周开始时间</th>
-                        <th>本周结束时间</th>
-                        <th>上周开始时间</th>
-                        <th>上周结束时间</th>
-                        <th colspan="2" style="text-align: center;">按钮</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input type="date" name="now-begin-time" id="now-begin-time" class="form-control"
-                                value="{{ now_begin_time }}"></td>
-                        <td><input type="date" name="now-over-time" id="now-over-time" class="form-control"
-                                value="{{ now_over_time }}"></td>
-                        <td><input type="date" name="last-begin-time" id="last-begin-time" class="form-control"
-                                value="{{ last_begin_time }}"></td>
-                        <td><input type="date" name="last-over-time" id="last-over-time" class="form-control"
-                                value="{{ last_over_time }}"></td>
-                        <td><input type="reset" class="btn btn-default pull-left" value="重置"></td>
-                        <td><input type="submit" class="btn btn-primary pull-right" value="查看"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
-    </div>
-    <div style="position: fixed; top: 15%; width: 100%; height: 84.5%; overflow-y: auto; background-color: #bdbdbd;">
-        <h3>团队效率</h3>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>类型</th>
-                    <th>项目名字</th>
-                    <th>图片/视频数量</th>
-                    <th>框数/属性/时长</th>
-                    <th>本周效率</th>
-                    <th>上周效率</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for i in tks_nw %}
-                <!-- 本周工作量 -->
-                <tr>
-                    {% if i.0 == '审核' %}
-                    <td>{{ i.0 }}</td>
-                    <td>{{ i.1 }}</td>
-                    <td>{{ i.2 }}</td>
-                    <td></td>
-                    <td>{{ i.3 }}张/h</td>
-                    {% for j in tks_lw %}
-                    <!-- 上周工作量 -->
-                    {% if j.0 == '审核' and j.1 == i.1 %}
-                    <td>{{ j.3 }}张/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if i.0 == '筛选' %}
-                    <td>{{ i.0 }}</td>
-                    <td>{{ i.1 }}</td>
-                    <td>{{ i.2 }}</td>
-                    <td></td>
-                    <td>{{ i.3 }}张/h</td>
-                    {% for j in tks_lw %}
-                    <!-- 上周工作量 -->
-                    {% if j.0 == '筛选' and j.1 == i.1 %}
-                    <td>{{ j.3 }}张/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if i.0 == '2D框标注' %}
-                    <td>{{ i.0 }}</td>
-                    <td>{{ i.1 }}</td>
-                    <td>{{ i.2 }}</td>
-                    <td>{{ i.3 }}</td>
-                    <td>{{ i.4 }}框/h</td>
-                    {% for j in tks_lw %}
-                    <!-- 上周工作量 -->
-                    {% if j.0 == '2D框标注' and j.1 == i.1 %}
-                    <td>{{ j.4 }}框/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if i.0 == '2D分割标注' %}
-                    <td>{{ i.0 }}</td>
-                    <td>{{ i.1 }}</td>
-                    <td>{{ i.2 }}</td>
-                    <td>{{ i.3 }}</td>
-                    <td>{{ i.4 }}框/h</td>
-                    {% for j in tks_lw %}
-                    <!-- 上周工作量 -->
-                    {% if j.0 == '2D分割标注' and j.1 == i.1 %}
-                    <td>{{ j.4 }}框/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if i.0 == '2.5D点云标注' %}
-                    <td>{{ i.0 }}</td>
-                    <td>{{ i.1 }}</td>
-                    <td>{{ i.2 }}</td>
-                    <td>{{ i.3 }}</td>
-                    <td>{{ i.4 }}框/h</td>
-                    {% for j in tks_lw %}
-                    <!-- 上周工作量 -->
-                    {% if j.0 == '2.5D点云标注' and j.1 == i.1 %}
-                    <td>{{ j.4 }}框/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if i.0 == '视频标注' %}
-                    <td>{{ i.0 }}</td>
-                    <td>{{ i.1 }}</td>
-                    <td>{{ i.2 }}</td>
-                    <td>{{ i.3 }}</td>
-                    <td>{{ i.4 }} /h</td>
-                    {% for j in tks_lw %}
-                    <!-- 上周工作量 -->
-                    {% if j.0 == '视频标注' and j.1 == i.1 %}
-                    <td>{{ j.4 }} /h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if i.0 == '属性标注' %}
-                    <td>{{ i.0 }}</td>
-                    <td>{{ i.1 }}</td>
-                    <td>{{ i.2 }}</td>
-                    <td>{{ i.3 }}</td>
-                    <td>{{ i.4 }}属性/h</td>
-                    {% for j in tks_lw %}
-                    <!-- 上周工作量 -->
-                    {% if j.0 == '属性标注' and j.1 == i.1 %}
-                    <td>{{ j.4 }}属性/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <h3>个人效率</h3>
-
-        <table class="table table-hover">
-            {% for pnw in pks_nw %}
-            <thead>
-                <tr>
-                    <th>名字</th>
-                    <th>类型</th>
-                    <th>项目名字</th>
-                    <th>图片/视频数量</th>
-                    <th>框数/属性/时长</th>
-                    <th>本周效率</th>
-                    <th>上周效率</th>
-                </tr>
-            </thead>
-            {% for gp in pnw %}
-            <tbody>
-                <tr>
-                    {% if gp.1 == '审核' %}
-                    <!--['guoweitao', '审核', 'S线数据', 1076, 2152]-->
-                    <td>{{ gp.0 }}</td>
-                    <td>{{ gp.1 }}</td>
-                    <td>{{ gp.2 }}</td>
-                    <td>{{ gp.3 }}</td>
-                    <td></td>
-                    <td>{{ gp.4 }}张/h</td>
-                    {% for j1 in pks_lw %}
-                    <!-- 上周工作量 -->
-                    {% for j2 in j1 %}
-                    {% if j2.1 == '审核' and j2.2 == gp.2 and j2.0 == gp.0 %}
-                    <td>{{ j2.4 }}张/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if gp.1 == '筛选' %}
-                    <!--['guoweitao', '审核', 'S线数据', 1076, 2152]-->
-                    <td>{{ gp.0 }}</td>
-                    <td>{{ gp.1 }}</td>
-                    <td>{{ gp.2 }}</td>
-                    <td>{{ gp.3 }}</td>
-                    <td></td>
-                    <td>{{ gp.4 }}张/h</td>
-                    {% for j1 in pks_lw %}
-                    <!-- 上周工作量 -->
-                    {% for j2 in j1 %}
-                    {% if j2.1 == '筛选' and j2.2 == gp.2 and j2.0 == gp.0 %}
-                    <td>{{ j2.4 }}张/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if gp.1 == '2D框标注' %}
-                    <!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
-                    <td>{{ gp.0 }}</td>
-                    <td>{{ gp.1 }}</td>
-                    <td>{{ gp.2 }}</td>
-                    <td>{{ gp.3 }}</td>
-                    <td>{{ gp.4 }}</td>
-                    <td>{{ gp.5 }}框/h</td>
-                    {% for j3 in pks_lw %}
-                    <!-- 上周工作量  -->
-                    {% for j4 in j3 %}
-                    {% if j4.1 == '2D框标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
-                    <td>{{ j4.5 }}框/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if gp.1 == '2D分割标注' %}
-                    <!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
-                    <td>{{ gp.0 }}</td>
-                    <td>{{ gp.1 }}</td>
-                    <td>{{ gp.2 }}</td>
-                    <td>{{ gp.3 }}</td>
-                    <td>{{ gp.4 }}</td>
-                    <td>{{ gp.5 }}框/h</td>
-                    {% for j3 in pks_lw %}
-                    <!-- 上周工作量  -->
-                    {% for j4 in j3 %}
-                    {% if j4.1 == '2D分割标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
-                    <td>{{ j4.5 }}框/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if gp.1 == '2.5D点云标注' %}
-                    <!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
-                    <td>{{ gp.0 }}</td>
-                    <td>{{ gp.1 }}</td>
-                    <td>{{ gp.2 }}</td>
-                    <td>{{ gp.3 }}</td>
-                    <td>{{ gp.4 }}</td>
-                    <td>{{ gp.5 }}框/h</td>
-                    {% for j3 in pks_lw %}
-                    <!-- 上周工作量  -->
-                    {% for j4 in j3 %}
-                    {% if j4.1 == '2.5D点云标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
-                    <td>{{ j4.5 }}框/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if gp.1 == '视频标注' %}
-                    <!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
-                    <td>{{ gp.0 }}</td>
-                    <td>{{ gp.1 }}</td>
-                    <td>{{ gp.2 }}</td>
-                    <td>{{ gp.3 }}</td>
-                    <td>{{ gp.4 }}</td>
-                    <td>{{ gp.5 }} /h</td>
-                    {% for j3 in pks_lw %}
-                    <!-- 上周工作量  -->
-                    {% for j4 in j3 %}
-                    {% if j4.1 == '视频标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
-                    <td>{{ j4.5 }} /h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if gp.1 == '属性标注' %}
-                    <!--[['hanbo', '标注', '杂物', 999, 999, 999]]-->
-                    <td>{{ gp.0 }}</td>
-                    <td>{{ gp.1 }}</td>
-                    <td>{{ gp.2 }}</td>
-                    <td>{{ gp.3 }}</td>
-                    <td>{{ gp.4 }}</td>
-                    <td>{{ gp.5 }}属性/h</td>
-                    {% for j3 in pks_lw %}
-                    <!-- 上周工作量  -->
-                    {% for j4 in j3 %}
-                    {% if j4.1 == '属性标注' and j4.2 == gp.2 and j4.0 == gp.0 %}
-                    <td>{{ j4.5 }}属性/h</td>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
-                    {% endif %}
-                </tr>
-            </tbody>
-            {% endfor %}
+    <div id="eff_div" style="margin-top: 50px; position: fixed; overflow-y: auto; width: 100%; height: 95.5%;">
+        <table class="table" id="search_tab" style="width: 800px; margin: auto;">
             <tr>
-                <!-- 为了每个人的表格能够明显看出来,特此弄一个空行 -->
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th style="width: 200px; text-align: center;">本周开始时间</th>
+                <th style="width: 200px; text-align: center;">本周结束时间</th>
+                <th style="width: 200px; text-align: center;">上周开始时间</th>
+                <th style="width: 200px; text-align: center;">上周结束时间</th>
             </tr>
-            {% endfor %}
+            <td><input type="date" name="now-begin-time" id="now-begin-time" class="form-control" ></td>
+            <td><input type="date" name="now-over-time" id="now-over-time" class="form-control"></td>
+            <td><input type="date" name="last-begin-time" id="last-begin-time" class="form-control"></td>
+            <td><input type="date" name="last-over-time" id="last-over-time" class="form-control"></td>
+            <td><button class="btn btn-primary" onclick="search()">查看</button></td>
         </table>
+        <h3>团队效率</h3>
+        <table class="layui-hide" id="eff_team" lay-filter="eff_team"></table>
+        <h3>个人效率</h3>
     </div>
     <!-- 弹窗之ESS-Info -->
     <div class="modal fade" tabindex="-1" role="dialog" id="ess_info">
@@ -455,6 +189,100 @@
 <script src="/static/js/disable.js"></script>
 <script src="/static/js/click_yh.js"></script>
 <script>
+    const apdiv = $("#eff_div");
+    const table = layui.table;
+
+    function search(){
+        const nbt = $("#now-begin-time").val();
+        const nlt = $("#now-over-time").val();
+        const lbt = $("#last-begin-time").val();
+        const llt = $("#last-over-time").val();
+        $.ajax("/efficiency/", {
+            method: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: {
+                nbt: nbt,
+                nlt: nlt,
+                lbt: lbt,
+                llt: llt
+            },
+        }).done(function (res) {
+            if (res && res.status == "successful") {
+                //渲染表格
+                table.render({//渲染table
+                    data: res.eff_team,
+                    elem: '#eff_team',         //设置容器
+                    page: true,
+                    limit: 20,
+                    limits: [20, 50, 100],
+                    skin: 'row', //表格风格
+                    even: true,    //隔行换色
+                    cols: [
+                        // [{ title: '团队效率', colspan:6, align: 'center' },],
+                        [
+                        { field: 'kinds', title: '任务类型', sort:true },
+                        { field: 'pname', title: '项目名字', sort:true },
+                        { field: 'pnums', title: '样本数量' },
+                        { field: 'knums', title: '标注数量' },
+                        { field: 'neff', title: '本周效率' },
+                        { field: 'leff', title: '上周效率' },
+                    ]],
+                });
+                if (res.user_list.length == 0){
+                    $("#alert_div").css("background-color", 'rgb(242, 222, 222)');
+                    $("#alert_div").css("color", 'rgb(169, 68, 66)');
+                    $(".alert-danger").html("个人效率如有数据则忽略!");
+                    $(".alert-danger").addClass("show");
+                }
+                else{
+                    $(".alert-danger").html("查询成功!");
+                    $(".alert-danger").addClass("show");
+                    $("#alert_div").css("background-color", 'rgb(21, 150, 90)');
+                    $("#alert_div").css("color", 'rgb(255, 255, 255)');
+                    window.setTimeout(function () {
+                        $(".alert-danger").removeClass("show");
+                    }, 1000);//显示的时间
+                }
+                for (var i = 0; i < res.user_list.length; i++) {
+                    if (document.getElementById(res.user_list[i]) == null){
+                        apdiv.append('<table class="layui-hide eff_p" id='+ res.user_list[i] +' lay-filter="'+ res.user_list[i] +'"></table>')
+                    }
+                }
+                for (var i = 0; i< res.user_list.length; i++){
+                    //渲染表格
+                    table.render({//渲染table
+                        data: res.eff_person[i],     //数据获取url
+                        elem: '#'+res.user_list[i],         //设置容器
+                        page: true,
+                        limit: 20,
+                        limits: [20, 50, 100],
+                        skin: 'row', //表格风格
+                        even: true,    //隔行换色
+                        cols: [
+                            // [
+                            //     { title: '个人效率', colspan:7, align: 'center', style:'background-color: #009688; color: #fff;' }
+                            // ],
+                            [
+                                { field: 'name', title: '用户名' },
+                                { field: 'kinds', title: '任务类型', sort:true },
+                                { field: 'pname', title: '项目名字', sort:true },
+                                { field: 'pnums', title: '样本数量' },
+                                { field: 'knums', title: '标注数量' },
+                                { field: 'neff', title: '本周效率' },
+                                { field: 'leff', title: '上周效率'}
+                            ]
+                        ],
+                    })
+                }
+            } else {
+                $("#err_msg").css("display", 'block');
+                $("#err_msg").html(res.mes);
+
+            }
+        });
+    }
+    
     function help() {
         $(".alert-danger").html("请联系卫龙!");
         $(".alert-danger").addClass("show");

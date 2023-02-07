@@ -1,3 +1,13 @@
+# 2023-02-07
+### Changed
+- 图表的 title 精确化
+    <img src="./myess/asserts/2023-02-07-ess-echarts-show.png">
+- 定时任务优化
+- 首页 -> 团队效率 UI 和 后端逻辑优化
+    <img src="./myess/asserts/2023-02-07-ess-index_eff-style.png">
+
+
+
 # 2023-02-03
 ### Changed
 - 修改ESS INFO 显示样式

@@ -245,7 +245,7 @@
     const anno_bar = echarts.init(document.getElementById("bar_knums"), 'dark');
     const check_bar_option = {
         title: {
-            text: '今年各项目验收情况'
+            text: start_time_render + ' ~ '+ end_time_render +' 各项目验收情况'
         },
         tooltip: {
             trigger: 'axis'
@@ -307,7 +307,7 @@
     check_bar.setOption(check_bar_option);
     const anno_bar_option = {
         title: {
-            text: '今年各项目标注情况'
+            text: start_time_render + ' ~ '+ end_time_render +' 各项目标注情况'
         },
         tooltip: {
             trigger: 'axis'
