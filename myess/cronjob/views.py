@@ -14,6 +14,7 @@ from datetime import datetime
 from loguru import logger
 from ess import views
 import threading
+import requests
 import pymysql
 import urllib
 import hashlib
@@ -113,6 +114,8 @@ class ReportImage(View):
         return FileResponse(open(img,'rb'), content_type='image/png')
 
 def ding_day_report_form():
+    picture1 = f"### 截止今年各项目报表详情\n\n![各个报表](http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png)"
+    
     def ding_mes():
         timestamp = str(round(time.time() * 1000))
 
@@ -126,22 +129,30 @@ def ding_day_report_form():
         ).digest()
         sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
         # 引用钉钉群消息通知的Webhook地址：
-        '''
-        f<img src="http://{CONFIG['public_ip']}/report_img" alt="测试"></img>
-        '''
         webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
         # 初始化机器人小丁,方式一：通常初始化
         msgs = DingtalkChatbot(webhook)
-        picture1 = f"### 截止今年各项目报表详情\n\n![各个报表](http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png)"
-        picture_total = picture1
-        states = msgs.send_markdown(title="截止今日今年各报表详情", text=picture_total, is_at_all=False)
-        logger.info(states)
-    
-    task = threading.Thread(target=ding_mes)
+        
+        states = msgs.send_markdown(title="截止今日今年各报表详情", text=picture1, is_at_all=False)
+        logger.info(f"钉钉机器人消息状态: {states}")
+    def wecom_mes():
+        res = requests.post(
+            f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}", 
+            json={"msgtype": "markdown","markdown": {
+                "content": picture1
+            }})
+        logger.info(f"企微机器人消息状态: {res.json()}")
+    task_ding = threading.Thread(target=ding_mes)
+    task_wc = threading.Thread(target=wecom_mes)
+
     if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
         logger.warning("钉机器人您还没有配置喔!")
     else:
-        task.start()
+        task_ding.start()
+    if CONFIG['wecom_webhook_key'] == "":
+        logger.warning("企业微信机器人还没有配置喔！")
+    else:
+        task_wc.start()
 
 
 def every_day_ding_send_report_form():

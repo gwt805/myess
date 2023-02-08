@@ -556,6 +556,7 @@ def dingtalk(kind,id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
 
     task_ding = threading.Thread(target=ding_mes)
     task_wc = threading.Thread(target=wecom_mes)
+    
     if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
         logger.warning("钉机器人您还没有配置喔!")
     else:
@@ -613,6 +614,7 @@ def wb_dingtalk(uname, kind, id, wbdata):
 
     task_ding = threading.Thread(target=ding_mes)
     task_wc = threading.Thread(target=wecom_mes)
+    
     if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
         logger.warning("钉机器人您还没有配置喔!")
     else:
