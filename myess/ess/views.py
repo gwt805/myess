@@ -785,7 +785,7 @@ def wbdata_count_public_code(wb_name, start_time, end_time):
         char_list = [[{}], [{}]]
         line_chart_list = [[[0],[0],[0]]]
     
-    return proname_list, char_list, format(money_total,','), line_chart_list
+    return proname_list, char_list, format(round(money_total,2),','), line_chart_list
 
 
 # 外包数据统计
