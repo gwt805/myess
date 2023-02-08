@@ -134,19 +134,24 @@ def ding_day_report_form():
         states = msgs.send_markdown(title="截止今日今年各报表详情", text=picture1, is_at_all=False)
         logger.info(f"钉钉机器人消息状态: {states}")
     def wecom_mes():
-        # picture1 = f"### 截止今年各项目报表详情\n\n![各个报表](http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png)"
-        res = requests.post(
-            f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}", 
-            json={"msgtype": "news","news": {
-                "articles": [
-                    {
-                        "title" : "截止今年各项目报表详情",
-                        "description" : "样本数量，标注数量，已用金额",
-                        "url" : f"http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png",
-                        "picurl" : f"http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png"
-                    }
-                ]
-            }})
+        img_dir = os.path.join(BASE_DIR,"cronjob/ding_day_report_form/")
+        img = img_dir + "/" + "hori_ver_contact_pie.png"
+        with open(img, 'rb') as f:
+            fcont = f.read()
+            m2 = hashlib.md5(fcont)
+            md5_val = m2.hexdigest()
+            base64_data=str(base64.b64encode(fcont),encoding='utf-8')
+        # 企业微信机器人发送图片消息
+        url = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}"
+        headers = {"Content-Type":'application/json'}
+        data = {
+            'msgtype':'image',
+            'image':{
+                'base64':base64_data,
+                'md5':md5_val
+            }
+        }
+        res = requests.post(url,headers=headers,json=data)
         logger.info(f"企微机器人消息状态: {res.json()}")
     task_ding = threading.Thread(target=ding_mes)
     task_wc = threading.Thread(target=wecom_mes)
