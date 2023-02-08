@@ -114,52 +114,86 @@ class ReportImage(View):
         return FileResponse(open(img,'rb'), content_type='image/png')
 
 def ding_day_report_form():
-    def ding_mes():
-        timestamp = str(round(time.time() * 1000))
+    # def ding_mes():
+    #     timestamp = str(round(time.time() * 1000))
 
-        secret = CONFIG["ding_secret"]  # 替换成你的签
+    #     secret = CONFIG["ding_secret"]  # 替换成你的签
 
-        secret_enc = secret.encode("utf-8")
-        string_to_sign = "{}\n{}".format(timestamp, secret)
-        string_to_sign_enc = string_to_sign.encode("utf-8")
-        hmac_code = hmac.new(
-            secret_enc, string_to_sign_enc, digestmod=hashlib.sha256
-        ).digest()
-        sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
-        # 引用钉钉群消息通知的Webhook地址：
-        webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
-        # 初始化机器人小丁,方式一：通常初始化
-        msgs = DingtalkChatbot(webhook)
-        picture1 = f"### 截止今年各项目报表详情\n\n![各个报表](http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png)"
-        states = msgs.send_markdown(title="截止今日今年各报表详情", text=picture1, is_at_all=False)
-        logger.info(f"钉钉机器人消息状态: {states}")
+    #     secret_enc = secret.encode("utf-8")
+    #     string_to_sign = "{}\n{}".format(timestamp, secret)
+    #     string_to_sign_enc = string_to_sign.encode("utf-8")
+    #     hmac_code = hmac.new(
+    #         secret_enc, string_to_sign_enc, digestmod=hashlib.sha256
+    #     ).digest()
+    #     sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
+    #     # 引用钉钉群消息通知的Webhook地址：
+    #     webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
+    #     # 初始化机器人小丁,方式一：通常初始化
+    #     msgs = DingtalkChatbot(webhook)
+    #     picture1 = f"### 截止今年各项目报表详情\n\n![各个报表](http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png)"
+    #     states = msgs.send_markdown(title="截止今日今年各报表详情", text=picture1, is_at_all=False)
+    #     logger.info(f"钉钉机器人消息状态: {states}")
     def wecom_mes():
         img_dir = os.path.join(BASE_DIR,"cronjob/ding_day_report_form/")
         img = img_dir + "/" + "hori_ver_contact_pie.png"
-        with open(img, 'rb') as f:
-            fcont = f.read()
-            m2 = hashlib.md5(fcont)
-            md5_val = m2.hexdigest()
-            base64_data=str(base64.b64encode(fcont),encoding='utf-8')
-        # 企业微信机器人发送图片消息
-        url = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}"
-        headers = {"Content-Type":'application/json'}
-        data = {
-            'msgtype':'image',
-            'image':{
-                'base64':base64_data,
-                'md5':md5_val
+        data = {'file': open(img, 'rb')}
+        # 请求id_url(将文件上传微信临时平台),返回media_id
+        id_url = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/upload_media?key={CONFIG['wecom_webhook_key']}&type=file"
+        response = requests.post(url=id_url, files=data)
+        json_res = response.json()
+        if json_res["errmsg"] == "ok":
+            media_id = json_res['media_id']
+            data = {"msgtype": "file",
+                    "file": {"media_id": media_id}
+                    }
+            # 发送文件
+            res_file = requests.post(url=f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}", json=data)
+            logger.info(f"企微机器人-文件-消息状态: {res_file.json()}")
+            
+            # 发送图片
+            with open(img, 'rb') as f:
+                fcont = f.read()
+                m2 = hashlib.md5(fcont)
+                md5_val = m2.hexdigest()
+                base64_data=str(base64.b64encode(fcont),encoding='utf-8')
+            # 企业微信机器人发送图片消息
+            url = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}"
+            headers = {"Content-Type":'application/json'}
+            data = {
+                'msgtype':'image',
+                'image':{
+                    'base64':base64_data,
+                    'md5':md5_val
+                }
             }
-        }
-        res = requests.post(url,headers=headers,json=data)
-        logger.info(f"企微机器人消息状态: {res.json()}")
-    task_ding = threading.Thread(target=ding_mes)
+            res_img = requests.post(url,headers=headers,json=data)
+            logger.info(f"企微机器人-图片-消息状态: {res_img.json()}")
+        else:
+            # 发送图片
+            with open(img, 'rb') as f:
+                fcont = f.read()
+                m2 = hashlib.md5(fcont)
+                md5_val = m2.hexdigest()
+                base64_data=str(base64.b64encode(fcont),encoding='utf-8')
+            # 企业微信机器人发送图片消息
+            url = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}"
+            headers = {"Content-Type":'application/json'}
+            data = {
+                'msgtype':'image',
+                'image':{
+                    'base64':base64_data,
+                    'md5':md5_val
+                }
+            }
+            res_img = requests.post(url,headers=headers,json=data)
+            logger.info(f"企微机器人-图片-消息状态: {res_img.json()}")
+    # task_ding = threading.Thread(target=ding_mes)
     task_wc = threading.Thread(target=wecom_mes)
 
-    if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
-        logger.warning("钉机器人您还没有配置喔!")
-    else:
-        task_ding.start()
+    # if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
+    #     logger.warning("钉机器人您还没有配置喔!")
+    # else:
+    #     task_ding.start()
     if CONFIG['wecom_webhook_key'] == "":
         logger.warning("企业微信机器人还没有配置喔！")
     else:
