@@ -11,6 +11,6 @@
     "wecom_webhook_key": "",
     "send_qqEmail": "",
     "send_qqEmail_pwd": "",
-    "enable_local_echarts": false, 
+    "enable_local_echarts": true, 
     "public_ip": ""
 }
