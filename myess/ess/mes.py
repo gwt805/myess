@@ -527,24 +527,24 @@ def dingtalk(kind,id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
                 msg_text = f"@{uname} {kind} 了一条GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
             else:
                 msg_text = f"@{uname} {kind} 了一条GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
-    # def ding_mes():
-    #     timestamp = str(round(time.time() * 1000))
+    def ding_mes():
+        timestamp = str(round(time.time() * 1000))
 
-    #     secret = CONFIG["ding_secret"]  # 替换成你的签
+        secret = CONFIG["ding_secret"]  # 替换成你的签
 
-    #     secret_enc = secret.encode("utf-8")
-    #     string_to_sign = "{}\n{}".format(timestamp, secret)
-    #     string_to_sign_enc = string_to_sign.encode("utf-8")
-    #     hmac_code = hmac.new(
-    #         secret_enc, string_to_sign_enc, digestmod=hashlib.sha256
-    #     ).digest()
-    #     sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
-    #     # 引用钉钉群消息通知的Webhook地址：
-    #     webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
-    #     # 初始化机器人小丁,方式一：通常初始化
-    #     msgs = DingtalkChatbot(webhook)
-    #     states = msgs.send_text(msg=(msg_text), is_at_all=False)
-    #     logger.info(f"钉钉机器人消息状态: {states}")
+        secret_enc = secret.encode("utf-8")
+        string_to_sign = "{}\n{}".format(timestamp, secret)
+        string_to_sign_enc = string_to_sign.encode("utf-8")
+        hmac_code = hmac.new(
+            secret_enc, string_to_sign_enc, digestmod=hashlib.sha256
+        ).digest()
+        sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
+        # 引用钉钉群消息通知的Webhook地址：
+        webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
+        # 初始化机器人小丁,方式一：通常初始化
+        msgs = DingtalkChatbot(webhook)
+        states = msgs.send_text(msg=(msg_text), is_at_all=False)
+        logger.info(f"钉钉机器人消息状态: {states}")
 
     def wecom_mes():
         res = requests.post(
@@ -554,13 +554,13 @@ def dingtalk(kind,id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
             }})
         logger.info(f"企微机器人消息状态: {res.json()}")
 
-    # task_ding = threading.Thread(target=ding_mes)
+    task_ding = threading.Thread(target=ding_mes)
     task_wc = threading.Thread(target=wecom_mes)
     
-    # if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
-    #     logger.warning("钉机器人您还没有配置喔!")
-    # else:
-    #     task_ding.start()
+    if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
+        logger.warning("钉机器人您还没有配置喔!")
+    else:
+        task_ding.start()
     if CONFIG['wecom_webhook_key'] == "":
         logger.warning("企业微信机器人还没有配置喔！")
     else:
@@ -585,24 +585,24 @@ def wb_dingtalk(uname, kind, id, wbdata):
         else:
             tmp = f"研发名字：{wbdata['user'].zh_uname}\r项目名字: {wbdata['proname'].pname}\r送标批次: {wbdata['send_data_batch']}\r送标时间: {wbdata['send_data_time']}\r送标样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r场景分布: {wbdata['scene']}\r送标原因: {wbdata['send_reason']}\r关键帧提取方式: {wbdata['key_frame_extracted_methods']}\r是否首次标注: {wbdata['ann_field_flag']}\r供应商:{wbdata['wb_name'].name}"
             msg_text = f"@{uname} {kind} 了一条供应商数据,具体内容如下:\r{tmp}"
-    # def ding_mes():
-    #     timestamp = str(round(time.time() * 1000))
+    def ding_mes():
+        timestamp = str(round(time.time() * 1000))
 
-    #     secret = CONFIG["ding_secret"]  # 替换成你的签
+        secret = CONFIG["ding_secret"]  # 替换成你的签
 
-    #     secret_enc = secret.encode("utf-8")
-    #     string_to_sign = "{}\n{}".format(timestamp, secret)
-    #     string_to_sign_enc = string_to_sign.encode("utf-8")
-    #     hmac_code = hmac.new(
-    #         secret_enc, string_to_sign_enc, digestmod=hashlib.sha256
-    #     ).digest()
-    #     sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
-    #     # 引用钉钉群消息通知的Webhook地址：
-    #     webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
-    #     # 初始化机器人小丁,方式一：通常初始化
-    #     msgs = DingtalkChatbot(webhook)
-    #     states = msgs.send_text(msg=(msg_text), is_at_all=False)
-    #     logger.info(f"钉钉机器人消息状态: {states}")
+        secret_enc = secret.encode("utf-8")
+        string_to_sign = "{}\n{}".format(timestamp, secret)
+        string_to_sign_enc = string_to_sign.encode("utf-8")
+        hmac_code = hmac.new(
+            secret_enc, string_to_sign_enc, digestmod=hashlib.sha256
+        ).digest()
+        sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
+        # 引用钉钉群消息通知的Webhook地址：
+        webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
+        # 初始化机器人小丁,方式一：通常初始化
+        msgs = DingtalkChatbot(webhook)
+        states = msgs.send_text(msg=(msg_text), is_at_all=False)
+        logger.info(f"钉钉机器人消息状态: {states}")
     
     def wecom_mes():
         res = requests.post(
@@ -612,13 +612,13 @@ def wb_dingtalk(uname, kind, id, wbdata):
             }})
         logger.info(f"企微机器人消息状态: {res.json()}")
 
-    # task_ding = threading.Thread(target=ding_mes)
+    task_ding = threading.Thread(target=ding_mes)
     task_wc = threading.Thread(target=wecom_mes)
     
-    # if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
-    #     logger.warning("钉机器人您还没有配置喔!")
-    # else:
-    #     task_ding.start()
+    if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
+        logger.warning("钉机器人您还没有配置喔!")
+    else:
+        task_ding.start()
     if CONFIG['wecom_webhook_key'] == "":
         logger.warning("企业微信机器人还没有配置喔！")
     else:
