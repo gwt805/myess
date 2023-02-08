@@ -130,11 +130,10 @@ def ding_day_report_form():
         webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
         # 初始化机器人小丁,方式一：通常初始化
         msgs = DingtalkChatbot(webhook)
-        picture1 = f"### 截止今年各项目报表详情\n\n![各个报表](http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png)"
+        picture1 = f"### 截止今年各项目报表详情\n\n ![各个报表](http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png)"
         states = msgs.send_markdown(title="截止今日今年各报表详情", text=picture1, is_at_all=False)
         logger.info(f"钉钉机器人消息状态: {states}")
     def wecom_mes():
-        # picture1 = f"### 截止今年各项目报表详情\n\n![各个报表](http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png)"
         res = requests.post(
             f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}", 
             json={"msgtype": "news","news": {
