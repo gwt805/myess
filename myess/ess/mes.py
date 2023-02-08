@@ -6,6 +6,7 @@ from loguru import logger
 from ess import models
 import urllib.parse
 import threading
+import requests
 import hashlib
 import base64
 import math
@@ -506,7 +507,26 @@ def gsdata_count_public_code(user, wb_name, start_time, end_time):
 
 # 钉通知
 def dingtalk(kind,id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
-    
+    # text消息@所有人
+    if kind == "删除":
+        msg_text = f"@{uname} {kind} 了ID为{id}的GS数据"
+    else:
+        if kind == "修改":
+            if task_id == "" or task_id == None:
+                msg_text = f"@{uname} {kind} 了一条ID为{id}的GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
+            elif knums == "" or knums == None:
+                msg_text = f"@{uname} {kind} 了一条ID为{id}的GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}\r"
+            else:
+                msg_text = f"@{uname} {kind} 了一条ID为{id}的GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
+        else:
+            if task_id == "" or task_id == None:
+                if kinds != "视频标注":
+                    msg_text = f"@{uname} {kind} 了一条GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
+                msg_text = f"@{uname} {kind} 了一条GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
+            elif knums == "" or task_id == None:
+                msg_text = f"@{uname} {kind} 了一条GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
+            else:
+                msg_text = f"@{uname} {kind} 了一条GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
     def ding_mes():
         timestamp = str(round(time.time() * 1000))
 
@@ -523,36 +543,47 @@ def dingtalk(kind,id,uname,pname,waibao,task_id,dtime,kinds,pnums,knums,ptimes):
         webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
         # 初始化机器人小丁,方式一：通常初始化
         msgs = DingtalkChatbot(webhook)
-        # text消息@所有人
-        if kind == "删除":
-            msg_text = f"@{uname} {kind} 了ID为{id}的GS数据"
-        else:
-            if kind == "修改":
-                if task_id == "" or task_id == None:
-                    msg_text = f"@{uname} {kind} 了一条ID为{id}的GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
-                elif knums == "" or knums == None:
-                    msg_text = f"@{uname} {kind} 了一条ID为{id}的GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}\r"
-                else:
-                    msg_text = f"@{uname} {kind} 了一条ID为{id}的GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
-            else:
-                if task_id == "" or task_id == None:
-                    if kinds != "视频标注":
-                        msg_text = f"@{uname} {kind} 了一条GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
-                    msg_text = f"@{uname} {kind} 了一条GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
-                elif knums == "" or task_id == None:
-                    msg_text = f"@{uname} {kind} 了一条GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t工时 : {ptimes}"
-                else:
-                    msg_text = f"@{uname} {kind} 了一条GS数据,具体内容如下:\r\t项目名字 : {pname}\r\t标注方 : {waibao}\r\t任务ID : {task_id}\r\t日期 : {dtime}\r\t任务类型 : {kinds}\r\t图片/视频数量 : {pnums}\r\t框数/属性/视频数量: {knums}\r\t工时 : {ptimes}"
         states = msgs.send_text(msg=(msg_text), is_at_all=False)
-        logger.info(states)
+        logger.info(f"钉钉机器人消息状态: {states}")
 
-    task = threading.Thread(target=ding_mes)
+    def wecom_mes():
+        res = requests.post(
+            f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}", 
+            json={"msgtype": "text","text": {
+                "content": msg_text
+            }})
+        logger.info(f"企微机器人消息状态: {res.json()}")
+
+    task_ding = threading.Thread(target=ding_mes)
+    task_wc = threading.Thread(target=wecom_mes)
     if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
         logger.warning("钉机器人您还没有配置喔!")
     else:
-        task.start()
+        task_ding.start()
+    if CONFIG['wecom_webhook_key'] == "":
+        logger.warning("企业微信机器人还没有配置喔！")
+    else:
+        task_wc.start()
 
 def wb_dingtalk(uname, kind, id, wbdata):
+    # text消息@所有人
+    if kind == "删除":
+        msg_text = f"@{uname} {kind} 了ID为 {id} 的供应商数据"
+    else:
+        if kind == "修改":
+            tmp = f"研发名字：{wbdata['user'].zh_uname}\r项目名字: {wbdata['proname'].pname}\r送标批次: {wbdata['send_data_batch']}\r送标时间: {wbdata['send_data_time']}\r送标样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r场景分布: {wbdata['scene']}\r送标原因: {wbdata['send_reason']}\r关键帧提取方式: {wbdata['key_frame_extracted_methods']}\r是否首次标注: {wbdata['ann_field_flag']}\r供应商: {wbdata['wb_name'].name}\r开始验收时间: {wbdata['begin_check_data_time']}\r结束验收时间: {wbdata['last_check_data_time']}\r标注结果返回时间: {wbdata['get_data_time']}\r"
+            if wbdata['ann_meta_data']:
+                ann_meta_data = wbdata['ann_meta_data']
+                for k in ann_meta_data:
+                    tmp += f'结算方式: {k["settlement_method"]}\r\t准确率: {k["recovery_precision"]}\r\t框数: {k["knums"]}\r\t单价: {k["unit_price"]}\r'
+                tmp += f'总价: {wbdata["total_money"]}'
+                msg_text = f"@{uname} {kind} 了一条ID为{id}的供应商数据,具体内容如下:\r{tmp}"
+            else:
+                tmp += "结算方式: 无 , 准确率: 无 , 框数: 无 , 单价: 无"
+                msg_text = f"@{uname} {kind} 了一条ID为{id}的供应商数据,具体内容如下:\r{tmp}"
+        else:
+            tmp = f"研发名字：{wbdata['user'].zh_uname}\r项目名字: {wbdata['proname'].pname}\r送标批次: {wbdata['send_data_batch']}\r送标时间: {wbdata['send_data_time']}\r送标样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r场景分布: {wbdata['scene']}\r送标原因: {wbdata['send_reason']}\r关键帧提取方式: {wbdata['key_frame_extracted_methods']}\r是否首次标注: {wbdata['ann_field_flag']}\r供应商:{wbdata['wb_name'].name}"
+            msg_text = f"@{uname} {kind} 了一条供应商数据,具体内容如下:\r{tmp}"
     def ding_mes():
         timestamp = str(round(time.time() * 1000))
 
@@ -569,31 +600,24 @@ def wb_dingtalk(uname, kind, id, wbdata):
         webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
         # 初始化机器人小丁,方式一：通常初始化
         msgs = DingtalkChatbot(webhook)
-        # text消息@所有人
-        if kind == "删除":
-            msg_text = f"@{uname} {kind} 了ID为 {id} 的供应商数据"
-        else:
-            if kind == "修改":
-                
-                tmp = f"研发名字：{wbdata['user'].zh_uname}\r项目名字: {wbdata['proname'].pname}\r送标批次: {wbdata['send_data_batch']}\r送标时间: {wbdata['send_data_time']}\r送标样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r场景分布: {wbdata['scene']}\r送标原因: {wbdata['send_reason']}\r关键帧提取方式: {wbdata['key_frame_extracted_methods']}\r是否首次标注: {wbdata['ann_field_flag']}\r供应商: {wbdata['wb_name'].name}\r开始验收时间: {wbdata['begin_check_data_time']}\r结束验收时间: {wbdata['last_check_data_time']}\r标注结果返回时间: {wbdata['get_data_time']}\r"
-                if wbdata['ann_meta_data']:
-                    ann_meta_data = wbdata['ann_meta_data']
-                    for k in ann_meta_data:
-                        tmp += f'结算方式: {k["settlement_method"]}\r\t准确率: {k["recovery_precision"]}\r\t框数: {k["knums"]}\r\t单价: {k["unit_price"]}\r'
-                    tmp += f'总价: {wbdata["total_money"]}'
-                    msg_text = f"@{uname} {kind} 了一条ID为{id}的供应商数据,具体内容如下:\r{tmp}"
-                else:
-                    tmp += "结算方式: 无 , 准确率: 无 , 框数: 无 , 单价: 无"
-                    msg_text = f"@{uname} {kind} 了一条ID为{id}的供应商数据,具体内容如下:\r{tmp}"
-            else:
-                tmp = f"研发名字：{wbdata['user'].zh_uname}\r项目名字: {wbdata['proname'].pname}\r送标批次: {wbdata['send_data_batch']}\r送标时间: {wbdata['send_data_time']}\r送标样本数量: {wbdata['pnums']}\r数据来源: {wbdata['data_source']}\r场景分布: {wbdata['scene']}\r送标原因: {wbdata['send_reason']}\r关键帧提取方式: {wbdata['key_frame_extracted_methods']}\r是否首次标注: {wbdata['ann_field_flag']}\r供应商:{wbdata['wb_name'].name}"
-                msg_text = f"@{uname} {kind} 了一条供应商数据,具体内容如下:\r{tmp}"
-        
         states = msgs.send_text(msg=(msg_text), is_at_all=False)
-        logger.info(states)
+        logger.info(f"钉钉机器人消息状态: {states}")
     
-    task = threading.Thread(target=ding_mes)
+    def wecom_mes():
+        res = requests.post(
+            f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}", 
+            json={"msgtype": "text","text": {
+                "content": msg_text
+            }})
+        logger.info(f"企微机器人消息状态: {res.json()}")
+
+    task_ding = threading.Thread(target=ding_mes)
+    task_wc = threading.Thread(target=wecom_mes)
     if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
         logger.warning("钉机器人您还没有配置喔!")
     else:
-        task.start()
+        task_ding.start()
+    if CONFIG['wecom_webhook_key'] == "":
+        logger.warning("企业微信机器人还没有配置喔！")
+    else:
+        task_wc.start()

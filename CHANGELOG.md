@@ -2,6 +2,7 @@
 ### Added
 - 饼图之金额 的title 显示 总金额
     <img src="./myess/asserts/2023-02-08-ess-echarts-money-totao_money.png">
+- 添加消息通知 -> 企业微信
 
 
 

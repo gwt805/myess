@@ -8,6 +8,7 @@
     "wb_data_show_count": 365,
     "ding_access_token": "",
     "ding_secret": "",
+    "wecom_webhook_key": "",
     "send_qqEmail": "",
     "send_qqEmail_pwd": "",
     "enable_local_echarts": false, 
