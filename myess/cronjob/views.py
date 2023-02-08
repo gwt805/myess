@@ -30,7 +30,7 @@ from django.views import View
 scheduler = BackgroundScheduler(timezone='Asia/Shanghai')  # 实例化调度器
 scheduler.add_jobstore(DjangoJobStore(), "default") # 调度器使用默认的DjangoJobStore()
 
-def make_report_form_img(chart_pie):
+def make_report_form_img(chart_pie, money_total):
     year = datetime.now().strftime('%Y')
     today = datetime.now().strftime('%Y-%m-%d')
     save_path = os.path.join(BASE_DIR,"cronjob/ding_day_report_form/")
@@ -77,7 +77,7 @@ def make_report_form_img(chart_pie):
             label_opts=opts.LabelOpts(is_show=False),
         )
         .set_global_opts(
-            title_opts=opts.TitleOpts(title=f"{year}-01-01 ~ {today} 各项目 已用金额情况"),
+            title_opts=opts.TitleOpts(title=f"{year}-01-01 ~ {today} 各项目 已用金额情况(总金额: {money_total} 元)"),
             legend_opts=opts.LegendOpts(orient="vertical", pos_top="15%", pos_left="2%", is_show=False),
         )
         .set_dark_mode()
@@ -145,8 +145,8 @@ def ding_day_report_form():
 
 
 def every_day_ding_send_report_form():
-    _, char_list, _ = views.wbdata_count_public_code("---", "", "")
-    make_report_form_img(char_list)
+    _, char_list, money_total, _ = views.wbdata_count_public_code("---", "", "")
+    make_report_form_img(char_list, money_total)
     ding_day_report_form()
     
 

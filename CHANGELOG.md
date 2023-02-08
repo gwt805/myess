@@ -1,3 +1,10 @@
+# 2023-02-08
+### Added
+- 饼图之金额 的title 显示 总金额
+    <img src="./myess/asserts/2023-02-08-ess-echarts-money-totao_money.png">
+
+
+
 # 2023-02-07
 ### Changed
 - 图表的 title 精确化

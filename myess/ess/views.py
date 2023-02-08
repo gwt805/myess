@@ -743,6 +743,7 @@ def wbdata_count_public_code(wb_name, start_time, end_time):
         pie_chart_money_data = []
         pie_chart_pnums_data = []
         line_chart_list = [] # [[],[],[]] time,kuang,qian [zhun]
+        money_total = 0
         for proidx in proname_list:
             time_list = []
             kuang_list = []
@@ -764,6 +765,7 @@ def wbdata_count_public_code(wb_name, start_time, end_time):
                             money_list.append(modidx.total_money)
                         else:
                             money_list.append(round(money_list[-1] + modidx.total_money,3))
+                        money_total += modidx.total_money
             line_chart_list.append([time_list, kuang_list, money_list, pnums_list])
             
             if len(kuang_list) == 0:
@@ -778,11 +780,12 @@ def wbdata_count_public_code(wb_name, start_time, end_time):
         char_list = [pie_chart_pnums_data, pie_chart_knums_data, pie_chart_money_data]
     else:
         # 为查询到数据先返回空，后面加提示
+        money_total = 0
         proname_list = []
         char_list = [[{}], [{}]]
         line_chart_list = [[[0],[0],[0]]]
     
-    return proname_list, char_list, line_chart_list
+    return proname_list, char_list, format(money_total,','), line_chart_list
 
 
 # 外包数据统计
@@ -794,13 +797,37 @@ def wbdata_count(request):
         wb_name = request.POST.get("wb_name_search")
         start_time = request.POST.get("start_time_search")
         end_time = request.POST.get("end_time_search")
-        proname_list, char_list, line_chart_list = wbdata_count_public_code(wb_name, start_time, end_time)
+        proname_list, char_list, money_total, line_chart_list = wbdata_count_public_code(wb_name, start_time, end_time)
 
         chart_pie = json.dumps(char_list,ensure_ascii=False)
         chart_line = json.dumps(line_chart_list, ensure_ascii=False)
-        return render(request, "tasks/wbdata_count.html", {"wb_name_list": wb_name_list, "wb_selc": json.dumps(wb_name),"time_start": json.dumps(start_time),"time_end": json.dumps(end_time), "proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })
+        return render(
+                        request, 
+                        "tasks/wbdata_count.html", 
+                        {
+                            "wb_name_list": wb_name_list, 
+                            "wb_selc": json.dumps(wb_name),
+                            "time_start": json.dumps(start_time),
+                            "time_end": json.dumps(end_time), 
+                            "proname": proname_list, 
+                            "proname_json":json.dumps(proname_list, ensure_ascii=False), 
+                            "chart_pie": chart_pie, "chart_line": chart_line, "money_total": json.dumps(money_total)
+                        }
+                    )
     
-    proname_list, char_list, line_chart_list = wbdata_count_public_code("---", "", "")
+    proname_list, char_list, money_total, line_chart_list = wbdata_count_public_code("---", "", "")
     chart_pie = json.dumps(char_list,ensure_ascii=False)
     chart_line = json.dumps(line_chart_list, ensure_ascii=False)
-    return render(request, "tasks/wbdata_count.html", {"wb_name_list": wb_name_list, "wb_selc": json.dumps("---"), "time_start": json.dumps(f"{year}-01-01"),"time_end": json.dumps(f"{today}"), "proname": proname_list, "proname_json":json.dumps(proname_list, ensure_ascii=False), "chart_pie": chart_pie, "chart_line": chart_line })
+    return render(
+                    request, 
+                    "tasks/wbdata_count.html", 
+                    {
+                        "wb_name_list": wb_name_list, 
+                        "wb_selc": json.dumps("---"), 
+                        "time_start": json.dumps(f"{year}-01-01"),
+                        "time_end": json.dumps(f"{today}"), 
+                        "proname": proname_list, 
+                        "proname_json":json.dumps(proname_list, ensure_ascii=False), 
+                        "chart_pie": chart_pie, "chart_line": chart_line, "money_total": json.dumps(money_total)
+                    }
+                )

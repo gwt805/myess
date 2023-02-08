@@ -194,7 +194,8 @@
     const pname = JSON.parse('{{ proname_json|safe }}');
     const chart_pie = JSON.parse('{{ chart_pie|safe }}');
     const chart_line = JSON.parse('{{ chart_line|safe }}');
-    
+    const money_total = JSON.parse('{{ money_total|safe }}');
+
     const wb_name_selc = JSON.parse('{{ wb_selc|safe }}');
     const time_start = JSON.parse('{{ time_start|safe }}');
     const time_end = JSON.parse('{{ time_end|safe }}');
@@ -208,9 +209,11 @@
     const chart_list = [echarts.init(document.getElementById("chart_pnums"), 'dark'), echarts.init(document.getElementById("chart_knums"), 'dark'), echarts.init(document.getElementById("char_money"), 'dark')]
     const chart_pie_info = ["总样本数", '总标注数', "已用金额"]
     for (let pie = 0; pie < chart_pie.length; pie++) {
+        if (pie ==2) text = time_start + ' ~ '+ time_end + ' 各项目' + chart_pie_info[pie] + '情况(总金额: ' + money_total + ' 元)';
+        else text = time_start + ' ~ '+ time_end + ' 各项目' + chart_pie_info[pie] + '情况';
         const option = {
             title: {
-                text: time_start + ' ~ '+ time_end + ' 各项目' + chart_pie_info[pie] + '情况', // 一级标题
+                text: text, // 一级标题
                 // subtext: 'Fake Data', // 二级标题
                 left: 'center' // 标题居中显示
             },
@@ -227,12 +230,6 @@
                     saveAsImage: { show: true }
                 }
             },
-            // legend: {
-            //     type: 'scroll',
-            //     orient: 'horizontal',
-            //     left: 'center',
-            //     top: 35,
-            // },
             series: [
                 {
                     name: '项目名字 - 框数/金额 - 占比',
