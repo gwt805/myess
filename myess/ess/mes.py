@@ -277,11 +277,6 @@ def gs_data_add(uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
 
 # search
 def search(uname, pname, waibao, task_id, kinds, dtime, lasttime):
-    day_count = timedelta(days=CONFIG["gs_data_show_count"])
-    now_time = datetime.now()
-    before_time = (now_time - day_count).strftime("%Y-%m-%d")
-    now_time = now_time.strftime("%Y-%m-%d")
-
     filterQuery = {}
     if uname != "---":
         filterQuery["uname"] = uname
@@ -295,12 +290,10 @@ def search(uname, pname, waibao, task_id, kinds, dtime, lasttime):
         filterQuery["kinds"] = kinds
     if lasttime and dtime:
         filterQuery["dtime__range"] = [dtime, lasttime]
-    elif lasttime and not dtime:
+    if lasttime and not dtime:
         filterQuery["dtime"] = lasttime
-    elif not lasttime and dtime:
+    if not lasttime and dtime:
         filterQuery["dtime"] = dtime
-    else:
-        filterQuery["dtime__range"] = [before_time, now_time]
     tdat = models.Task.objects.filter(**filterQuery).order_by("-dtime")
     data = []
     for i in tdat:
