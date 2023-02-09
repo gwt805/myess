@@ -363,24 +363,28 @@ def nupdate(id, uname, pname, waibao, task_id, dtime, kinds, pnums, knums, ptime
         return "error"
 
 # waibao_search
-def waibao_search(pname, bzf, begin_time, over_time):
-    day_count = timedelta(days=CONFIG["wb_data_show_count"])
-    now_time = datetime.now()
-    before_time = (now_time - day_count).strftime("%Y-%m-%d")
-    now_time = now_time.strftime("%Y-%m-%d")
+def waibao_search(pname, bzf, send_data_begin_time, send_data_last_time, get_data_begin_time, get_data_last_time):
     filterQuery = {}
     if pname != "---":
         filterQuery["proname"] = models.Project.objects.get(pname=pname)
     if bzf != "---":
         filterQuery["wb_name"] = models.Waibaos.objects.get(name=bzf)
-    if begin_time and over_time:
-        filterQuery["send_data_time__range"] = [begin_time, over_time]
-    elif begin_time and not over_time:
-        filterQuery["send_data_time"] = begin_time
-    elif not begin_time and over_time:
-        filterQuery["send_data_time"] = over_time
-    else:
-        filterQuery["send_data_time__range"] = [before_time, now_time]
+    # 送标时间
+    if send_data_begin_time and send_data_last_time:
+        filterQuery["send_data_time__range"] = [send_data_begin_time, send_data_last_time]
+    if send_data_begin_time and not send_data_last_time:
+        filterQuery["send_data_time"] = send_data_begin_time
+    if not send_data_begin_time and send_data_last_time:
+        filterQuery["send_data_time"] = send_data_last_time
+
+    # 收到结果时间
+    if get_data_begin_time and get_data_last_time:
+        filterQuery["get_data_time__range"] = [get_data_begin_time, get_data_last_time]
+    if get_data_begin_time and not get_data_last_time:
+        filterQuery["get_data_time"] = get_data_begin_time
+    if not get_data_begin_time and get_data_last_time:
+        filterQuery["get_data_time"] = get_data_last_time
+
     tdat = models.Supplier.objects.filter(**filterQuery)
     data = []
     for i in tdat:

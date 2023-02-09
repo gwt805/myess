@@ -28,12 +28,15 @@
             background-color: #fff;
             top: 0;
         }
+
         .modrm:hover {
             color: red !important;
         }
+
         .border_update:hover {
             border: 1px solid rgb(29, 126, 184) !important;
         }
+
         .form-group {
             margin-left: 60px !important;
         }
@@ -146,18 +149,28 @@
                             <td>
                                 <input type="text" class="form-control" name="user_insert" id="user_insert" disabled>
                             </td>
-                            <td><select class="form-control" name="pname" id="pname_insert"><option value="---">---</option></select></td>
-                            <td><input type="text" class="form-control" name="send_data_batch_insert" id="send_data_batch_insert"></td>
-                            <td><input type="date" class="form-control" name="send_data_time_insert" id="send_data_time_insert"></td>
+                            <td><select class="form-control" name="pname" id="pname_insert">
+                                    <option value="---">---</option>
+                                </select></td>
+                            <td><input type="text" class="form-control" name="send_data_batch_insert"
+                                    id="send_data_batch_insert"></td>
+                            <td><input type="date" class="form-control" name="send_data_time_insert"
+                                    id="send_data_time_insert"></td>
                             <td><input type="number" name="pnums" min="0" class="form-control" id="pnums_insert"></td>
                             <td>
                                 <select name="data_source_insert" class="form-control" id="data_source_insert"></select>
                             </td>
                             <td><input type="text" class="form-control" name="scene_insert" id="scene_insert"></td>
-                            <td><input type="text" class="form-control" name="send_reason_insert" id="send_reason_insert"></td>
-                            <td><input type="text" class="form-control" name="key_frame_extracted_methods_insert" id="key_frame_extracted_methods_insert"></td>
-                            <td><select name="ann_field" id="ann_field" class="form-control"><option value="---">---</option></select></td>
-                            <td><select class="form-control" name="wb_name" id="wb_name_insert"><option value="---">---</option></select></td>
+                            <td><input type="text" class="form-control" name="send_reason_insert"
+                                    id="send_reason_insert"></td>
+                            <td><input type="text" class="form-control" name="key_frame_extracted_methods_insert"
+                                    id="key_frame_extracted_methods_insert"></td>
+                            <td><select name="ann_field" id="ann_field" class="form-control">
+                                    <option value="---">---</option>
+                                </select></td>
+                            <td><select class="form-control" name="wb_name" id="wb_name_insert">
+                                    <option value="---">---</option>
+                                </select></td>
                             <td>
                                 <button class="btn btn-primary" id="btn_insert">
                                     <i class="fa fa-plus-square" aria-hidden="true"></i> 添加
@@ -172,9 +185,8 @@
                         <tr>
                             <th>项目名字</th>
                             <th>标注方</th>
-                            <th>开始时间</th>
-                            <th>结束时间</th>
-                            <th>按钮</th>
+                            <th colspan="2" style="text-align: center;">送标起止时间</th>
+                            <th colspan="2" style="text-align: center;">交付起止时间</th>
                         </tr>
                         <tr>
                             <td>
@@ -187,8 +199,10 @@
                                     <option value="---">---</option>
                                 </select>
                             </td>
-                            <td><input type="date" name="begin_time" class="form-control" id="begin_time_search"></td>
-                            <td><input type="date" name="last_time" class="form-control" id="last_time_search"></td>
+                            <td><input type="date" name="send_data_begin_time" class="form-control" id="send_data_begin_time_search"></td>
+                            <td><input type="date" name="send_data_last_time" class="form-control" id="send_data_last_time_search"></td>
+                            <td><input type="date" name="get_res_begin_time" class="form-control" id="get_res_begin_time_search"></td>
+                            <td><input type="date" name="get_res_last_time" class="form-control" id="get_res_last_time_search"></td>
                             <td>
                                 <input type="reset" class="btn btn-default" id="reset" value="重置">
                                 <input type="button" class="btn btn-primary" id="serch" value="查询">
@@ -205,7 +219,9 @@
                 <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="fa fa-pencil"></i> 编辑</a>
                 <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="fa fa-remove"></i> 删除</a>
             </script>
-            <div><table class="layui-hide table-bordered" id="test" lay-filter="test"></table></div>
+            <div>
+                <table class="layui-hide table-bordered" id="test" lay-filter="test"></table>
+            </div>
             <!-- 弹窗之ESS-Info -->
             <div class="modal fade" tabindex="-1" role="dialog" id="ess_info">
                 <div class="modal-dialog" role="document">
@@ -267,8 +283,8 @@
                             </div>
                             <div class="modal-footer">
                                 <a href="https://github.com/gwt805/myess/tree/master" target="_blank"
-                                    style="position: absolute; left: 20px;"><i
-                                        class="fa fa-github-square fa-2x" style="color: black;"></i></a>
+                                    style="position: absolute; left: 20px;"><i class="fa fa-github-square fa-2x"
+                                        style="color: black;"></i></a>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"
                                     style="color: blue;">
                                     <span aria-hidden="true">OK</span>
@@ -288,7 +304,8 @@
                             <h3 class="modal-title">修改数据</h3>
                         </div>
                         <div class="modal-body">
-                            <div class="alert alert-danger" id="err_msg" style="display: none; text-align: center;"></div>
+                            <div class="alert alert-danger" id="err_msg" style="display: none; text-align: center;">
+                            </div>
                             <div>
                                 <table class="table" id="gtable">
                                     <tr>
@@ -299,11 +316,15 @@
                                         <th>送标时间</th>
                                     </tr>
                                     <tr>
-                                        <td><input type="number" min="0" class="form-control" name="id" disabled id="id_update"></td>
+                                        <td><input type="number" min="0" class="form-control" name="id" disabled
+                                                id="id_update"></td>
                                         <td><input type="text" class="form-control" id="user_update" disabled></td>
-                                        <td><select class="form-control" name="pname" id="pname_update" disabled></select></td>
-                                        <td><input type="text" class="form-control" name="send_data_batch_update" id="send_data_batch_update" disabled></td>
-                                        <td><input type="date" class="form-control" name="send_data_time" id="send_data_time_update" disabled></td>
+                                        <td><select class="form-control" name="pname" id="pname_update"
+                                                disabled></select></td>
+                                        <td><input type="text" class="form-control" name="send_data_batch_update"
+                                                id="send_data_batch_update" disabled></td>
+                                        <td><input type="date" class="form-control" name="send_data_time"
+                                                id="send_data_time_update" disabled></td>
                                     </tr>
                                     <tr>
                                         <th>送标样本数量</th>
@@ -313,11 +334,17 @@
                                         <th>关键帧抽取方式</th>
                                     </tr>
                                     <tr>
-                                        <td><input type="number" class="form-control" min="0" name="pnums" id="pnums_update" disabled></td>
-                                        <td><select class="form-control" name="data_source" id="data_source_update" disabled></select></td>
-                                        <td><input type="text" class="form-control" name="scene_update" id="scene_update" disabled></td>
-                                        <td><input type="text" class="form-control" name="send_reason_update" id="send_reason_update" disabled></td>
-                                        <td><input type="text" class="form-control" name="key_frame_extracted_methods_update" id="key_frame_extracted_methods_update" disabled></td>
+                                        <td><input type="number" class="form-control" min="0" name="pnums"
+                                                id="pnums_update" disabled></td>
+                                        <td><select class="form-control" name="data_source" id="data_source_update"
+                                                disabled></select></td>
+                                        <td><input type="text" class="form-control" name="scene_update"
+                                                id="scene_update" disabled></td>
+                                        <td><input type="text" class="form-control" name="send_reason_update"
+                                                id="send_reason_update" disabled></td>
+                                        <td><input type="text" class="form-control"
+                                                name="key_frame_extracted_methods_update"
+                                                id="key_frame_extracted_methods_update" disabled></td>
                                     </tr>
                                     <tr>
                                         <th>外包名字</th>
@@ -327,11 +354,16 @@
                                         <th>收到标注结果时间</th>
                                     </tr>
                                     <tr>
-                                        <td><select class="form-control" name="wb_name" id="wb_name_update" disabled></select></td>
-                                        <td><select class="form-control" name="ann_field_flag_update" id="ann_field_flag_update" disabled></select></td>
-                                        <td><input type="date" class="form-control" name="begin_check_data_time_update" id="begin_check_data_time_update"></td>
-                                        <td><input type="date" class="form-control" name="last_check_data_time_update" id="last_check_data_time_update"></td>
-                                        <td><input type="date" class="form-control" name="get_data_time" id="get_data_time_update"></td>
+                                        <td><select class="form-control" name="wb_name" id="wb_name_update"
+                                                disabled></select></td>
+                                        <td><select class="form-control" name="ann_field_flag_update"
+                                                id="ann_field_flag_update" disabled></select></td>
+                                        <td><input type="date" class="form-control" name="begin_check_data_time_update"
+                                                id="begin_check_data_time_update"></td>
+                                        <td><input type="date" class="form-control" name="last_check_data_time_update"
+                                                id="last_check_data_time_update"></td>
+                                        <td><input type="date" class="form-control" name="get_data_time"
+                                                id="get_data_time_update"></td>
                                     </tr>
                                 </table>
                             </div>
@@ -349,8 +381,10 @@
                                 </table>
                             </div>
                             <div style="display: flex; justify-content: center;">
-                                <button style="margin-bottom: 15px; display: inline; width: 100%;" class="btn btn-warning" onclick="tableadd(1)">
-                                <i class="fa fa-plus-square" aria-hidden="true" style="margin-right: 10px;"></i>新&nbsp;增</button>
+                                <button style="margin-bottom: 15px; display: inline; width: 100%;"
+                                    class="btn btn-warning" onclick="tableadd(1)">
+                                    <i class="fa fa-plus-square" aria-hidden="true"
+                                        style="margin-right: 10px;"></i>新&nbsp;增</button>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal"
@@ -366,7 +400,7 @@
 </body>
 <script src="/static/js/disable.js"></script>
 <script src="/static/js/click_yh.js"></script>
-<script type="text/javascript">    
+<script type="text/javascript">
     const projects = JSON.parse('{{ projects|safe }}'); // 项目名字 列表
     const bzf = JSON.parse('{{ bzf|safe }}'); // 外包列表
     const data_source_list = JSON.parse('{{ data_source|safe }}'); // 数据来源列表
@@ -375,11 +409,11 @@
     let global_jsfs_count = 1;
     let is_search = false; // 数据导出flag
     let is_search_url = '' // 数据来源url
-    let tmpobj=null; // table row 高亮用
+    let tmpobj = null; // table row 高亮用
     search();
 
     // 增加行
-    function tableadd(add_row_flag){
+    function tableadd(add_row_flag) {
         const update_table_add_line = document.getElementById("jsfs_table");
         if (add_row_flag != 0) {
             for (var idx = 0; idx < add_row_flag; idx++) {
@@ -387,25 +421,25 @@
                 const newRow = update_table_add_line.insertRow(rowCount); //添加到最后一行
                 //给第一列添加
                 const newCell1 = newRow.insertCell(0);
-                newCell1.innerHTML = "<select class='form-control settlement_method_update border_update' id='settlement_method_update"+ global_jsfs_count +"'><option value='---'>---</option></select>";
+                newCell1.innerHTML = "<select class='form-control settlement_method_update border_update' id='settlement_method_update" + global_jsfs_count + "'><option value='---'>---</option></select>";
                 //给第二列添加
                 const newCell2 = newRow.insertCell(1);
-                newCell2.innerHTML = "<input type='number' class='form-control border_update' min='0' max='100' name='recovery_precision_update' id='recovery_precision_update"+ global_jsfs_count + "'>";
+                newCell2.innerHTML = "<input type='number' class='form-control border_update' min='0' max='100' name='recovery_precision_update' id='recovery_precision_update" + global_jsfs_count + "'>";
                 //给第三列添加
                 const newCell3 = newRow.insertCell(2);
-                newCell3.innerHTML = "<input type='number' min='0' class='form-control border_update' name='knums_update' id='knums_update"+ global_jsfs_count +"'>";
+                newCell3.innerHTML = "<input type='number' min='0' class='form-control border_update' name='knums_update' id='knums_update" + global_jsfs_count + "'>";
                 //给第四列添加
                 const newCell4 = newRow.insertCell(3);
-                newCell4.innerHTML = "<input type='number' min='0' step='0.01' class='form-control border_update' name='unit_price_update' id='unit_price_update"+ global_jsfs_count +"'>";
+                newCell4.innerHTML = "<input type='number' min='0' step='0.01' class='form-control border_update' name='unit_price_update' id='unit_price_update" + global_jsfs_count + "'>";
                 // 给第五列添加 删除X-icon
-                if (rowCount != 1){
+                if (rowCount != 1) {
                     const newCell5 = newRow.insertCell(4);
                     newCell5.innerHTML = "<i class='fa fa-remove fa-2x modrm' style='margin: auto; color: gray;' title='删除' onclick='rmrows(this)'></i>";
                 }
                 // 给结算方式 添加下拉框
                 let jss = document.getElementById('settlement_method_update' + global_jsfs_count);
                 for (var i = 0; i < js_methods.length; i++) {
-                    if (jss.length < js_methods.length+1) { // 这里不判断的话会一直添加
+                    if (jss.length < js_methods.length + 1) { // 这里不判断的话会一直添加
                         if (js_methods[i] != jss.value) {
                             var objOption = document.createElement("option");
                             objOption.value = js_methods[i];
@@ -420,23 +454,23 @@
         else {
             let rowCount = update_table_add_line.rows.length; //行数
             const newRow = update_table_add_line.insertRow(rowCount); //添加到最后一行
-            
+
             //给第一列添加
             const newCell1 = newRow.insertCell(0);
-            newCell1.innerHTML = "<select class='form-control settlement_method_update border_update' id='settlement_method_update"+ global_jsfs_count +"'><option value='---'>---</option></select>";
+            newCell1.innerHTML = "<select class='form-control settlement_method_update border_update' id='settlement_method_update" + global_jsfs_count + "'><option value='---'>---</option></select>";
             //给第二列添加
             const newCell2 = newRow.insertCell(1);
-            newCell2.innerHTML = "<input type='number' class='form-control border_update' min='0' max='100' name='recovery_precision_update' id='recovery_precision_update"+ global_jsfs_count + "'>";
+            newCell2.innerHTML = "<input type='number' class='form-control border_update' min='0' max='100' name='recovery_precision_update' id='recovery_precision_update" + global_jsfs_count + "'>";
             //给第三列添加
             const newCell3 = newRow.insertCell(2);
-            newCell3.innerHTML = "<input type='number' min='0' class='form-control border_update' name='knums_update' id='knums_update"+ global_jsfs_count +"'>";
+            newCell3.innerHTML = "<input type='number' min='0' class='form-control border_update' name='knums_update' id='knums_update" + global_jsfs_count + "'>";
             //给第四列添加
             const newCell4 = newRow.insertCell(3);
-            newCell4.innerHTML = "<input type='number' min='0' step='0.01' class='form-control border_update' name='unit_price_update' id='unit_price_update"+ global_jsfs_count +"'>";
+            newCell4.innerHTML = "<input type='number' min='0' step='0.01' class='form-control border_update' name='unit_price_update' id='unit_price_update" + global_jsfs_count + "'>";
             // 给结算方式 添加下拉框
             let jss = document.getElementById('settlement_method_update' + global_jsfs_count);
             for (var i = 0; i < js_methods.length; i++) {
-                if (jss.length < js_methods.length+1) { // 这里不判断的话会一直添加
+                if (jss.length < js_methods.length + 1) { // 这里不判断的话会一直添加
                     if (js_methods[i] != jss.value) {
                         var objOption = document.createElement("option");
                         objOption.value = js_methods[i];
@@ -449,60 +483,60 @@
         }
     }
     // 删除指定行
-    function rmrows(r){
+    function rmrows(r) {
         let tab_row = r.parentNode.parentNode.rowIndex;
         document.getElementById("jsfs_table").deleteRow(tab_row);
     }
     // 删除行
-    function table_remove_row(rm_row_idx){
+    function table_remove_row(rm_row_idx) {
         const update_table_add_line = document.getElementById("jsfs_table");
         // 判断多余的空行删掉
         let remove_table_data_list = [];
-        for(let i=rm_row_idx; i>1; i--){
-            remove_table_data_list.push(i-1);
+        for (let i = rm_row_idx; i > 1; i--) {
+            remove_table_data_list.push(i - 1);
         }
-        for (let idx=0; idx<remove_table_data_list.length; idx++){
+        for (let idx = 0; idx < remove_table_data_list.length; idx++) {
             update_table_add_line.deleteRow(remove_table_data_list[idx]);
         }
         global_jsfs_count = 1; // 初始化结算方式为 1 条
     }
     // 获取行数据
     //判断行数据提示
-    function modal_alert(mes){
+    function modal_alert(mes) {
         $("#err_msg").css("display", 'block');
         $("#err_msg").html(mes);
     }
-    function isFloat(num){
-        if(String(num).indexOf('.') > -1) return true;
+    function isFloat(num) {
+        if (String(num).indexOf('.') > -1) return true;
         else return false;
     }
-    function get_table_data(){
+    function get_table_data() {
         const update_table_add_line = document.getElementById("jsfs_table");
         const rowCount = update_table_add_line.rows.length; //行数
         let ann_meta_data = [];
         let is_continue = true;
-        for(var i=1; i<rowCount; i++){
+        for (var i = 1; i < rowCount; i++) {
             const jsfs = update_table_add_line.rows[i].cells[0].getElementsByTagName("select")[0].value;
             const zql = update_table_add_line.rows[i].cells[1].getElementsByTagName("input")[0].value;
             const ks = Number(update_table_add_line.rows[i].cells[2].getElementsByTagName("input")[0].value);
             const dj = Number(update_table_add_line.rows[i].cells[3].getElementsByTagName("input")[0].value);
 
-            console.log(jsfs,ks,dj)
+            console.log(jsfs, ks, dj)
 
-            if (zql != ""){
-                if (jsfs == "---" || ks == 0 || dj == 0){
+            if (zql != "") {
+                if (jsfs == "---" || ks == 0 || dj == 0) {
                     is_continue = false;
                     modal_alert("框数,单价,结算方式 需同时填写 !");
                     continue;
                 }
                 else is_continue = true;
             }
-            else{
-                if (jsfs == "---" && ks == 0 && dj == 0){
+            else {
+                if (jsfs == "---" && ks == 0 && dj == 0) {
                     is_continue = true;
                 }
-                else{
-                    if (jsfs == "---" || ks == 0 || dj == 0){
+                else {
+                    if (jsfs == "---" || ks == 0 || dj == 0) {
                         modal_alert("框数,单价,结算方式 需同时填写 !");
                         is_continue = false;
                         continue;
@@ -510,12 +544,12 @@
                     else is_continue = true;
                 }
             }
-            if (Number(zql) < 0 || Number(zql) > 100){
+            if (Number(zql) < 0 || Number(zql) > 100) {
                 modal_alert("准确率不可能 小于0 / 大于100 !");
                 is_continue = false;
                 continue;
             }
-            if (ks < 0 || isFloat(ks)){
+            if (ks < 0 || isFloat(ks)) {
                 modal_alert("框数不可能 小于0 / 是小数!");
                 is_continue = false;
                 continue;
@@ -525,14 +559,14 @@
                 is_continue = false;
                 continue;
             }
-            if (is_continue){
-                ann_meta_data.push({"settlement_method":jsfs, "recovery_precision":zql, "knums":ks, "unit_price":dj});
+            if (is_continue) {
+                ann_meta_data.push({ "settlement_method": jsfs, "recovery_precision": zql, "knums": ks, "unit_price": dj });
             }
         }
         return [is_continue, ann_meta_data];
     }
 
-    function clean_insert_data(){
+    function clean_insert_data() {
         // end 清除
         $("#pname_insert").find('option:first').prop("selected", "selected");
         $("#send_data_time_insert").val("");
@@ -544,7 +578,7 @@
         $("#wb_name_insert").find('option:first').prop("selected", "selected");
     }
 
-    function warning_alert(msg){
+    function warning_alert(msg) {
         $(".alert-danger").html(msg);
         $("#alert_div").css("background-color", 'rgb(242, 222, 222)');
         $("#alert_div").css("color", 'rgb(169, 68,66)');
@@ -589,23 +623,23 @@
         cols: [[               //设置列标签、标题、宽度、是否排序等
             // {checkbox:true}, // 复选框
             { field: 'id', title: 'ID', fixed: left },
-            { field: 'user', title:'研发', width: 80, fixed: left},
-            { field: 'pname', title: '项目名字', width: 220, fixed: left},
-            { field: 'send_data_batch', title: '送标批次', width: 150, fixed: left},
-            { field: 'send_data_time', title: "送标时间", width: 110, fixed: left},
-            { field: 'pnums', title: "送标样本数量", width: 130},
-            { field: 'data_source', title: "数据来源", width: 110},
-            { field: 'scene', title: "场景分布", width: 110},
-            { field: 'send_reason', title: "送标原因", width: 110},
-            { field: 'key_frame_extracted_methods', title: "关键帧抽取方式", width: 130},
-            { field: 'begin_check_data_time', title: "开始验收时间", width: 120},
-            { field: 'last_check_data_time', title: "结束验收时间", width: 120},
-            { field: 'get_data_time', title: '标注结果返回时间', width: 150},
-            { field: 'ann_meta_data', title:'准确率&框数&结算方式&单价', width: 230},
-            { field: 'total_money', title: "总价", width: 110},
+            { field: 'user', title: '研发', width: 80, fixed: left },
+            { field: 'pname', title: '项目名字', width: 220, fixed: left, sort: true },
+            { field: 'send_data_batch', title: '送标批次', width: 150, fixed: left },
+            { field: 'send_data_time', title: "送标时间", width: 110, fixed: left },
+            { field: 'pnums', title: "送标样本数量", width: 130 },
+            { field: 'data_source', title: "数据来源", width: 110 },
+            { field: 'scene', title: "场景分布", width: 110 },
+            { field: 'send_reason', title: "送标原因", width: 110 },
+            { field: 'key_frame_extracted_methods', title: "关键帧抽取方式", width: 130 },
+            { field: 'begin_check_data_time', title: "开始验收时间", width: 120 },
+            { field: 'last_check_data_time', title: "结束验收时间", width: 120 },
+            { field: 'get_data_time', title: '标注结果返回时间', width: 150 },
+            { field: 'ann_meta_data', title: '准确率&框数&结算方式&单价', width: 230 },
+            { field: 'total_money', title: "总价", width: 110 },
             { field: 'ann_field_flag', title: "是否首次标注", width: 120 },
             { field: 'wb_name', title: '外包名字', width: 90, fixed: 'right' },
-            { fixed: 'right', title: '操作', toolbar: '#barDemo',width:150 },//设置每行的工具栏以及其容器
+            { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150 },//设置每行的工具栏以及其容器
         ]],
         done: function (res, curr, count) {
             is_search = false;
@@ -613,20 +647,20 @@
         }
     });
     // 点击行高亮
-    table.on('row(test)', function(obj){
+    table.on('row(test)', function (obj) {
         $(".active-tr").removeClass("active-tr");
         obj.tr.addClass("active-tr");
         //定义单击行改变行的背景颜色
-        if (tmpobj!=null){
-            tmpobj.tr[0].style='background-color: #ffffff;';
-            if (tmpobj.tr[1]){
-                tmpobj.tr[1].style='background-color: #ffffff;';
+        if (tmpobj != null) {
+            tmpobj.tr[0].style = 'background-color: #ffffff;';
+            if (tmpobj.tr[1]) {
+                tmpobj.tr[1].style = 'background-color: #ffffff;';
             }
         }
-        tmpobj=obj;
-        obj.tr[0].style='background-color: #b8e2f3;';
-        if (obj.tr[1]){
-            obj.tr[1].style='background-color: #b8e2f3;';
+        tmpobj = obj;
+        obj.tr[0].style = 'background-color: #b8e2f3;';
+        if (obj.tr[1]) {
+            obj.tr[1].style = 'background-color: #b8e2f3;';
         }
     })
     // 表格后台过滤
@@ -634,9 +668,11 @@
         // var pname_search = $("#pname_search option:selected").val().replace("&","%26");
         const pname_search = encodeURIComponent($("#pname_search option:selected").val()); // encodeURIComponent 解决了把& 当参数问题
         const bzf_search = $('#bzf_search option:selected').val();
-        const begin_time_search = $("#begin_time_search").val();
-        const last_time_search = $("#last_time_search").val();
-        let url = '/wballdata?pname=' + pname_search + '&bzf=' + bzf_search + "&begin_time=" + begin_time_search + "&last_time=" + last_time_search
+        const send_data_begin_time = $("#send_data_begin_time_search").val();
+        const send_data_last_time = $("#send_data_last_time_search").val();
+        const get_data_begin_time = $("#get_res_begin_time_search").val();
+        const get_data_last_time = $("#get_res_last_time_search").val();
+        let url = '/wballdata?pname=' + pname_search + '&bzf=' + bzf_search + "&send_data_begin_time=" + send_data_begin_time + "&send_data_last_time=" + send_data_last_time + "&get_data_begin_time=" + get_data_begin_time + "&get_data_last_time=" + get_data_last_time;
         table.reload('test', {
             url: url,
             page: {
@@ -679,7 +715,7 @@
                 }, 1000);//显示的时间
             }
             else {
-                layer.confirm('真的删除ID为 '+obj.data.id+' 的数据么', function (index) {
+                layer.confirm('真的删除ID为 ' + obj.data.id + ' 的数据么', function (index) {
                     $.ajax("/wb_dtdel/", {
                         method: "GET",
                         contentType: "application/json; charset=utf-8",
@@ -720,7 +756,7 @@
                 }, 1000);//显示的时间
             }
             else {
-                layer.confirm('真的修改ID为 '+obj.data.id+' 的数据么', function (index) {
+                layer.confirm('真的修改ID为 ' + obj.data.id + ' 的数据么', function (index) {
                     // 删除表格只保留 1条记录
                     const update_table_add_line = document.getElementById("jsfs_table");
                     const rowCount = update_table_add_line.rows.length; //行数
@@ -737,11 +773,11 @@
                         },
                     }).done(function (res) {
                         if (res && res.status == "successful") {
-                            for(let clean_idx=1; clean_idx<=3; clean_idx++){
-                                $("#settlement_method_update"+clean_idx).find('option:first').prop("selected", "selected");
-                                $("#recovery_precision_update"+clean_idx).val("");
-                                $("#knums_update"+clean_idx).val("");
-                                $("#unit_price_update"+clean_idx).val("");
+                            for (let clean_idx = 1; clean_idx <= 3; clean_idx++) {
+                                $("#settlement_method_update" + clean_idx).find('option:first').prop("selected", "selected");
+                                $("#recovery_precision_update" + clean_idx).val("");
+                                $("#knums_update" + clean_idx).val("");
+                                $("#unit_price_update" + clean_idx).val("");
                             }
                             const id = res.data[0].id;
                             const user = res.data[0].user;
@@ -777,18 +813,18 @@
                             $("#wb_name_update").html("<option value=" + wb_name + ">" + wb_name + "</option>");
 
                             tableadd(ann_meta_data.length); // 动态添加行数
-                            if (ann_meta_data != ""){
-                                if (ann_meta_data.length > 3)tableadd();
+                            if (ann_meta_data != "") {
+                                if (ann_meta_data.length > 3) tableadd();
                                 for (let index = 0; index < ann_meta_data.length; index++) {
                                     const method = ann_meta_data[index]["settlement_method"];
                                     const price = ann_meta_data[index]["unit_price"];
                                     const pricision = ann_meta_data[index]["recovery_precision"];
                                     const knums = ann_meta_data[index]["knums"];
                                     // 结算方式	交付准确率	框数	单价
-                                    $("#settlement_method_update"+(index+1)).val(method);
-                                    $("#recovery_precision_update"+(index+1)).val(pricision);
-                                    $("#knums_update"+(index+1)).val(knums);
-                                    $("#unit_price_update"+(index+1)).val(price);
+                                    $("#settlement_method_update" + (index + 1)).val(method);
+                                    $("#recovery_precision_update" + (index + 1)).val(pricision);
+                                    $("#knums_update" + (index + 1)).val(knums);
+                                    $("#unit_price_update" + (index + 1)).val(price);
                                 }
                             }
                         }
@@ -824,13 +860,13 @@
             else if (pname == "---") {
                 warning_alert("项目名字不允许为空!");
             }
-            else if (send_data_batch == ""){
+            else if (send_data_batch == "") {
                 warning_alert("送标批次不允许为空!");
             }
             else if (scene == "---") {
                 warning_alert("数据来源不允许为空!");
             }
-            else if(wb_name == "---") {
+            else if (wb_name == "---") {
                 warning_alert("外包名字不允许为空!");
             }
             else if (pnums == "") {
@@ -912,7 +948,7 @@
         const wb_name = $("#wb_name_update option:selected").val();
         const ann_meta_data = get_table_data();
 
-        if (ann_meta_data[0]){
+        if (ann_meta_data[0]) {
             $.ajax("/wb_update/", {
                 method: "POST",
                 contentType: "application/json; charset=utf-8",
@@ -967,7 +1003,7 @@
         // 给项目名字 添加下拉框
         var p_s = document.getElementById('pname_insert');
         for (var i = 0; i < projects.length; i++) {
-            if (p_s.length < projects.length+1) { // 这里不判断的话会一直添加
+            if (p_s.length < projects.length + 1) { // 这里不判断的话会一直添加
                 if (projects[i] != p_s.value) {
                     var objOption = document.createElement("option");
                     objOption.value = projects[i];
@@ -978,9 +1014,9 @@
         };
         // 给数据来源添加下拉框
         var dsl_insert = document.getElementById("data_source_insert");
-        for (var i = 0; i < data_source_list.length; i++){
-            if (dsl_insert.length < data_source_list.length){
-                if (data_source_list[i] != dsl_insert.value){
+        for (var i = 0; i < data_source_list.length; i++) {
+            if (dsl_insert.length < data_source_list.length) {
+                if (data_source_list[i] != dsl_insert.value) {
                     var objOption = document.createElement("option");
                     objOption.value = data_source_list[i];
                     objOption.text = data_source_list[i];
@@ -990,9 +1026,9 @@
         }
         // 给是否是首次标注赋值
         var ann_field_sel = document.getElementById("ann_field");
-        for (var i = 0; i < ann_field.length; i++){
-            if (ann_field_sel.length < ann_field.length+1){
-                if (ann_field[i] != ann_field_sel.value){
+        for (var i = 0; i < ann_field.length; i++) {
+            if (ann_field_sel.length < ann_field.length + 1) {
+                if (ann_field[i] != ann_field_sel.value) {
                     var objOption = document.createElement("option");
                     objOption.value = ann_field[i];
                     objOption.text = ann_field[i];
@@ -1020,12 +1056,12 @@
             $('#ginsert').css("display", "none");
             $('#search').css("display", "block");
         }
-        $("#begin_time_search").val("2021-01-01")
+        $("#send_data_begin_time_search").val("2021-01-01")
         var now = new Date();
         var day = ('0' + now.getDate()).slice(-2);
         var month = ('0' + (now.getMonth() + 1)).slice(-2);
         var today = now.getFullYear() + '-' + (month) + '-' + (day);
-        $("#last_time_search").val(today);
+        $("#send_data_last_time_search").val(today);
         // 给项目名字 添加下拉框
         var p_s = document.getElementById('pname_search');
         for (var i = 0; i < projects.length; i++) {
@@ -1057,11 +1093,11 @@
         if (flag == 'wbdata_count') {
             window.location.href = '/wbdata_count';
         }
-        else if(flag == 'cronjob'){
-            if (sessionStorage.getItem("power") != '1'){
+        else if (flag == 'cronjob') {
+            if (sessionStorage.getItem("power") != '1') {
                 warning_alert("您没有权限查看!");
             }
-            else{
+            else {
                 window.location.href = "/cronjob";
             }
         }
@@ -1079,7 +1115,7 @@
         $('#ess_info').modal('show');
     }
     // setting
-    if (sessionStorage.getItem("power") != '1'){
+    if (sessionStorage.getItem("power") != '1') {
         $("#nav_setting").css('display', 'none')
     }
     else {
@@ -1093,9 +1129,9 @@
     }
 
     //头工具栏事件
-    table.on('toolbar(test)', function(obj){
-        if (obj.event == "export_btn"){
-            if (is_search){
+    table.on('toolbar(test)', function (obj) {
+        if (obj.event == "export_btn") {
+            if (is_search) {
                 $.ajax(is_search_url, {
                     method: "GET",
                     contentType: "application/json; charset=utf-8",
@@ -1105,7 +1141,7 @@
                         warning_alert("正在导出数据中,请耐心等待!")
                         const source_data = res.source;
                         let export_data_list = []
-                        const table_title = ["ID","研发","项目名字","送标批次","送标时间","送标样本数量","数据来源","场景分布","送标原因","关键帧抽取方式","开始验收时间","结束验收时间","标注结果返回时间","标注详情","总价","是否首次标注","外包名字"];
+                        const table_title = ["ID", "研发", "项目名字", "送标批次", "送标时间", "送标样本数量", "数据来源", "场景分布", "送标原因", "关键帧抽取方式", "开始验收时间", "结束验收时间", "标注结果返回时间", "标注详情", "总价", "是否首次标注", "外包名字"];
                         for (const idx in source_data) {
                             let tmp_list = [];
                             const data_idx = source_data[idx];
@@ -1123,17 +1159,17 @@
                             tmp_list.push(data_idx['last_check_data_time'])
                             tmp_list.push(data_idx['get_data_time'])
                             let anno = ""
-                            if (data_idx['ann_meta_data'] != ""){
+                            if (data_idx['ann_meta_data'] != "") {
                                 for (const idx in data_idx['ann_meta_data']) {
-                                    if (data_idx['ann_meta_data'][idx] == ","){
+                                    if (data_idx['ann_meta_data'][idx] == ",") {
                                         anno = anno + "&"
                                     }
-                                    else{
+                                    else {
                                         anno = anno + data_idx['ann_meta_data'][idx]
                                     }
                                 }
                             }
-                            else{
+                            else {
                                 console.log('为空')
                             }
                             tmp_list.push(anno)
@@ -1141,7 +1177,7 @@
                             tmp_list.push(data_idx['ann_field_flag'])
                             tmp_list.push(data_idx['wb_name'])
                             export_data_list.push(tmp_list)
-                            
+
                         }
                         table.exportFile(table_title, export_data_list, 'xls');
                         // table.exportFile(ins1.config.id, source_data); 没有逗号的话可以直接用这个
@@ -1149,7 +1185,7 @@
                     }
                 });
             }
-            else{
+            else {
                 $.ajax(is_search_url, {
                     method: "GET",
                     contentType: "application/json; charset=utf-8",
@@ -1159,7 +1195,7 @@
                         warning_alert("正在导出数据中,请耐心等待!")
                         const source_data = res.source;
                         let export_data_list = []
-                        const table_title = ["ID","研发","项目名字","送标批次","送标时间","送标样本数量","数据来源","场景分布","送标原因","关键帧抽取方式","开始验收时间","结束验收时间","标注结果返回时间","标注详情","总价","是否首次标注","外包名字"];
+                        const table_title = ["ID", "研发", "项目名字", "送标批次", "送标时间", "送标样本数量", "数据来源", "场景分布", "送标原因", "关键帧抽取方式", "开始验收时间", "结束验收时间", "标注结果返回时间", "标注详情", "总价", "是否首次标注", "外包名字"];
                         for (const idx in source_data) {
                             let tmp_list = [];
                             const data_idx = source_data[idx];
@@ -1177,17 +1213,17 @@
                             tmp_list.push(data_idx['last_check_data_time'])
                             tmp_list.push(data_idx['get_data_time'])
                             let anno = ""
-                            if (data_idx['ann_meta_data'] != ""){
+                            if (data_idx['ann_meta_data'] != "") {
                                 for (const idx in data_idx['ann_meta_data']) {
-                                    if (data_idx['ann_meta_data'][idx] == ","){
+                                    if (data_idx['ann_meta_data'][idx] == ",") {
                                         anno = anno + "&"
                                     }
-                                    else{
+                                    else {
                                         anno = anno + data_idx['ann_meta_data'][idx]
                                     }
                                 }
                             }
-                            else{
+                            else {
                                 console.log('为空')
                             }
                             tmp_list.push(anno)
@@ -1195,7 +1231,7 @@
                             tmp_list.push(data_idx['ann_field_flag'])
                             tmp_list.push(data_idx['wb_name'])
                             export_data_list.push(tmp_list)
-                            
+
                         }
                         table.exportFile(table_title, export_data_list, 'xls');
                         // table.exportFile(ins1.config.id, source_data); 没有逗号的话可以直接用这个

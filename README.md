@@ -30,14 +30,15 @@ npm install phantomjs-prebuilt -g
     "mysql_pwd": "" ————————————————— 数据库密码
     "mysql_port": "" ———————————————— 数据库端口
     "mysql_db": "" —————————————————— 数据库名字
-    "gs_data_show_count": 31 ———————— gs数据展示最近 n 天
-    "wb_data_show_count": 365 ——————— 供应商数据展示最近 n 天
     "ding_access_token": "" ————————— 钉群机器人webhook中的token
     "ding_secret": "" ——————————————— 钉群机器人的secret
     "send_qqEmail": "" —————————————— 发邮件的邮箱
     "send_qqEmail_pwd": "" —————————— 邮箱的授权码
     "enable_local_echarts": false ——— 本地为false，服务器为true
     "public_ip": "ip:port" —————————— 公网地址, 定时任务发报表用
+chmod -R 777 myess
+chmod a+rw myess
+chmod +x myess/myess/ess_auto_start.sh
 cd myess
 python manage.py makemigrations
 python manage.py migrate

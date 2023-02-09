@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -182,15 +182,10 @@ def gsalldata(request):  # 首页数据
         == request.GET.get("lasttime")
         == None
     ):
-        now_time = datetime.now()
-        before_time = (
-            now_time - timedelta(days=CONFIG["gs_data_show_count"])
-        ).strftime("%Y-%m-%d")
-        now_time = now_time.strftime("%Y-%m-%d")
-
+        year = datetime.now().strftime('%Y')
         data_object = list(
             models.Task.objects.all().filter(
-                dtime__range=[before_time, now_time])
+                dtime__range=[f"{year}-01-01", f"{year}-12-31"])
         )
 
         data = []
@@ -355,27 +350,27 @@ def efficiency(request):  # 效率
         try:
             eff_team, user_list, eff_person = eff_test(nbt, nlt, lbt, llt)
             return render(
-                request, 
-                "tasks/efficiency.html", 
+                request,
+                "tasks/efficiency.html",
                 {
                     "nbt": nbt, "nlt": nlt, "lbt": lbt, "llt": llt,
-                    "status": json.dumps("successful"), 
-                    "eff_team": json.dumps(eff_team), 
-                    "user_list": user_list, 
-                    "user_list_json": json.dumps(user_list), 
+                    "status": json.dumps("successful"),
+                    "eff_team": json.dumps(eff_team),
+                    "user_list": user_list,
+                    "user_list_json": json.dumps(user_list),
                     "eff_person": json.dumps(eff_person)
                 }
             )
         except:
             return render(
-                request, 
-                "tasks/efficiency.html", 
+                request,
+                "tasks/efficiency.html",
                 {
                     "nbt": nbt, "nlt": nlt, "lbt": lbt, "llt": llt,
-                    "status": json.dumps("error"), 
-                    "eff_team": json.dumps(eff_team), 
-                    "user_list": user_list, 
-                    "user_list_json": json.dumps(user_list), 
+                    "status": json.dumps("error"),
+                    "eff_team": json.dumps(eff_team),
+                    "user_list": user_list,
+                    "user_list_json": json.dumps(user_list),
                     "eff_person": json.dumps(eff_person)
                 }
             )
@@ -393,7 +388,7 @@ def getperformancedata(request):
         begin_time = request.GET.get("begin_time").strip()
         last_time = request.GET.get("last_time").strip()
         uname = request.GET.get("uname")
-        
+
         data = performanceq(begin_time, last_time, uname)
         if len(data) == 0:
             return JsonResponse({"code": 0, "msg": "很遗憾没有查询到数据!", "count": 0, "data": None})
@@ -410,7 +405,8 @@ def getperformancedata(request):
 # GS数据统计
 def gsdata_count(request):
     wb_name_list = [i[0] for i in models.Waibaos.objects.values_list("name")]
-    user_list = [i[0] for i in models.User.objects.filter(group='数据标注组').values_list("zh_uname")]
+    user_list = [i[0] for i in models.User.objects.filter(
+        group='数据标注组').values_list("zh_uname")]
     year = datetime.now().strftime('%Y')
     today = datetime.now().strftime('%Y-%m-%d')
     if request.method == "POST":
@@ -418,8 +414,9 @@ def gsdata_count(request):
         wb_name = request.POST.get("wb_name_search")
         start_time = request.POST.get("start_time_search")
         end_time = request.POST.get("end_time_search")
-        check_data_pname_list,anno_data_pname_list,bar_chart_check_list,bar_chart_anno_list,line_chart_check_list,line_chart_anno_list = gsdata_count_public_code(user, wb_name, start_time, end_time)
-        
+        check_data_pname_list, anno_data_pname_list, bar_chart_check_list, bar_chart_anno_list, line_chart_check_list, line_chart_anno_list = gsdata_count_public_code(
+            user, wb_name, start_time, end_time)
+
         if bar_chart_check_list == bar_chart_anno_list == line_chart_check_list == line_chart_anno_list == []:
             no_data = "false"
         else:
@@ -443,12 +440,13 @@ def gsdata_count(request):
                 "wb_name": json.dumps(wb_name),
                 "start_time": json.dumps(start_time),
                 "end_time": json.dumps(end_time),
-                "no_data" : json.dumps(no_data)
+                "no_data": json.dumps(no_data)
             }
-    )
+        )
 
-    check_data_pname_list,anno_data_pname_list,bar_chart_check_list,bar_chart_anno_list,line_chart_check_list,line_chart_anno_list = gsdata_count_public_code("---", "---","","")
-    
+    check_data_pname_list, anno_data_pname_list, bar_chart_check_list, bar_chart_anno_list, line_chart_check_list, line_chart_anno_list = gsdata_count_public_code(
+        "---", "---", "", "")
+
     if bar_chart_check_list == bar_chart_anno_list == line_chart_check_list == line_chart_anno_list == []:
         no_data = "false"
     else:
@@ -472,7 +470,7 @@ def gsdata_count(request):
             "wb_name": json.dumps("---"),
             "start_time": json.dumps(f"{year}-01-01"),
             "end_time": json.dumps(f"{today}"),
-            "no_data" : json.dumps(no_data)
+            "no_data": json.dumps(no_data)
         }
     )
 
@@ -485,27 +483,17 @@ def waibao(request):
     bzf = json.dumps(
         [i[0] for i in models.Waibaos.objects.values_list("name")]
     )  # 数据库里所有的项目名字
-    data_source_list = json.dumps(["---",'人工采集',"回流数据"])
-    js_methods = json.dumps(['矩形框',"多边形", "线段", "筛选", "3D框", "3D分割"])
+    data_source_list = json.dumps(["---", '人工采集', "回流数据"])
+    js_methods = json.dumps(['矩形框', "多边形", "线段", "筛选", "3D框", "3D分割"])
     ann_field_flag = json.dumps(['首次标注', '返修标注'])
     return render(request, "tasks/waibao.html", {"projects": projects, "bzf": bzf, "data_source": data_source_list, "js_methods": js_methods, "ann_field": ann_field_flag})
 
 
 def wballdata(request):
-    if (
-        request.GET.get("pname")
-        == request.GET.get("bzf")
-        == request.GET.get("begin_time")
-        == request.GET.get("last_time")
-        == None
-    ):
-        now_time = datetime.now()
-        before_time = (
-            now_time - timedelta(days=CONFIG["wb_data_show_count"])
-        ).strftime("%Y-%m-%d")
-        now_time = now_time.strftime("%Y-%m-%d")
-
-        data_object = models.Supplier.objects.all().filter(send_data_time__range=[before_time, now_time])
+    if (request.GET.get("pname") == request.GET.get("bzf") == request.GET.get("send_data_begin_time") == request.GET.get("send_data_last_time") == request.GET.get("get_data_begin_time") == request.GET.get("get_data_last_time") == None ):
+        year = datetime.now().strftime('%Y')
+        data_object = models.Supplier.objects.all().filter(
+            send_data_time__range=[f"{year}-01-01", f"{year}-12-31"])
 
         data = []
         for i in data_object:
@@ -524,11 +512,12 @@ def wballdata(request):
             tmp_dict['last_check_data_time'] = i.last_check_data_time
             tmp_dict["get_data_time"] = i.get_data_time
             tmp_dict["ann_field_flag"] = i.ann_field_flag
-            
+
             if i.ann_meta_data == None:
                 tmp_dict['ann_meta_data'] = ""
             else:
-                tmp_dict['ann_meta_data'] = json.dumps(i.ann_meta_data, ensure_ascii=False) # ensure_ascii
+                tmp_dict['ann_meta_data'] = json.dumps(
+                    i.ann_meta_data, ensure_ascii=False)  # ensure_ascii
             tmp_dict["wb_name"] = i.wb_name.name
             tmp_dict['total_money'] = i.total_money
             data.append(tmp_dict)
@@ -543,12 +532,16 @@ def wballdata(request):
             res.append(item)
         return JsonResponse({"code": 0, "msg": "查询成功", "count": len(data), "data": res, "source": data})
     else:
-        
+
         pname = request.GET.get("pname").strip()
         bzf = request.GET.get("bzf").strip()
-        begin_time = request.GET.get("begin_time").strip()
-        last_time = request.GET.get("last_time").strip()
-        data = waibao_search(pname, bzf, begin_time, last_time)
+        
+        send_data_begin_time = request.GET.get("send_data_begin_time").strip()
+        send_data_last_time = request.GET.get("send_data_last_time").strip()
+        get_data_begin_time = request.GET.get("get_data_begin_time").strip()
+        get_data_last_time = request.GET.get("get_data_last_time").strip()
+
+        data = waibao_search(pname, bzf, send_data_begin_time, send_data_last_time, get_data_begin_time, get_data_last_time)
         data.sort(key=lambda x: x["send_data_time"], reverse=True)
         res = []
         pageIndex = request.GET.get("pageIndex")
@@ -558,7 +551,8 @@ def wballdata(request):
         for item in context:
             res.append(item)
         return JsonResponse(
-            {"code": 0, "message": "查询成功", "count": len(data), "data": res, "source": data}
+            {"code": 0, "message": "查询成功", "count": len(
+                data), "data": res, "source": data}
         )
 
 
@@ -572,22 +566,23 @@ def waiabo_data_insert(request):
         except:
             return JsonResponse({"data": "样本数量 是 <b>整数<b/>么?"})
         dataone = {
-                'user': models.User.objects.get(username=models.User.objects.get(zh_uname=data.get("user")).username),
-                'proname': models.Project.objects.get(pname=data.get("pname")),
-                "send_data_batch": data.get("send_data_batch"),
-                'send_data_time': data.get("send_data_time"),
-                'pnums': abs(int(data.get("pnums"))),
-                'data_source': data.get("data_source"),
-                'scene': data.get("scene"),
-                'send_reason': data.get("send_reason"),
-                'key_frame_extracted_methods': data.get("key_frame_extracted_methods"),
-                'ann_field_flag': data.get("ann_field_flag"),
-                'wb_name': models.Waibaos.objects.get(name=data.get("wb_name")),
-                'created_time': datetime.now().strftime("%Y-%m-%d")
+            'user': models.User.objects.get(username=models.User.objects.get(zh_uname=data.get("user")).username),
+            'proname': models.Project.objects.get(pname=data.get("pname")),
+            "send_data_batch": data.get("send_data_batch"),
+            'send_data_time': data.get("send_data_time"),
+            'pnums': abs(int(data.get("pnums"))),
+            'data_source': data.get("data_source"),
+            'scene': data.get("scene"),
+            'send_reason': data.get("send_reason"),
+            'key_frame_extracted_methods': data.get("key_frame_extracted_methods"),
+            'ann_field_flag': data.get("ann_field_flag"),
+            'wb_name': models.Waibaos.objects.get(name=data.get("wb_name")),
+            'created_time': datetime.now().strftime("%Y-%m-%d")
         }
         try:
             models.Supplier.objects.create(**dataone)
-            wb_dingtalk(models.User.objects.get(zh_uname=data.get("user")).username, "添加", "", dataone)
+            wb_dingtalk(models.User.objects.get(
+                zh_uname=data.get("user")).username, "添加", "", dataone)
             return JsonResponse({"data": "successful"})
         except:
             return JsonResponse({"data": "请检查填写的内容"})
@@ -611,21 +606,23 @@ def wb_update(request):
             'user': models.User.objects.get(username=models.User.objects.get(zh_uname=data.get("user")).username),
             'proname': models.Project.objects.get(pname=data.get("pname")),
             'send_data_batch': data.get("send_data_batch"),
-            'send_data_time' : data.get("send_data_time"),
-            'pnums' : abs(int(data.get("pnums"))),
-            'data_source' : data.get("data_source"),
-            'scene' : data.get("scene"),
-            'send_reason' : data.get("send_reason"),
-            'key_frame_extracted_methods' : data.get("key_frame_extracted_methods"),
+            'send_data_time': data.get("send_data_time"),
+            'pnums': abs(int(data.get("pnums"))),
+            'data_source': data.get("data_source"),
+            'scene': data.get("scene"),
+            'send_reason': data.get("send_reason"),
+            'key_frame_extracted_methods': data.get("key_frame_extracted_methods"),
             'ann_field_flag': data.get("ann_field_flag"),
             'wb_name': models.Waibaos.objects.get(name=data.get("wb_name"))
         }
         if data.get("begin_check_data_time"):
-            data_update['begin_check_data_time'] = data.get("begin_check_data_time")
+            data_update['begin_check_data_time'] = data.get(
+                "begin_check_data_time")
         else:
             data_update['begin_check_data_time'] = None
-        if data.get("last_check_data_time"): 
-            data_update['last_check_data_time'] = data.get("last_check_data_time")
+        if data.get("last_check_data_time"):
+            data_update['last_check_data_time'] = data.get(
+                "last_check_data_time")
         else:
             data_update['last_check_data_time'] = None
         if data.get("get_data_time"):
@@ -634,9 +631,11 @@ def wb_update(request):
             data_update['get_data_time'] = None
 
         new_ann_meta_data = []
-        for item in range(0,(len(data)-16)//4):
-            settlement_method =  data.get(f"ann_meta_data[{item}][settlement_method]")
-            recovery_precision = data.get(f"ann_meta_data[{item}][recovery_precision]")
+        for item in range(0, (len(data)-16)//4):
+            settlement_method = data.get(
+                f"ann_meta_data[{item}][settlement_method]")
+            recovery_precision = data.get(
+                f"ann_meta_data[{item}][recovery_precision]")
             knums = data.get(f"ann_meta_data[{item}][knums]")
             unit_price = data.get(f"ann_meta_data[{item}][unit_price]")
             if knums == 0 or unit_price == 0 or settlement_method == "---":
@@ -650,7 +649,7 @@ def wb_update(request):
                     return JsonResponse({"status": "error", "mes": "单价不可能能 小于0 !"})
                 else:
                     if recovery_precision != "":
-                        if float(recovery_precision) < 0  or float(recovery_precision) > 100:
+                        if float(recovery_precision) < 0 or float(recovery_precision) > 100:
                             return JsonResponse({"status": "error", "mes": "准确率率不能 小于0 大于100 !"})
                         else:
                             try:
@@ -659,7 +658,7 @@ def wb_update(request):
                                     "recovery_precision": abs(float(recovery_precision)),
                                     "knums": abs(int(knums)),
                                     "unit_price": abs(float(unit_price))
-                                    }
+                                }
                                 new_ann_meta_data.append(ann_tmp_dict)
                             except:
                                 return JsonResponse({"status": "error", "mes": "请检查 框数 和 单价 是否填写正确!"})
@@ -670,7 +669,7 @@ def wb_update(request):
                                 "recovery_precision": None,
                                 "knums": abs(int(knums)),
                                 "unit_price": abs(float(unit_price))
-                                }
+                            }
                             new_ann_meta_data.append(ann_tmp_dict)
                         except:
                             return JsonResponse({"status": "error", "mes": "请检查 框数 和 单价 是否填写正确!"})
@@ -678,15 +677,17 @@ def wb_update(request):
         if new_ann_meta_data:
             data_update["ann_meta_data"] = new_ann_meta_data
             money_count = 0
-            for idx  in new_ann_meta_data:
-                money_count += round((idx["knums"] * idx["unit_price"]),2)
+            for idx in new_ann_meta_data:
+                money_count += round((idx["knums"] * idx["unit_price"]), 2)
             data_update["total_money"] = money_count
         else:
             data_update["ann_meta_data"] = None
             data_update["total_money"] = None
         try:
-            models.Supplier.objects.filter(id=data.get('id')).update(**data_update)
-            wb_dingtalk(models.User.objects.get(zh_uname=data.get("main_user")).username, "修改", data.get('id'), data_update)
+            models.Supplier.objects.filter(
+                id=data.get('id')).update(**data_update)
+            wb_dingtalk(models.User.objects.get(zh_uname=data.get(
+                "main_user")).username, "修改", data.get('id'), data_update)
             return JsonResponse({"status": "successful"})
         except:
             return JsonResponse({"status": "error", "mes": "请检查填写的信息!"})
@@ -725,14 +726,18 @@ def wbdata_count_public_code(wb_name, start_time, end_time):
     year = datetime.now().strftime('%Y')
     if wb_name == "---":
         if start_time and end_time:
-            init_data = models.Supplier.objects.filter(send_data_time__range=[start_time, end_time])
+            init_data = models.Supplier.objects.filter(
+                get_data_time__range=[start_time, end_time])
         else:
-            init_data = models.Supplier.objects.filter(send_data_time__range=[year + '-01-01', year + "-12-31"])
+            init_data = models.Supplier.objects.filter(
+                get_data_time__range=[year + '-01-01', year + "-12-31"])
     else:
         if start_time and end_time:
-            init_data = models.Supplier.objects.filter(send_data_time__range=[start_time, end_time], wb_name=models.Waibaos.objects.get(name=wb_name))
+            init_data = models.Supplier.objects.filter(get_data_time__range=[
+                                                       start_time, end_time], wb_name=models.Waibaos.objects.get(name=wb_name))
         else:
-            init_data = models.Supplier.objects.filter(send_data_time__range=[year + '-01-01', year + "-12-31"], wb_name=models.Waibaos.objects.get(name=wb_name))
+            init_data = models.Supplier.objects.filter(get_data_time__range=[
+                                                       year + '-01-01', year + "-12-31"], wb_name=models.Waibaos.objects.get(name=wb_name))
     if init_data:
         proname_list = []
         for item in init_data:
@@ -742,7 +747,7 @@ def wbdata_count_public_code(wb_name, start_time, end_time):
         pie_chart_knums_data = []
         pie_chart_money_data = []
         pie_chart_pnums_data = []
-        line_chart_list = [] # [[],[],[]] time,kuang,qian [zhun]
+        line_chart_list = []  # [[],[],[]] time,kuang,qian [zhun]
         money_total = 0
         for proidx in proname_list:
             time_list = []
@@ -751,41 +756,50 @@ def wbdata_count_public_code(wb_name, start_time, end_time):
             pnums_list = []
             for modidx in init_data:
                 if modidx.proname.pname == proidx:
-                    time_list.append(modidx.send_data_time.strftime('%Y-%m-%d'))
+                    time_list.append(
+                        modidx.send_data_time.strftime('%Y-%m-%d'))
                     if len(pnums_list) == 0:
                         pnums_list.append(modidx.pnums)
                     else:
                         pnums_list.append(pnums_list[-1] + modidx.pnums)
                     if modidx.ann_meta_data:
                         if len(kuang_list) == 0:
-                            kuang_list.append(sum([idx["knums"] for idx in modidx.ann_meta_data]))
+                            kuang_list.append(
+                                sum([idx["knums"] for idx in modidx.ann_meta_data]))
                         else:
-                            kuang_list.append( kuang_list[-1] + sum([idx["knums"] for idx in modidx.ann_meta_data]))
+                            kuang_list.append(
+                                kuang_list[-1] + sum([idx["knums"] for idx in modidx.ann_meta_data]))
                         if len(money_list) == 0:
                             money_list.append(modidx.total_money)
                         else:
-                            money_list.append(round(money_list[-1] + modidx.total_money,3))
+                            money_list.append(
+                                round(money_list[-1] + modidx.total_money, 3))
                         money_total += modidx.total_money
-            line_chart_list.append([time_list, kuang_list, money_list, pnums_list])
-            
+            line_chart_list.append(
+                [time_list, kuang_list, money_list, pnums_list])
+
             if len(kuang_list) == 0:
                 pie_chart_knums_data.append({"name": proidx, "value": [0]})
             else:
-                pie_chart_knums_data.append({"name": proidx, "value": kuang_list[-1]})
+                pie_chart_knums_data.append(
+                    {"name": proidx, "value": kuang_list[-1]})
             if len(money_list) == 0:
                 pie_chart_money_data.append({"name": proidx, "value": [0]})
             else:
-                pie_chart_money_data.append({"name": proidx, "value": money_list[-1]})
-            pie_chart_pnums_data.append({"name": proidx, "value": pnums_list[-1]})
-        char_list = [pie_chart_pnums_data, pie_chart_knums_data, pie_chart_money_data]
+                pie_chart_money_data.append(
+                    {"name": proidx, "value": money_list[-1]})
+            pie_chart_pnums_data.append(
+                {"name": proidx, "value": pnums_list[-1]})
+        char_list = [pie_chart_pnums_data,
+                     pie_chart_knums_data, pie_chart_money_data]
     else:
         # 为查询到数据先返回空，后面加提示
         money_total = 0
         proname_list = []
         char_list = [[{}], [{}]]
-        line_chart_list = [[[0],[0],[0]]]
-    
-    return proname_list, char_list, format(round(money_total,2),','), line_chart_list
+        line_chart_list = [[[0], [0], [0]]]
+
+    return proname_list, char_list, format(round(money_total, 2), ','), line_chart_list
 
 
 # 外包数据统计
@@ -799,35 +813,36 @@ def wbdata_count(request):
         end_time = request.POST.get("end_time_search")
         proname_list, char_list, money_total, line_chart_list = wbdata_count_public_code(wb_name, start_time, end_time)
 
-        chart_pie = json.dumps(char_list,ensure_ascii=False)
+        chart_pie = json.dumps(char_list, ensure_ascii=False)
         chart_line = json.dumps(line_chart_list, ensure_ascii=False)
         return render(
-                        request, 
-                        "tasks/wbdata_count.html", 
-                        {
-                            "wb_name_list": wb_name_list, 
-                            "wb_selc": json.dumps(wb_name),
-                            "time_start": json.dumps(start_time),
-                            "time_end": json.dumps(end_time), 
-                            "proname": proname_list, 
-                            "proname_json":json.dumps(proname_list, ensure_ascii=False), 
-                            "chart_pie": chart_pie, "chart_line": chart_line, "money_total": json.dumps(money_total)
-                        }
-                    )
-    
-    proname_list, char_list, money_total, line_chart_list = wbdata_count_public_code("---", "", "")
-    chart_pie = json.dumps(char_list,ensure_ascii=False)
+            request,
+            "tasks/wbdata_count.html",
+            {
+                "wb_name_list": wb_name_list,
+                "wb_selc": json.dumps(wb_name),
+                "time_start": json.dumps(start_time),
+                "time_end": json.dumps(end_time),
+                "proname": proname_list,
+                "proname_json": json.dumps(proname_list, ensure_ascii=False),
+                "chart_pie": chart_pie, "chart_line": chart_line, "money_total": json.dumps(money_total)
+            }
+        )
+
+    proname_list, char_list, money_total, line_chart_list = wbdata_count_public_code(
+        "---", "", "")
+    chart_pie = json.dumps(char_list, ensure_ascii=False)
     chart_line = json.dumps(line_chart_list, ensure_ascii=False)
     return render(
-                    request, 
-                    "tasks/wbdata_count.html", 
-                    {
-                        "wb_name_list": wb_name_list, 
-                        "wb_selc": json.dumps("---"), 
-                        "time_start": json.dumps(f"{year}-01-01"),
-                        "time_end": json.dumps(f"{today}"), 
-                        "proname": proname_list, 
-                        "proname_json":json.dumps(proname_list, ensure_ascii=False), 
-                        "chart_pie": chart_pie, "chart_line": chart_line, "money_total": json.dumps(money_total)
-                    }
-                )
+        request,
+        "tasks/wbdata_count.html",
+        {
+            "wb_name_list": wb_name_list,
+            "wb_selc": json.dumps("---"),
+            "time_start": json.dumps(f"{year}-01-01"),
+            "time_end": json.dumps(f"{today}"),
+            "proname": proname_list,
+            "proname_json": json.dumps(proname_list, ensure_ascii=False),
+            "chart_pie": chart_pie, "chart_line": chart_line, "money_total": json.dumps(money_total)
+        }
+    )
