@@ -1,3 +1,11 @@
+# 2023-02-10
+### Changed
+- 修复数据不能正常导出问题
+- 外包栏 图表根据数据 发送时间/交付时间 展示
+    <img src="./myess/asserts/ess-2023-02-10-echarts-show_select.png">
+
+
+
 # 2023-02-09
 ### Changed
 - 弃用钉钉消息通知

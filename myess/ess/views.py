@@ -722,22 +722,31 @@ def wb_update(request):
     return JsonResponse({"data": data, "status": "successful"})
 
 
-def wbdata_count_public_code(wb_name, start_time, end_time):
+def wbdata_count_public_code(is_send_time_method, wb_name, start_time, end_time):
     year = datetime.now().strftime('%Y')
-    if wb_name == "---":
-        if start_time and end_time:
-            init_data = models.Supplier.objects.filter(
-                get_data_time__range=[start_time, end_time])
+    if is_send_time_method == "是":
+        if wb_name == "---":
+            if start_time and end_time:
+                init_data = models.Supplier.objects.filter(send_data_time__range=[start_time, end_time])
+            else:
+                init_data = models.Supplier.objects.filter(send_data_time__range=[year + '-01-01', year + "-12-31"])
         else:
-            init_data = models.Supplier.objects.filter(
-                get_data_time__range=[year + '-01-01', year + "-12-31"])
+            if start_time and end_time:
+                init_data = models.Supplier.objects.filter(send_data_time__range=[start_time, end_time], wb_name=models.Waibaos.objects.get(name=wb_name))
+            else:
+                init_data = models.Supplier.objects.filter(send_data_time__range=[year + '-01-01', year + "-12-31"], wb_name=models.Waibaos.objects.get(name=wb_name))
     else:
-        if start_time and end_time:
-            init_data = models.Supplier.objects.filter(get_data_time__range=[
-                                                       start_time, end_time], wb_name=models.Waibaos.objects.get(name=wb_name))
+        if wb_name == "---":
+            if start_time and end_time:
+                init_data = models.Supplier.objects.filter(get_data_time__range=[start_time, end_time])
+            else:
+                init_data = models.Supplier.objects.filter(get_data_time__range=[year + '-01-01', year + "-12-31"])
         else:
-            init_data = models.Supplier.objects.filter(get_data_time__range=[
-                                                       year + '-01-01', year + "-12-31"], wb_name=models.Waibaos.objects.get(name=wb_name))
+            if start_time and end_time:
+                init_data = models.Supplier.objects.filter(get_data_time__range=[start_time, end_time], wb_name=models.Waibaos.objects.get(name=wb_name))
+            else:
+                init_data = models.Supplier.objects.filter(get_data_time__range=[year + '-01-01', year + "-12-31"], wb_name=models.Waibaos.objects.get(name=wb_name))
+
     if init_data:
         proname_list = []
         for item in init_data:
@@ -799,7 +808,7 @@ def wbdata_count_public_code(wb_name, start_time, end_time):
         char_list = [[{}], [{}]]
         line_chart_list = [[[0], [0], [0]]]
 
-    return proname_list, char_list, format(round(money_total, 2), ','), line_chart_list
+    return is_send_time_method, proname_list, char_list, format(round(money_total, 2), ','), line_chart_list
 
 
 # 外包数据统计
@@ -808,10 +817,11 @@ def wbdata_count(request):
     year = datetime.now().strftime('%Y')
     today = datetime.now().strftime('%Y-%m-%d')
     if request.method == "POST":
+        is_send_time_method = request.POST.get("select_time_method")
         wb_name = request.POST.get("wb_name_search")
         start_time = request.POST.get("start_time_search")
         end_time = request.POST.get("end_time_search")
-        proname_list, char_list, money_total, line_chart_list = wbdata_count_public_code(wb_name, start_time, end_time)
+        is_send_method, proname_list, char_list, money_total, line_chart_list = wbdata_count_public_code(is_send_time_method, wb_name, start_time, end_time)
 
         chart_pie = json.dumps(char_list, ensure_ascii=False)
         chart_line = json.dumps(line_chart_list, ensure_ascii=False)
@@ -819,6 +829,7 @@ def wbdata_count(request):
             request,
             "tasks/wbdata_count.html",
             {
+                "is_send_time_method": json.dumps(is_send_method),
                 "wb_name_list": wb_name_list,
                 "wb_selc": json.dumps(wb_name),
                 "time_start": json.dumps(start_time),
@@ -829,14 +840,14 @@ def wbdata_count(request):
             }
         )
 
-    proname_list, char_list, money_total, line_chart_list = wbdata_count_public_code(
-        "---", "", "")
+    _, proname_list, char_list, money_total, line_chart_list = wbdata_count_public_code("是", "---", "", "")
     chart_pie = json.dumps(char_list, ensure_ascii=False)
     chart_line = json.dumps(line_chart_list, ensure_ascii=False)
     return render(
         request,
         "tasks/wbdata_count.html",
         {
+            "is_send_time_method": json.dumps("是"),
             "wb_name_list": wb_name_list,
             "wb_selc": json.dumps("---"),
             "time_start": json.dumps(f"{year}-01-01"),
