@@ -678,8 +678,8 @@ def wb_update(request):
             data_update["ann_meta_data"] = new_ann_meta_data
             money_count = 0
             for idx in new_ann_meta_data:
-                money_count += round((idx["knums"] * idx["unit_price"]), 2)
-            data_update["total_money"] = money_count
+                money_count += idx["knums"] * idx["unit_price"]
+            data_update["total_money"] = round(money_count, 2)
         else:
             data_update["ann_meta_data"] = None
             data_update["total_money"] = None

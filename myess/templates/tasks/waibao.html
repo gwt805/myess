@@ -699,8 +699,14 @@
         });
         $('#pname_search').find('option:first').prop("selected", "selected");
         $('#bzf_search').find('option:first').prop("selected", "selected");
-        $("#begin_time_search").val("");
-        $("#last_time_search").val("");
+        $("#send_data_begin_time_search").val("2021-01-01");
+        var now = new Date();
+        var day = ('0' + now.getDate()).slice(-2);
+        var month = ('0' + (now.getMonth() + 1)).slice(-2);
+        var today = now.getFullYear() + '-' + (month) + '-' + (day);
+        $("#send_data_last_time_search").val(today);
+        $("#get_res_begin_time_search").val("");
+        $("#get_res_last_time_search").val("");
     })
     // 操作栏-编辑/删除
     table.on('tool(test)', function (obj) { // 双击 toolDouble
