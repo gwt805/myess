@@ -93,6 +93,11 @@
         <div id="search_div" style="border-bottom: 1px dashed gray; color: #fff; margin-top: 2px; display: flex; justify-content: center; background-color: rgb(16, 12, 42);">
             <form action="/wbdata_count/" method="post" onsubmit="return pie_line_search()" style="margin: 10px 0;">
                 {% csrf_token %}
+                <label for="select_time_method" style="margin: auto 5px; padding: 6px 0 0 10px; float: left;">是否按照数据发送日期查询</label>
+                <select name="select_time_method" id="select_time_method" class="form-control" style="width:80px; border-radius: 5px; float: left;">
+                    <option value="是">是</option>
+                    <option value="否">否</option>
+                </select>
                 <label for="wb_name_search" style="margin: auto 5px; padding: 6px 0 0 10px; float: left;">供应商</label>
                 <select class="form-control" name="wb_name_search" id="wb_name_search" style="width: 100px; border-radius: 5px; float: left;">
                     <option value="---">---</option>
@@ -196,11 +201,13 @@
     const chart_line = JSON.parse('{{ chart_line|safe }}');
     const money_total = JSON.parse('{{ money_total|safe }}');
 
+    const is_send_time_method = JSON.parse('{{ is_send_time_method|safe }}');
     const wb_name_selc = JSON.parse('{{ wb_selc|safe }}');
     const time_start = JSON.parse('{{ time_start|safe }}');
     const time_end = JSON.parse('{{ time_end|safe }}');
     
     // 对查询的数据做渲染
+    $("#select_time_method").val(is_send_time_method);
     $("#wb_name_search").val(wb_name_selc);
     $("#start_time_search").val(time_start);
     $("#end_time_search").val(time_end);
