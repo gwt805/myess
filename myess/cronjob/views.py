@@ -202,7 +202,7 @@ def ding_day_report_form():
 
 def every_day_ding_send_report_form():
     _, _, char_list, money_total, _ = views.wbdata_count_public_code("是", "---", "", "")
-    make_report_form_img(char_list, format(round(money_total, 2), ','))
+    make_report_form_img(char_list, money_total)
     ding_day_report_form()
     
 
