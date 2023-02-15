@@ -684,7 +684,6 @@ def wb_update(request):
             data_update["total_money"] = round(money_count, 2)
             # 触发检查是否满足 1/3,2/3,3/3
             budget_check(data.get("pname"), data.get("send_data_time"))
-            logger.info("预算检测")
         else:
             data_update["ann_meta_data"] = None
             data_update["total_money"] = None
@@ -955,7 +954,7 @@ def budget_check(pname, time):
         user_list = ["carsonlee"]
         if pname in ground_50_pname_list:
             budget_data = models.Budget.objects.filter(year_budget=int(time.split('-')[0]), proname=models.Project.objects.get(pname="50-地面物体"))
-            ann_budget = budget_data[0].ann_budget
+            ann_budget = [item.ann_budget for item in budget_data]
             for item in ground_50_pname_list:
                 tmp = models.Supplier.objects.filter(proname=models.Project.objects.get(pname=item).pname,send_data_time__range=[f"{time.split('-')[0]}-01-01", f"{time.split('-')[0]}-12-31"])
                 for tmp_item in tmp:
