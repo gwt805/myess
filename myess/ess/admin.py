@@ -36,7 +36,7 @@ class ControlTASK(admin.ModelAdmin):
 
 @admin.register(models.Project)
 class ControlPorject(admin.ModelAdmin):
-    list_display = ("pname",)
+    list_display = ("id", "pname")
     search_fields = ('pname',)
     list_per_page = 10  # 每页展示5条记录
 
@@ -93,3 +93,42 @@ class ControlSupplier(admin.ModelAdmin):
                     "wb_name__name",
                     "created_time",
                     "total_money"]
+
+@admin.register(models.Budget)
+class ControlBudget(admin.ModelAdmin):
+    list_display = (
+        "year_budget",
+        "proname_id",
+        "ann_budget",
+        "used_money",
+        "used_ratio",
+        "reaching_one_third_budget_time",
+        "one_third_report_time",
+        "one_third_report_file",
+        "reaching_two_third_budget_time",
+        "two_third_report_time",
+        "two_third_report_file",
+        "reaching_one_third_budget_time",
+        "third_third_report_time",
+        "third_third_report_file",
+        "created_time",
+        "updated_time"
+    )
+    list_per_page = 30  # 每页展示5条记录
+    search_fields = [
+                    "year_budget",
+                    "proname__pname",
+                    "ann_budget",
+                    "used_money",
+                    "used_ratio",
+                    "reaching_one_third_budget_time",
+                    "one_third_report_time",
+                    "one_third_report_file",
+                    "reaching_two_third_budget_time",
+                    "two_third_report_time",
+                    "two_third_report_file",
+                    "reaching_one_third_budget_time",
+                    "third_third_report_time",
+                    "third_third_report_file",
+                    "created_time",
+                    "updated_time"]

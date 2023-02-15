@@ -620,3 +620,46 @@ def wb_dingtalk(uname, kind, id, wbdata):
         logger.warning("企业微信机器人还没有配置喔！")
     else:
         task_wc.start()
+
+def budget_talk(uname, kind, id, data):
+    if kind ==  "删除":
+        msg_text = f"@{uname} {kind}了一条ID为 {id} 的标注预算数据"
+    if kind == "添加":
+        msg_text = f"@{uname} {kind}了一条 {data['year']} 年标注预算数据:\r\t项目名字: {data['pname']}\r\t标注预算: {data['ann_budget']}"
+    if kind == "修改":
+        msg_text = f"@{uname} {kind}了一条ID为 {id} 的{data.year_budget}年标注预算数据, 详情如下:\r"
+        msg_text += f"\t项目名字: {data.proname}\r\t标注预算: {data.ann_budget}\r\t已使用费用: {data.used_money}\r\t使用百分比: {data.used_ratio}\r\t达到1/3预算日期: {data.reaching_one_third_budget_time}\r\t1/3 汇报日期: {data.one_third_report_time}\r\t1/3 汇报文档: {data.one_third_report_file}\r\t达到2/3预算日期: {data.reaching_two_third_budget_time}\r\t2/3 汇报日期: {data.two_third_report_time}\r\t2/3 汇报文档: {data.two_third_report_file}\r\t达到 100%预算日期: {data.reaching_third_third_budget_time}\r\t100% 汇报日期: {data.third_third_report_time}\r\t100% 汇报文档: {data.third_third_report_file}"
+    def wecom_mes():
+        res = requests.post(
+            f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}", 
+            json={"msgtype": "text","text": {
+                "content": msg_text
+            }})
+        logger.info(f"企微机器人消息状态: {res.json()}")
+
+    task_wc = threading.Thread(target=wecom_mes)
+    
+    if CONFIG['wecom_webhook_key'] == "":
+        logger.warning("企业微信机器人还没有配置喔！")
+    else:
+        task_wc.start()
+
+def budget_reaching_talk(pname, uname_list, ratio):
+    msg_text = ""
+    for item in uname_list:
+        msg_text += f"@{item} "
+    msg_text += f"\r请注意: 项目: {pname} 预算使用已达 {ratio}"
+    def wecom_mes():
+        res = requests.post(
+            f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}", 
+            json={"msgtype": "text","text": {
+                "content": msg_text
+            }})
+        logger.info(f"企微机器人消息状态: {res.json()}")
+
+    task_wc = threading.Thread(target=wecom_mes)
+    
+    if CONFIG['wecom_webhook_key'] == "":
+        logger.warning("企业微信机器人还没有配置喔！")
+    else:
+        task_wc.start()

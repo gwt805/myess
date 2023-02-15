@@ -18,7 +18,7 @@ class User(AbstractUser):
     )
 
     class Meta:
-        verbose_name_plural = "用户列表"
+        verbose_name_plural = "用户信息表"
 
 
 class Task(models.Model):
@@ -49,7 +49,7 @@ class Project(models.Model):
     )  # 项目类型
 
     class Meta:
-        verbose_name_plural = "项目列表"
+        verbose_name_plural = "项目名字表"
 
 class Tkinds(models.Model):
     kinds = models.CharField(
@@ -63,7 +63,7 @@ class Waibaos(models.Model):
     name = models.CharField(max_length=128, unique=True, verbose_name="外包名字")
     
     class Meta:
-        verbose_name_plural = "供应商列表"
+        verbose_name_plural = "供应商名字表"
 
 # class Waibao(models.Model):
 #     pname = models.CharField(null=False, max_length=128, verbose_name="项目名字", blank=True)  # 项目名字
@@ -78,9 +78,9 @@ class Waibaos(models.Model):
 
 class Supplier(models.Model):
     user = models.ForeignKey(to="User", on_delete=models.CASCADE, verbose_name="研发") # CharField(null=False, max_length=256,verbose_name='研发名字', default=None) # 研发名字
-    proname = models.ForeignKey(to='Project',on_delete=models.CASCADE, to_field='pname', verbose_name="项目名字") #(to="Project", to_field="id", on_delete=models.CASCADE) #CharField(null=False, max_length=128, verbose_name="项目名字", blank=True)  # 项目名字
-    send_data_batch = models.TextField(null=False, verbose_name="送标批次", default=None)
-    ann_field_flag = models.CharField(null=False, max_length=128, default=None, verbose_name="首次标注or返修标注")
+    proname = models.ForeignKey(to='Project',on_delete=models.CASCADE, to_field='pname', verbose_name="项目名字")
+    send_data_batch = models.TextField(null=False, verbose_name="送标批次", default=None, blank=True)
+    ann_field_flag = models.CharField(null=False, max_length=128, default=None, verbose_name="首次标注or返修标注", blank=True)
     send_data_time = models.DateField(null=False, verbose_name="送标时间", default="1999-01-01") # 送标时间
     pnums = models.IntegerField(null=False, verbose_name="送标样本数量", blank=True)  # 送标样本数量
     data_source = models.CharField(null=False, max_length=256, choices=(("人工采集",  "人工采集"), ("数据回流", "数据回流"), ("未知", "未知")), verbose_name="数据来源", default="未知") # 数据来源
@@ -97,7 +97,32 @@ class Supplier(models.Model):
     total_money = models.FloatField(null=True, verbose_name="总金钱", blank=True)
 
     class Meta:
-        verbose_name_plural = "供应商数据列表新"
+        verbose_name_plural = "供应商送标统计表"
+
+class Budget(models.Model):
+    year_budget = models.IntegerField(null=False, verbose_name="哪年的预算")
+    proname = models.ForeignKey(to='Project',on_delete=models.CASCADE, to_field='pname', verbose_name="项目名字")
+    ann_budget = models.FloatField(verbose_name="标注预算")
+    used_money = models.FloatField(null=True, verbose_name="已使用费用", blank=True)
+    used_ratio = models.FloatField(null=True, verbose_name="使用百分比", blank=True)
+
+    reaching_one_third_budget_time = models.DateField(null=True, verbose_name="达到1/3预算日期", blank=True)
+    one_third_report_time = models.DateField(null=True, verbose_name="1/3 汇报日期", blank=True)
+    one_third_report_file = models.TextField(null=True, verbose_name="1/3 汇报文档", blank=True)
+    
+    reaching_two_third_budget_time = models.DateField(null=True, verbose_name="达到2/3预算日期", blank=True)
+    two_third_report_time = models.DateField(null=True, verbose_name="2/3 汇报日期", blank=True)
+    two_third_report_file = models.TextField(null=True, verbose_name="2/3 汇报文档", blank=True)
+
+    reaching_third_third_budget_time = models.DateField(null=True, verbose_name="达到 100%预算日期", blank=True)
+    third_third_report_time = models.DateField(null=True, verbose_name="100% 汇报日期", blank=True)
+    third_third_report_file = models.TextField(null=True, verbose_name="100% 汇报文档", blank=True)
+
+    created_time = models.DateField(null=False,auto_created=True,auto_now=True)
+    updated_time = models.DateField(null=False,auto_created=True,auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "年度标注预算表"
 
 
 class TaskSummary(models.Model):

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" rel="external nofollow" href="/static/img/favicon.ico" />
+    <link rel="stylesheet" href="/static/lib/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/index1.css">
+    <script src="/static/lib/jquery/2.1.4/jquery.min.js"></script>
+    <script src="/static/lib/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="/static/lib/echarts/5.4.1/dist/echarts.min.js"></script>
+    <link href="/static/lib/layui-v2.7.6/layui/css/layui.css" rel="stylesheet">
+    <script src="/static/lib/layui-v2.7.6/layui/layui.js"></script>
+    <script src="/static/lib/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <title>供应商各项目数据统计</title>
+    <style>
+        h3 {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-left: 60px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top" onselectstart="return false">
+        <!--onselectstrat 禁止选中-->
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#my-nav"
+                    aria-expanded="false">
+                    <span class="sr-only">切换导航条</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- <a class="navbar-brand" style="cursor:default;"> -->
+                <img src="/static/img/logo_ess.png" alt="ESS" draggable="false">
+                <!-- </a> -->
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="my-nav">
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <a href="/index">首页</a>
+                    </li>
+                    <li class="active">
+                        <a href="/waibao" style="color: #fff; background-color: rgb(68, 147, 199);">外包数据</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li style="border-right: 1px solid #bdbdbd; margin-right: 20px; cursor: pointer;"><a
+                            onclick="help()">
+                            <i class="fa fa-hand-o-right" style="margin-right: 5px; font-size: 18px;"></i>
+                            <span style="font-size: 18px;">Help</span></a>
+                    </li>
+                    <li role="presentation" class="dropdown" style="width: 139px;">
+                        <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                            style="text-align: center;">
+                            <i class="fa fa-user" style="margin-left: -30px; font-size: 18px;"></i>
+                            <span style="font-size: 18px; margin-left: 5px;" id="name"></span><span class="caret"
+                                style="margin-left: 10px;"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li style="border-bottom: 1px solid gray;" id="nav_setting">
+                                <a href="/sites/" target="black">
+                                    <i class="fa fa-gear"></i>
+                                    <span style="margin-left: 10px;">设置</span>
+                                </a>
+                            </li>
+                            <li style="border-bottom: 1px solid gray;" onclick="info()">
+                                <a>
+                                    <i class="fa fa-info-circle"></i>
+                                    <span style="margin-left: 10px;">关于</span>
+                                </a>
+                            </li>
+                            <li onclick="logout()"><a><i class="fa fa-sign-out"></i><span
+                                        style="margin-left: 10px;">注销</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="alert alert-danger hide" id="alert_div"
+        style="width: 300px; position: fixed; top: 40%;left: 42.5%; right: 50%;z-index: 1; font-size: 22px; text-align: center;">
+    </div> <!-- 警告弹出框 -->
+    <div style="width: 100%; height: 94.7%; position: absolute; top: 42px; overflow-y: auto; overflow-x: hidden;">
+        <script type="text/html" id="toolbars">
+            <input type="number" id="year_search" placeholder="查询的年份" min="2023" class="layui-input" style="display: inline; width:150px; height: 30px;">
+            <button class="layui-btn layui-btn-sm" lay-event="search_btn">查询</button>
+            <button class="layui-btn layui-btn-sm" lay-event="add_btn">添加数据</button>
+            <h3 id="tittle" style="margin-top: -25px;"></h3>
+        </script>
+        <!--工具栏(每行)-->
+        <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="fa fa-pencil"></i> 编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="fa fa-remove"></i> 删除</a>
+        </script>
+        <table class="layui-hide table-bordered" id="budget_table" lay-filter="budget_table"></table>
+    </div>
+    <!-- 弹窗之添加数据 -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="modal_add">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color: rgb(68, 147, 199);">
+                        <i class="fa fa-info-circle"></i> ESS-BUDGET-ADD
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="err_msg" style="display: none; text-align: center;"></div>
+                    <table class="table">
+                        <tr>
+                            <th>年份</th>
+                            <th>项目名字</th>
+                            <th>标注预算</th>
+                        </tr>
+                        <tr>
+                            <td><input type="number" min="0" class="form-control" id="year"></td>
+                            <td>
+                                <select name="pname" id="pname" class="form-control">
+                                    <option value="---">---</option>
+                                </select>
+                            </td>
+                            <td><input type="number" min="0" class="form-control" id="money"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        style="float: left; border-radius: 5px; height: 35px; width: 50%; color: blue; background-color: #bdbdbd;"
+                        id="miss">
+                        <span aria-hidden="true">取消</span>
+                    </button>
+                    <button class="btn btn-primary" style="width: 50%;" onclick="budget_add()">添加</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- 弹窗之修改数据 -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="modal_change">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color: rgb(68, 147, 199);">
+                        <i class="fa fa-info-circle"></i> ESS-BUDGET-CHANGE
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="err_msg" style="display: none; text-align: center;"></div>
+                    <table class="table">
+                        <tr>
+                            <th>ID</th>
+                            <th>项目名字</th>
+                            <th>标注预算</th>
+                            <th>已使用费用</th>
+                            <th>使用百分比</th>
+                        </tr>
+                        <tr>
+                            <td><input type="number" class="form-control" id="edit_id" disabled></td>
+                            <td><select class="form-control" id="edit_pname" disabled></select></td>
+                            <td><input type="text" class="form-control" id="edit_ann_budget" disabled></td>
+                            <td><input type="number" class="form-control" id="edit_used_money" disabled></td>
+                            <td><input type="number" class="form-control" id="edit_used_ratio" disabled></td>
+                        </tr>
+                        <tr>
+                            <th>达到1/3预算日期</th>
+                            <th>1/3 汇报日期</th>
+                            <th>1/3 汇报文档</th>
+                            <th>达到2/3预算日期</th>
+                            <th>2/3 汇报日期</th>
+                        </tr>
+                        <tr>
+                            <td><input type="date" class="form-control" id="edit_one_three_time" disabled></td>
+                            <td><input type="date" class="form-control" id="edit_one_three_report_time"></td>
+                            <td><textarea class="form-control" id="edit_one_three_report_file"
+                                    style="resize: none; height: 35px; overflow-y: hidden; overflow-wrap: normal;"></textarea>
+                            </td>
+                            <td><input type="date" class="form-control" id="edit_two_three_time" disabled></td>
+                            <td><input type="date" class="form-control" id="edit_two_three_report_time"></td>
+                        </tr>
+                        <tr>
+                            <th>2/3 汇报文档</th>
+                            <th>达到 100%预算日期</th>
+                            <th>100% 汇报日期</th>
+                            <th>100% 汇报文档</th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <td><textarea class="form-control" id="edit_two_three_report_file"
+                                    style="resize: none; height: 35px; overflow-y: hidden; overflow-wrap: normal;"></textarea>
+                            </td>
+                            <td><input type="date" class="form-control" id="edit_three_three_time" disabled></td>
+                            <td><input type="date" class="form-control" id="edit_three_three_report_time"></td>
+                            <td><textarea class="form-control" id="edit_three_three_report_file"
+                                    style="resize: none; height: 35px; overflow-y: hidden; overflow-wrap: normal;"></textarea>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        style="float: left; border-radius: 5px; height: 35px; width: 50%; color: blue; background-color: #bdbdbd;"
+                        id="miss_change">
+                        <span aria-hidden="true">取消</span>
+                    </button>
+                    <button class="btn btn-primary" style="width: 50%;" onclick="budget_change()">修改</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- 弹窗之ESS-Info -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="ess_info">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color: rgb(68, 147, 199);">
+                        <i class="fa fa-info-circle"></i> ESS-INFO
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <p>
+                            ESS 是一款统计性的功能平台<br>
+                            主要有记录个人平时的工作内容，工作量，工作效率，绩效等<br>
+                            也可以统计给供应商发送的数据量，各供应商在每个项目上所用的费用等
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>Font-Awesome version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 4.7.0</span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>Echarts version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 5.4.1</span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>Pyecharts version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 2.0.1</span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>Bootstrap version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 3.4.1</span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>jQuery version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 2.1.4</span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>Layui version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 2.7.6</span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <span class="ant-typography"><strong>Django version:</strong></span>
+                            <span class="ant-typography ant-typography-secondary"> 3.2.14</span>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="https://github.com/gwt805/myess/tree/master" target="_blank"
+                            style="position: absolute; left: 20px;"><i class="fa fa-github-square fa-2x"
+                                style="color: black;"></i></a>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            style="color: blue;">
+                            <span aria-hidden="true">OK</span>
+                        </button>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</body>
+<script src="/static/js/disable.js"></script>
+<script src="/static/js/click_yh.js"></script>
+<script type="text/javascript">
+    const pname_list = JSON.parse('{{ pname|safe}}');
+    const table = layui.table;
+    let tmpobj = null;
+    function warning_alert_page(mes) {
+        $(".alert-danger").html(mes);
+        $(".alert-danger").addClass("show");
+        window.setTimeout(function () {
+            $(".alert-danger").removeClass("show");
+        }, 1000);//显示的时间
+    }
+    function warning_alert_modle(mes) {
+        $("#err_msg").html(mes);
+        $("#err_msg").css("display", 'block');
+        window.setTimeout(function () {
+            $("#err_msg").css("display", 'none');
+        }, 1000);//显示的时间
+    }
+    $(document).ready(function () {
+        tabload("");
+    });
+    function tabload(year) {
+        $.ajax("/budgetalldata/", {
+            method: "GET",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: { "year": year, id: "" },
+        })
+            .done(function (res) {
+                const year = res.year;
+                //渲染表格
+                table.render({//渲染table
+                    data: res.data,     //数据获取ur
+                    elem: '#budget_table',         //设置容器
+                    toolbar: "#toolbars",    // 工具栏
+                    defaultToolbar: [],   // 默认工具栏
+                    height: 'full-70',    //高度为屏幕高度-20
+                    page: true,
+                    page: {
+                        layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'],     // 自定义分页布局
+                        curr: 1,      // 设置默认起始页1
+                        groups: 3,   //只显示10个连续页码,就是说显示10个可见页其他的省略
+                        first: '首页', // 不显示首页
+                        last: '尾页'   // 不显示尾页
+                    },
+                    limit: 20,
+                    limits: [20, 50, 100],
+                    skin: 'row', //表格风格
+                    even: true,    //隔行换色
+                    lineStyle: 'height: 39.5px;', // 设置整体行高,即开启多行显示
+                    totalRow: false, // 尾部分页栏-合计, 默认false
+                    cols: [
+                        [{ field: 'id', title: 'ID', fixed: 'left' },
+                        { field: 'pname', title: '项目名字', width: 220, fixed: 'left' },
+                        { field: 'ann_budget', title: '标注预算(元)', width: 140 },
+                        { field: 'used_money', title: '已使用费用(元)', width: 140 },
+                        { field: 'used_ratio', title: "使用百分比(%)", width: 140 },
+                        { field: 'reaching_one_third_budget_time', title: "达到1/3预算日期", width: 140 },
+                        { field: 'one_third_report_time', title: "1/3 汇报日期", width: 140 },
+                        { field: 'one_third_report_file', title: "1/3 汇报文档", width: 140 },
+                        { field: 'reaching_two_third_budget_time', title: "达到2/3预算日期", width: 140 },
+                        { field: 'two_third_report_time', title: "2/3 汇报日期", width: 140 },
+                        { field: 'two_third_report_file', title: "2/3 汇报文档", width: 140 },
+                        { field: 'reaching_third_third_budget_time', title: "达到 100%预算日期", width: 160 },
+                        { field: 'third_third_report_time', title: '100% 汇报日期', width: 140 },
+                        { field: 'third_third_report_file', title: '100% 汇报文档', width: 140 },
+                        { title: '操作', toolbar: '#barDemo', width: 150, fixed: 'right' }
+                        ]],
+                    done: function (res, curr, count) {
+                        $("#year_search").val(year);
+                        $("#tittle").html(year + " 年标注预算使用情况");
+                    }
+                });
+            })
+    }
+    // 点击行高亮
+    table.on('row(budget_table)', function (obj) {
+        $(".active-tr").removeClass("active-tr");
+        obj.tr.addClass("active-tr");
+        //定义单击行改变行的背景颜色
+        if (tmpobj != null) {
+            tmpobj.tr[0].style = 'background-color: #ffffff;';
+            tmpobj.tr[0].style = 'border: 1px solid black;'
+            if (tmpobj.tr[1]) {
+                tmpobj.tr[1].style = 'background-color: #ffffff;';
+                tmpobj.tr[1].style = 'border:1px solid black;';
+            }
+        }
+        tmpobj = obj;
+        obj.tr[0].style = 'background-color: #b8e2f3;';
+        if (obj.tr[1]) {
+            obj.tr[1].style = 'background-color: #b8e2f3;';
+        }
+    })
+    // 数据添加
+    function budget_add() {
+        const year = Number($("#year").val());
+        const pname = $("#pname").val();
+        const money = $("#money").val();
+
+        if (year <= 0 || pname == "---" || money <= 0) {
+            warning_alert_modle("请检查所填写的参数!");
+        }
+        else {
+            $.ajax("/budget/", {
+                method: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    name: $("#name").text(),
+                    year: year,
+                    pname: pname,
+                    money: money
+                },
+            })
+                .done(function (res) {
+                    $("#miss").click();
+                    if (res.status == "successful") {
+                        warning_alert_page("添加成功!");
+                        tabload("");
+                    }
+                    else {
+                        warning_alert_page(res.msg);
+                    }
+                })
+        }
+    }
+    //头工具栏事件
+    table.on('toolbar(budget_table)', function (obj) {
+        if (obj.event == "add_btn") {
+            if (sessionStorage.getItem("power") == '3') warning_alert_page("您没有添加数据权限!");
+            else {
+                const now = new Date();
+                $("#year").val(now.getFullYear());
+                $("#pname").val("---");
+                $("#money").val("");
+                $('#modal_add').modal('show');
+                // 给项目名字 添加下拉框
+                let pname_sel_dom = document.getElementById('pname');
+                for (let i = 0; i < pname_list.length; i++) {
+                    if (pname_sel_dom.length < pname_list.length + 1) { // 这里不判断的话会一直添加
+                        if (pname_list[i] != pname_sel_dom.value) {
+                            var objOption = document.createElement("option");
+                            objOption.value = pname_list[i];
+                            objOption.text = pname_list[i];
+                            pname_sel_dom.add(objOption);
+                        };
+                    };
+                };
+            }
+        }
+        if (obj.event == "search_btn") {
+            if (Number($("#year_search").val()) <= 0) warning_alert_page("年份不允许小于等于零!");
+            else tabload($("#year_search").val());
+        }
+    })
+    // 操作栏-编辑/删除
+    table.on('tool(budget_table)', function (obj) { // 双击 toolDouble
+        const data = obj.data;
+        if (obj.event === 'del') {
+            if (sessionStorage.getItem("power") != '1') {
+                warning_alert_page("您没有删除数据权限!");
+            }
+            else {
+                layer.confirm('真的删除ID为 ' + obj.data.id + ' 的数据么', function (index) {
+                    $.ajax("/budget/", {
+                        method: "DEL",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: {
+                            name: $("#name").text(),
+                            id: obj.data.id
+                        },
+                        headers: { "X-CSRFtoken": $.cookie("csrftoken") }
+                    })
+                        .done(function (res) {
+                            if (res && res.status == "successful") {
+                                warning_alert_page("ID: " + obj.data.id + " 删除成功!");
+                                tabload("");
+                            }
+                            else {
+                                warning_alert_page("ID: " + obj.data.id + " 删除失败!");
+                            }
+                        });
+                    layer.close(index);
+                });
+            }
+        }
+        if (obj.event === 'edit') {
+            if (sessionStorage.getItem("power") == '3') warning_alert_page("您没有修改数据权限!");
+            else {
+                layer.confirm('真的修改ID为 ' + obj.data.id + ' 的数据么', function (index) {
+                    $.ajax("/budgetalldata/", {
+                        method: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: {
+                            id: obj.data.id,
+                            year: ""
+                        },
+                        headers: { "X-CSRFtoken": $.cookie("csrftoken") }
+                    }).done(function (res) {
+                        if (res && res.status == "successful") {
+                            $('#modal_change').modal('show');
+                            let pname_sel_dom = document.getElementById('edit_pname');
+                            for (let i = 0; i < pname_list.length; i++) {
+                                if (pname_sel_dom.length < pname_list.length + 1) { // 这里不判断的话会一直添加
+                                    if (pname_list[i] != pname_sel_dom.value) {
+                                        var objOption = document.createElement("option");
+                                        objOption.value = pname_list[i];
+                                        objOption.text = pname_list[i];
+                                        pname_sel_dom.add(objOption);
+                                    };
+                                };
+                            };
+                            const data = res.data;
+                            $("#edit_id").val(data[0]["id"]);
+                            $("#edit_pname").val(data[0]["pname"]);
+                            $("#edit_ann_budget").val(data[0]["ann_budget"]);
+                            $("#edit_used_money").val(data[0]["used_money"]);
+                            $("#edit_used_ratio").val(data[0]["used_ratio"]);
+                            $("#edit_one_three_time").val(data[0]["reaching_one_third_budget_time"]);
+                            $("#edit_one_three_report_time").val(data[0]["one_third_report_time"]);
+                            $("#edit_one_three_report_file").val(data[0]["one_third_report_file"]);
+                            $("#edit_two_three_time").val(data[0]["reaching_two_third_budget_time"]);
+                            $("#edit_two_three_report_time").val(data[0]["two_third_report_time"]);
+                            $("#edit_two_three_report_file").val(data[0]["two_third_report_file"]);
+                            $("#edit_three_three_time").val(data[0]["reaching_third_third_budget_time"]);
+                            $("#edit_three_three_report_time").val(data[0]["third_third_report_time"]);
+                            $("#edit_three_three_report_file").val(data[0]["third_third_report_file"]);
+                        }
+                        else {
+                            warning_alert_page("修改出问题了,联系管理员");
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        }
+    })
+    // 数据修改
+    function budget_change() {
+        $.ajax("/budget/", {
+            method: "PUT",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: {
+                name: $("#name").text(),
+                id: $("#edit_id").val(),
+                one_third_report_time: $("#edit_one_three_report_time").val(),
+                one_third_report_file: $("#edit_one_three_report_file").val(),
+                two_third_report_time: $("#edit_two_three_report_time").val(),
+                two_third_report_file: $("#edit_two_three_report_file").val(),
+                third_third_report_time: $("#edit_three_three_report_time").val(),
+                third_third_report_file: $("#edit_three_three_report_file").val(),
+            },
+            headers: { "X-CSRFtoken": $.cookie("csrftoken") }
+        }).done(function (res) {
+            if (res && res.status == "successful") {
+                $("#miss_change").click();
+                warning_alert_page("ID: " + $("#edit_id").val() + " 修改成功!");
+                tabload("");
+            }
+            else {
+                $("#miss_change").click();
+                warning_alert_page("ID: " + $("#edit_id").val() + " 修改失败!");
+            }
+        });
+
+    }
+    function help() {
+        $(".alert-danger").html("请联系卫龙!");
+        $(".alert-danger").addClass("show");
+        window.setTimeout(function () {
+            $(".alert-danger").removeClass("show");
+        }, 1000);//显示的时间
+    };
+    // setting
+    if (sessionStorage.getItem("power") != '1') {
+        $("#nav_setting").css('display', 'none')
+    }
+    else {
+        $("#nav_setting").css('display', 'block')
+    }
+    // 关于
+    function info() {
+        $('#ess_info').modal('show');
+    }
+    function logout() {
+        sessionStorage.setItem("isLogin", "");
+        sessionStorage.setItem("zhuname", "");
+        sessionStorage.setItem("power", "");
+        window.location.href = '/login'
+    }
+
+</script>
+
+</html>

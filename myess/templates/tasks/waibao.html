@@ -113,9 +113,20 @@
                 <i class="fa fa-search" aria-hidden="true"></i>
                 <span>搜索数据</span>
             </label>
-            <label onclick="showData('wbdata_count')">
-                <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                <span>图表展示</span>
+            <label for="money">
+                <input type="checkbox" id="money" style="display: none;">
+                <i class="fa fa-jpy"></i>
+                <span>预算详情 <i class="fa fa-eject" aria-hidden="true"></i></span>
+                <ul>
+                    <li  onclick="showData('wbdata_count')">
+                        <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                        图表展示
+                    </li>
+                    <li onclick="showData('budget')">
+                        <i class="fa fa-table" aria-hidden="false"></i>
+                        表格展示
+                    </li>
+                </ul>
             </label>
             <label onclick="showData('cronjob')">
                 <i class="fa fa-clock-o"></i>
@@ -653,8 +664,10 @@
         //定义单击行改变行的背景颜色
         if (tmpobj != null) {
             tmpobj.tr[0].style = 'background-color: #ffffff;';
+            tmpobj.tr[0].style = 'border: 1px solid black;'
             if (tmpobj.tr[1]) {
                 tmpobj.tr[1].style = 'background-color: #ffffff;';
+                tmpobj.tr[1].style = 'border:1px solid black;';
             }
         }
         tmpobj = obj;
@@ -1098,6 +1111,9 @@
     function showData(flag) {
         if (flag == 'wbdata_count') {
             window.location.href = '/wbdata_count';
+        }
+        else if (flag == 'budget') {
+            window.location.href = "/budget";
         }
         else if (flag == 'cronjob') {
             if (sessionStorage.getItem("power") != '1') {

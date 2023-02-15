@@ -1,7 +1,7 @@
 * {
     padding: 0;
     margin: 0;
-    cursor: url("../img/mouse.png"),default;
+    cursor: url("../img/mouse.png"), default;
 }
 
 /* 滚动条 */
@@ -20,11 +20,21 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(68,147,199);
+    background-color: rgb(68, 147, 199);
 }
 
 ::-webkit-scrollbar-thumb:active {
-    background-color: rgb(68,147,199);
+    background-color: rgb(68, 147, 199);
+}
+
+/*定义两端按钮的样式*/
+::-webkit-scrollbar-button {
+    display: none;
+}
+
+/*定义右下角汇合处的样式*/
+::-webkit-scrollbar-corner {
+    display: none;
 }
 
 /* 导航栏 */
@@ -97,6 +107,41 @@
 
 #left label span {
     margin-left: 10px;
+}
+
+#left label span i {
+    margin-left: 10px;
+    transform: rotate(180deg);
+}
+
+#left label ul {
+    display: none;
+    /* margin-left: 20px; */
+}
+
+#left label ul li {
+    line-height: 30px;
+    padding-left: 20px;
+}
+
+#left label ul li:first-child {
+    margin-top: 10px;
+}
+
+#left label ul li:last-child {
+    margin-bottom: -10px;
+}
+
+#left label>input:checked~ul {
+    display: block;
+}
+
+#left label>input:checked~ul li:hover {
+    font-size: large;
+}
+
+#left label>input:checked~span i {
+    transform: rotate(360deg);
 }
 
 #left p {

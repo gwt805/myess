@@ -15,7 +15,9 @@ from .mes import (
     waibao_search,
     gs_data_add,
     dingtalk,
-    wb_dingtalk
+    wb_dingtalk,
+    budget_talk,
+    budget_reaching_talk
 )
 import json
 import smtplib
@@ -680,6 +682,9 @@ def wb_update(request):
             for idx in new_ann_meta_data:
                 money_count += idx["knums"] * idx["unit_price"]
             data_update["total_money"] = round(money_count, 2)
+            # 触发检查是否满足 1/3,2/3,3/3
+            budget_check(data.get("pname"), data.get("send_data_time"))
+            logger.info("预算检测")
         else:
             data_update["ann_meta_data"] = None
             data_update["total_money"] = None
@@ -811,7 +816,7 @@ def wbdata_count_public_code(is_send_time_method, wb_name, start_time, end_time)
     return is_send_time_method, proname_list, char_list, format(round(money_total, 2), ','), line_chart_list
 
 
-# 外包数据统计
+# 外包数据统计 -- 图表
 def wbdata_count(request):
     wb_name_list = [i[0] for i in models.Waibaos.objects.values_list("name")]
     year = datetime.now().strftime('%Y')
@@ -857,3 +862,261 @@ def wbdata_count(request):
             "chart_pie": chart_pie, "chart_line": chart_line, "money_total": json.dumps(money_total)
         }
     )
+
+# 外包数据统计 -- 表格
+@csrf_exempt
+def budget(request):
+    projects = json.dumps(
+        [i[0] for i in models.Project.objects.values_list("pname")]
+    )  # 数据库里所有的项目名字
+
+    if request.method == "POST":
+        data = QueryDict(request.body)
+        try:
+            name = data.get('name')
+            year_budget=int(data.get("year"))
+            pname=data.get("pname")
+            ann_budget=float(data.get("money"))
+            if len(models.Budget.objects.filter(year_budget= year_budget, proname=models.Project.objects.get(pname=pname))) == 0:
+                models.Budget.objects.create(year_budget=year_budget, proname=models.Project.objects.get(pname=pname), ann_budget=ann_budget)
+                logger.info(f"name: {name} year: {data.get('year')} pname: {data.get('pname')} money: {data.get('money')}")
+                budget_talk(name, "添加", "", {"year":year_budget, "pname": pname, "ann_budget": ann_budget})
+                return JsonResponse({"status": "successful", "msg": "添加成功"})
+            else:
+                return JsonResponse({"status": "error", "msg": "已经添加过了!"})
+        except:
+            return JsonResponse({"status": "error", "msg": "添加失败!"})
+    if request.method == "DEL":
+        data = QueryDict(request.body)
+        try:
+            name = data.get("name")
+            models.Budget.objects.get(id=int(data.get("id"))).delete()
+            logger.info(f"name: {name} ID: {data.get('id')} 删除成功!")
+            budget_talk(name, "删除", data.get("id"), "")
+            return JsonResponse({"status": "successful", "msg": "删除成功"})
+        except:
+            logger.warning('删除失败')
+            return JsonResponse({"status": "error", "msg": "删除失败"})
+    if request.method == "PUT":
+        data = QueryDict(request.body)
+        try:
+            name = data.get("name")
+            id = int(data.get("id"))
+            req_dic = {}
+            one_third_report_time = data.get("one_third_report_time")
+            one_third_report_file = data.get("one_third_report_file")
+            two_third_report_time = data.get("two_third_report_time")
+            two_third_report_file = data.get("two_third_report_file")
+            third_third_report_time = data.get("third_third_report_time")
+            third_third_report_file = data.get("third_third_report_file")
+            if one_third_report_time:
+                req_dic["one_third_report_time"] = one_third_report_time
+            else:
+                req_dic["one_third_report_time"] = None
+            if one_third_report_file:
+                req_dic["one_third_report_file"] = one_third_report_file
+            else:
+                req_dic["one_third_report_file"] = None
+            if two_third_report_time:
+                req_dic["two_third_report_time"] = two_third_report_time
+            else:
+                req_dic["two_third_report_time"] = None
+            if two_third_report_file:
+                req_dic["two_third_report_file"] = two_third_report_file
+            else:
+                req_dic["two_third_report_file"] = None
+            if third_third_report_time:
+                req_dic["third_third_report_time"] = third_third_report_time
+            else:
+                req_dic["third_third_report_time"] = None
+            if third_third_report_file:
+                req_dic["third_third_report_file"] = third_third_report_file
+            else:
+                req_dic["third_third_report_file"] = None
+            
+            models.Budget.objects.filter(id=id).update(**req_dic)
+            logger.info(f"name: {name} ID: {data.get('id')} 修改成功!")
+            budget_talk(name, "修改", id, models.Budget.objects.get(id=id))
+            return JsonResponse({"status": "successful", "msg": "修改成功"})
+        except:
+            logger.warning('修改失败')
+            return JsonResponse({"status": "error", "msg": "修改失败"})
+
+    return render(request, "tasks/budget.html", {"pname": projects})
+
+
+def budget_check(pname, time):
+    def check_task():
+        ground_50_pname_list = ["50-地灯","50-扶梯","50-脚垫","50-地毯","50-电线","50-地面物体"]
+        ground_s_pname_list = ["S线-地灯","S线-电线","S线-脚垫","S线-地毯","S线-扶梯","S线-地面物体"]
+        xunjian_50_panme_list = ["50-杂物","50-脏污","50-巡检"]
+        used_money = 0
+        today = datetime.now().strftime('%Y-%m-%d')
+        user_list = ["carsonlee"]
+        if pname in ground_50_pname_list:
+            budget_data = models.Budget.objects.filter(year_budget=int(time.split('-')[0]), proname=models.Project.objects.get(pname="50-地面物体"))
+            ann_budget = budget_data[0].ann_budget
+            for item in ground_50_pname_list:
+                tmp = models.Supplier.objects.filter(proname=models.Project.objects.get(pname=item).pname,send_data_time__range=[f"{time.split('-')[0]}-01-01", f"{time.split('-')[0]}-12-31"])
+                for tmp_item in tmp:
+                    if tmp_item.total_money != None:
+                        used_money += tmp_item.total_money
+                        if tmp_item.user.username not in user_list:
+                            user_list.append(tmp_item.user.username)
+            used_money = round(used_money, 2)
+            if ann_budget:
+                used_ratio = float((format(used_money/ann_budget[0] * 100, '.5f')))
+                budget_data.update(used_money=used_money,used_ratio=used_ratio, updated_time=today)
+                if used_money >= (ann_budget[0]/3) and used_money < ((ann_budget[0]/3)*2): # 三分之一 企微通知， 并改写时间, 记得判断 日期是否已经存在
+                    one_third_time = budget_data[0].reaching_one_third_budget_time
+                    if one_third_time == None:
+                        budget_data.update(reaching_one_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk("50-地面物体", user_list, "1/3") # 通知
+                if used_money >= ((ann_budget[0]/3)*2) and used_money < ann_budget[0]: # 三分之二 企微通知， 并改写时间, 记得判断 日期是否已经存在
+                    two_third_time = budget_data[0].reaching_two_third_budget_time
+                    if two_third_time == None:
+                        budget_data.update(reaching_two_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk("50-地面物体", user_list, "2/3") # 通知
+                if used_money >= ann_budget[0]: # 百分百 企微通知， 并改写时间, 记得判断 日期是否已经存在
+                    thidr_third_time = budget_data[0].reaching_third_third_budget_time
+                    if thidr_third_time == None:
+                        budget_data.update(reaching_third_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk("50-地面物体", user_list, "100%") # 通知
+            else:
+                logger.warning("请联系管理员添加该项目的预算!")
+        if pname in ground_s_pname_list:
+            budget_data = models.Budget.objects.filter(year_budget=int(time.split('-')[0]), proname=models.Project.objects.get(pname="S线-地面物体"))
+            ann_budget = [item.ann_budget for item in budget_data]
+            for item in ground_s_pname_list:
+                tmp = models.Supplier.objects.filter(proname=models.Project.objects.get(pname=item).pname,send_data_time__range=[f"{time.split('-')[0]}-01-01", f"{time.split('-')[0]}-12-31"])
+                for tmp_item in tmp:    
+                    if tmp_item.total_money != None:
+                        used_money += tmp_item.total_money
+                        if tmp_item.user.username not in user_list:
+                            user_list.append(tmp_item.user.username)
+            used_money = round(used_money, 2)
+            if ann_budget:
+                used_ratio = float((format(used_money/ann_budget[0] * 100, '.5f')))
+                budget_data.update(used_money=used_money,used_ratio=used_ratio, updated_time=today)
+                if used_money >= (ann_budget[0]/3) and used_money < ((ann_budget[0]/3)*2): # 三分之一 企微通知， 并改写时间, 记得判断 日期是否已经存在
+                    one_third_time = budget_data[0].reaching_one_third_budget_time
+                    if one_third_time == None:
+                        budget_data.update(reaching_one_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk("S线-地面物体", user_list, "1/3") # 通知
+                if used_money >= ((ann_budget[0]/3)*2) and used_money < ann_budget[0]: # 三分之二 企微通知， 并改写时间, 记得判断 日期是否已经存在
+                    two_third_time = budget_data[0].reaching_two_third_budget_time
+                    if two_third_time == None:
+                        budget_data.update(reaching_two_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk("S线-地面物体", user_list, "2/3") # 通知
+                if used_money >= ann_budget[0]: # 百分百 企微通知， 并改写时间, 记得判断 日期是否已经存在
+                    thidr_third_time = budget_data[0].reaching_third_third_budget_time
+                    if thidr_third_time == None:
+                        budget_data.update(reaching_third_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk("S线-地面物体", user_list, "100%") # 通知
+            else:
+                logger.warning("请联系管理员添加该项目的预算!")
+        if pname in xunjian_50_panme_list:
+            budget_data = models.Budget.objects.filter(year_budget=int(time.split('-')[0]), proname=models.Project.objects.get(pname="50-巡检"))
+            ann_budget = [item.ann_budget for item in budget_data]
+            for item in xunjian_50_panme_list:
+                tmp = models.Supplier.objects.filter(proname=models.Project.objects.get(pname=item),send_data_time__range=[f"{time.split('-')[0]}-01-01", f"{time.split('-')[0]}-12-31"])
+                for tmp_item in tmp:
+                    if tmp_item.total_money != None:
+                        used_money += tmp_item.total_money
+                        if tmp_item.user.username not in user_list:
+                            user_list.append(tmp_item.user.username)
+            logger.info(f"User_list: {user_list}")
+            used_money = round(used_money, 2)
+            if ann_budget:
+                used_ratio = float((format(used_money/ann_budget[0] * 100, '.5f')))
+                budget_data.update(used_money=used_money,used_ratio=used_ratio, updated_time=today)
+                if used_money >= (ann_budget[0]/3) and used_money < ((ann_budget[0]/3)*2): # 三分之一 企微通知， 并改写时间, 记得判断 日期是否已经存在
+                    one_third_time = budget_data[0].reaching_one_third_budget_time
+                    if one_third_time == None:
+                        budget_data.update(reaching_one_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk("50-巡检", user_list, "1/3") # 通知
+                if used_money >= ((ann_budget[0]/3)*2) and used_money < ann_budget[0]: # 三分之二 企微通知， 并改写时间, 记得判断 日期是否已经存在
+                    two_third_time = budget_data[0].reaching_two_third_budget_time
+                    if two_third_time == None:
+                        budget_data.update(reaching_two_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk("50-巡检", user_list, "2/3") # 通知
+                if used_money >= ann_budget[0]: # 百分百 企微通知， 并改写时间, 记得判断 日期是否已经存在
+                    thidr_third_time = budget_data[0].reaching_third_third_budget_time
+                    if thidr_third_time == None:
+                        budget_data.update(reaching_third_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk("50-巡检", user_list, "100%") # 通知
+            else:
+                logger.warning("请联系管理员添加该项目的预算!")
+        if pname not in ground_50_pname_list and pname not in ground_s_pname_list and pname not in xunjian_50_panme_list:
+            budget_data = models.Budget.objects.filter(year_budget=int(time.split('-')[0]), proname=models.Project.objects.get(pname=pname).pname)
+            ann_budget = [item.ann_budget for item in budget_data]
+            tmp = models.Supplier.objects.filter(proname=models.Project.objects.get(pname=pname).pname,send_data_time__range=[f"{time.split('-')[0]}-01-01", f"{time.split('-')[0]}-12-31"])
+            for tmp_item in tmp:
+                if tmp_item.total_money != None:
+                    used_money += tmp_item.total_money
+                    if tmp_item.user.username not in user_list:
+                            user_list.append(tmp_item.user.username)
+            used_money = round(used_money, 2)
+            if ann_budget:
+                used_ratio = float((format(used_money/ann_budget[0] * 100, '.5f')))
+                budget_data.update(used_money=used_money,used_ratio=used_ratio, updated_time=today)
+                if used_money >= (ann_budget[0]/3) and used_money < ((ann_budget[0]/3)*2): # 三分之一
+                    one_third_time = budget_data[0].reaching_one_third_budget_time
+                    if one_third_time == None:
+                        budget_data.update(reaching_one_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk(pname, user_list, "1/3") # 通知
+                if used_money >= ((ann_budget[0]/3)*2) and used_money < ann_budget[0]: # 三分之二
+                    two_third_time = budget_data[0].reaching_two_third_budget_time
+                    if two_third_time == None:
+                        budget_data.update(reaching_two_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk(pname, user_list, "2/3") # 通知
+                if used_money >= ann_budget[0]: # 百分百
+                    thidr_third_time = budget_data[0].reaching_third_third_budget_time
+                    if thidr_third_time == None:
+                        budget_data.update(reaching_third_third_budget_time=today, updated_time=today)
+                    budget_reaching_talk(pname, user_list, "100%") # 通知
+            else:
+                logger.warning("请联系管理员添加该项目的预算!")
+    
+    task = threading.Thread(target=check_task)
+    task.start()
+
+# 数据查询、展示
+def budgetalldata(request):
+    year = int(datetime.now().strftime('%Y'))
+    get_year = request.GET.get("year")
+    get_id = request.GET.get("id")
+
+    filter_query = {}
+    if get_year == "": # search
+        filter_query["year_budget"] = year
+    else:
+        filter_query["year_budget"] = int(get_year)
+        year = get_year
+    if get_id != "": # update_for_get
+        filter_query["id"] = int(get_id)
+    budget_data = models.Budget.objects.filter(**filter_query)
+
+    data_json_list = [
+        {
+            "id": item.id,
+            "pname": item.proname.pname,
+            "ann_budget": item.ann_budget,
+            "used_money": item.used_money,
+            "used_ratio": item.used_ratio,
+            "reaching_one_third_budget_time": item.reaching_one_third_budget_time,
+            "one_third_report_time": item.one_third_report_time,
+            "one_third_report_file": item.one_third_report_file,
+            "reaching_two_third_budget_time": item.reaching_two_third_budget_time,
+            "two_third_report_time": item.two_third_report_time,
+            "two_third_report_file": item.two_third_report_file,
+            "reaching_third_third_budget_time": item.reaching_third_third_budget_time,
+            "third_third_report_time": item.third_third_report_time,
+            "third_third_report_file": item.third_third_report_file,
+         } 
+        for item in budget_data
+        ]
+    if not data_json_list:
+        data_json_list = []
+
+    return JsonResponse({"status": "successful", "data": data_json_list, "year": year})

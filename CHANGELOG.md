@@ -1,3 +1,14 @@
+# 2023-02-15
+### Added
+- 添加数据标注预算展示页面及后端逻辑
+    <img src="./myess/asserts/2023-02-15-ess-budget.png">
+### Changed
+- 侧边栏优化
+    <img src="./myess/asserts/2023-02-15-ess-sidebar.png">
+- 点击表格行高亮优化
+
+
+
 # 2023-02-10
 ### Changed
 - 修复数据不能正常导出问题
