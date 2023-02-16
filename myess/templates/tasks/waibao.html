@@ -40,6 +40,7 @@
         .form-group {
             margin-left: 60px !important;
         }
+        #left span:last-child:hover{color: rgb(87,163,243) !important; cursor: pointer;}
     </style>
 </head>
 
@@ -132,7 +133,8 @@
                 <i class="fa fa-clock-o"></i>
                 <span>定时任务</span>
             </label>
-            <p>© gwt 2021.12.18</p>
+            <p style="margin-bottom: 35px;">© gwt 2021.12.18</p>
+            <span onclick="showData('updvis')" style="display: block; position: absolute; bottom: 0; margin: 0 0 10px 45px; color: rgb(84, 127, 219);">更新记录</span>
         </div>
         <div id="right">
             <div style="height: 80px;">
@@ -1122,6 +1124,9 @@
             else {
                 window.location.href = "/cronjob";
             }
+        }
+        else if (flag == 'updvis') {
+            window.open("https://github.com/gwt805/myess/blob/master/CHANGELOG.md", "_blank");
         }
     }
 
