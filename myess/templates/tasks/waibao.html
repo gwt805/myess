@@ -533,11 +533,10 @@
             const zql = update_table_add_line.rows[i].cells[1].getElementsByTagName("input")[0].value;
             const ks = Number(update_table_add_line.rows[i].cells[2].getElementsByTagName("input")[0].value);
             const dj = Number(update_table_add_line.rows[i].cells[3].getElementsByTagName("input")[0].value);
-
-            console.log(jsfs, ks, dj)
+            const dj_str = update_table_add_line.rows[i].cells[3].getElementsByTagName("input")[0].value;
 
             if (zql != "") {
-                if (jsfs == "---" || ks == 0 || dj == 0) {
+                if (jsfs == "---" || ks == 0 || dj_str == "") {
                     is_continue = false;
                     modal_alert("框数,单价,结算方式 需同时填写 !");
                     continue;
@@ -549,7 +548,7 @@
                     is_continue = true;
                 }
                 else {
-                    if (jsfs == "---" || ks == 0 || dj == 0) {
+                    if (jsfs == "---" || ks == 0 || dj_str == "") {
                         modal_alert("框数,单价,结算方式 需同时填写 !");
                         is_continue = false;
                         continue;
@@ -726,7 +725,6 @@
     // 操作栏-编辑/删除
     table.on('tool(test)', function (obj) { // 双击 toolDouble
         var data = obj.data;
-        // console.log(obj.data)
         if (obj.event === 'del') {
             if (sessionStorage.getItem("power") != '1') {
                 $(".alert-danger").html("您没有删除数据权限!");
@@ -1196,9 +1194,6 @@
                                     }
                                 }
                             }
-                            else {
-                                console.log('为空')
-                            }
                             tmp_list.push(anno)
                             tmp_list.push(data_idx['total_money'])
                             tmp_list.push(data_idx['ann_field_flag'])
@@ -1249,9 +1244,6 @@
                                         anno = anno + data_idx['ann_meta_data'][idx]
                                     }
                                 }
-                            }
-                            else {
-                                console.log('为空')
                             }
                             tmp_list.push(anno)
                             tmp_list.push(data_idx['total_money'])
