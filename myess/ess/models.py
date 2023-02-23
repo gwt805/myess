@@ -47,7 +47,10 @@ class Project(models.Model):
     pname = models.CharField(
         max_length=125, unique=True, verbose_name="项目名字", blank=True
     )  # 项目类型
-
+    
+    def __str__(self):
+        return self.pname
+    
     class Meta:
         verbose_name_plural = "项目名字表"
 
@@ -55,6 +58,9 @@ class Tkinds(models.Model):
     kinds = models.CharField(
         max_length=20, unique=True, verbose_name="任务类型"
     )  # 任务类型：标注，审核，其他
+    
+    def __str__(self):
+        return self.kinds
 
     class Meta:
         verbose_name_plural = "任务类型列表"
@@ -62,19 +68,12 @@ class Tkinds(models.Model):
 class Waibaos(models.Model):
     name = models.CharField(max_length=128, unique=True, verbose_name="外包名字")
     
+    def __str__(self):
+        return self.name
+    
     class Meta:
         verbose_name_plural = "供应商名字表"
 
-# class Waibao(models.Model):
-#     pname = models.CharField(null=False, max_length=128, verbose_name="项目名字", blank=True)  # 项目名字
-#     pnums = models.IntegerField(null=False, verbose_name="送标样本数量", blank=True)  # 送标样本数量
-#     get_data_time = models.CharField(null=True, max_length=20, verbose_name="收到标注结果时间")  # 收到标注结果时间
-#     knums = models.IntegerField(null=True, verbose_name="标注数量") #IntegerField(null=False, verbose_name="框数", blank=True)  # 标注框数量
-#     settlement_method = models.CharField(null=True, verbose_name="结算方式", max_length=256) #CharField(null=False, max_length=128, verbose_name="结算方式", blank=True)  # 结算方式
-#     unit_price = models.FloatField(null=True, verbose_name="单价") #FloatField(null=False, verbose_name="单价", blank=True)  # 单价
-#     wb_name = models.CharField(null=False, max_length=128, verbose_name="外包名字", blank=True)  # 外包名字
-#     class Meta:
-#         verbose_name_plural = "供应商数据列表"
 
 class Supplier(models.Model):
     user = models.ForeignKey(to="User", on_delete=models.CASCADE, verbose_name="研发") # CharField(null=False, max_length=256,verbose_name='研发名字', default=None) # 研发名字
