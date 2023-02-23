@@ -19,6 +19,7 @@ class ControlUser(UserAdmin):
 @admin.register(models.Task)
 class ControlTASK(admin.ModelAdmin):
     list_display = (
+        "id",
         "uname",
         "pname",
         "waibao",
@@ -43,20 +44,21 @@ class ControlPorject(admin.ModelAdmin):
 
 @admin.register(models.Tkinds)
 class ControlTkinds(admin.ModelAdmin):
-    list_display = ("kinds",)
+    list_display = ("id", "kinds")
     search_fields = ('kinds',)
     list_per_page = 10  # 每页展示5条记录
 
 
 @admin.register(models.Waibaos)
 class ControlWaibaos(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ("id", "name")
     search_fields = ('name',)
     list_per_page = 10  # 每页展示5条记录
 
 @admin.register(models.Supplier)
 class ControlSupplier(admin.ModelAdmin):
     list_display = (
+        "id",
         "user",
         "proname_id",
         "send_data_batch",
@@ -75,7 +77,7 @@ class ControlSupplier(admin.ModelAdmin):
         "total_money"
     )
     ordering = ("-created_time",)
-    list_per_page = 5  # 每页展示5条记录
+    list_per_page = 10  # 每页展示5条记录
     search_fields = [
                     "user__username",
                     "proname__pname",
@@ -97,6 +99,7 @@ class ControlSupplier(admin.ModelAdmin):
 @admin.register(models.Budget)
 class ControlBudget(admin.ModelAdmin):
     list_display = (
+        "id",
         "year_budget",
         "proname_id",
         "ann_budget",
