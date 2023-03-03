@@ -274,7 +274,7 @@
         var data = obj.data;
         // console.log(obj.data)
         if (obj.event === 'del') {
-            if (sessionStorage.getItem("power") != '1') {
+            if (window.localStorage.getItem("power") != '1') {
                 $(".alert-danger").html("您没有删除数据权限!");
                 $(".alert-danger").addClass("show");
                 window.setTimeout(function () {
@@ -412,7 +412,7 @@
         }, 1000);//显示的时间
     };
     // setting
-    if (sessionStorage.getItem("power") != '1'){
+    if (window.localStorage.getItem("power") != '1'){
         $("#nav_setting").css('display', 'none')
     }
     else {
@@ -424,9 +424,9 @@
     }
     // 退出登录
     function logout() {
-        sessionStorage.setItem("isLogin", "");
-        sessionStorage.setItem("zhuname", "");
-        sessionStorage.setItem("power", "");
+        window.localStorage.removeItem("isLogin");
+        window.localStorage.removeItem("zhuname");
+        window.localStorage.removeItem("power");
         window.location.href = '/login'
     }
 </script>

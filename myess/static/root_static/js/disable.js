@@ -19,33 +19,11 @@ document.oncontextmenu = function () {
 }
 
 
-// check();
-// 禁止选取内容
-// document.onselectstart = function () {
-//     return false;
-// }
-
-// 禁止复制
-// document.oncopy = function () {
-//     return false;
-// }
-
 // 必须登录
 $(window).load(function () {
-    // var cookie_res = document.cookie.split(";")[0].split(",")
-    // console.log(cookie_res)
-    // var isLogin = cookie_res[0].split("=")[1];
-    // var zhuname = cookie_res[1].split("=")[1];
-    // if (((document.cookie).split(";")[0]).split("=")[1] != "true") {
-    //     alert("必须登录后才能查看!");
-    //     window.location.href = "/ess/login";
-    // }else{
-    //     $("#name").html(zhuname);
-    // }
-    let isLogin = sessionStorage.getItem("isLogin");
-    let zhuname = sessionStorage.getItem("zhuname");
+    let isLogin = window.localStorage.getItem("isLogin");
+    let zhuname = window.localStorage.getItem("zhuname");
     if (isLogin != 'true') {
-        alert("必须登录后才能查看!");
         window.location.href = "/login";
     } else {
         $("#name").html(zhuname);

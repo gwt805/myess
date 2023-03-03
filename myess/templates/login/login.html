@@ -38,10 +38,17 @@
   <script src="/static/js/login_canvas.js"></script>
   <script src="/static/js/disable_login.js"></script>
   <script>
+    $(document).ready(function () {
+      let isLogin = window.localStorage.getItem("isLogin");
+      if (isLogin == 'true') {
+        window.location.href = "/index";
+      }
+      
+    });
     $("input").keydown(function (event) {
-        if (event.keyCode == 13) {
-          login();
-        }
+      if (event.keyCode == 13) {
+        login();
+      }
     });
     function login() {
       if ($("#user").val() == "") {
@@ -62,18 +69,9 @@
           },
         }).done(function (res) {
           if (res && res.data == "successful") {
-            // console.log(res.zhuname)
-            //设置Cookie中的名称与值以及过期时间【单位：天】
-            // var expires = new Date();
-            // expires.setTime(expires.getTime() + 1 * 24 * 60 * 60 * 1000);
-            // document.cookie = "isLogin=true;expires=" + expires.toGMTString();
-            // document.cookie = "isLogin=true,zhuname="+ res.zhuname;
-            sessionStorage.setItem("isLogin", "true");
-            sessionStorage.setItem("zhuname", res.zhuname);
-            sessionStorage.setItem("power", res.power);
-            // sessionStorage.getItem("zhuname")
-            // sessionStorage.removeItem("isLogin")
-            // sessionStorage.removeItem("zhuname")
+            window.localStorage.setItem("isLogin", "true");
+            window.localStorage.setItem("zhuname", res.zhuname);
+            window.localStorage.setItem("power", res.power);
             window.location.href = "/index";
           }
           else {

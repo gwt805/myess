@@ -423,7 +423,7 @@
     //头工具栏事件
     table.on('toolbar(budget_table)', function (obj) {
         if (obj.event == "add_btn") {
-            if (sessionStorage.getItem("power") == '3') warning_alert_page("您没有添加数据权限!");
+            if (window.localStorage.getItem("power") == '3') warning_alert_page("您没有添加数据权限!");
             else {
                 const now = new Date();
                 $("#year").val(now.getFullYear());
@@ -453,7 +453,7 @@
     table.on('tool(budget_table)', function (obj) { // 双击 toolDouble
         const data = obj.data;
         if (obj.event === 'del') {
-            if (sessionStorage.getItem("power") != '1') {
+            if (window.localStorage.getItem("power") != '1') {
                 warning_alert_page("您没有删除数据权限!");
             }
             else {
@@ -482,7 +482,7 @@
             }
         }
         if (obj.event === 'edit') {
-            if (sessionStorage.getItem("power") == '3') warning_alert_page("您没有修改数据权限!");
+            if (window.localStorage.getItem("power") == '3') warning_alert_page("您没有修改数据权限!");
             else {
                 layer.confirm('真的修改ID为 ' + obj.data.id + ' 的数据么', function (index) {
                     $.ajax("/budgetalldata/", {
@@ -571,7 +571,7 @@
         }, 1000);//显示的时间
     };
     // setting
-    if (sessionStorage.getItem("power") != '1') {
+    if (window.localStorage.getItem("power") != '1') {
         $("#nav_setting").css('display', 'none')
     }
     else {
@@ -582,9 +582,9 @@
         $('#ess_info').modal('show');
     }
     function logout() {
-        sessionStorage.setItem("isLogin", "");
-        sessionStorage.setItem("zhuname", "");
-        sessionStorage.setItem("power", "");
+        window.localStorage.removeItem("isLogin");
+        window.localStorage.removeItem("zhuname");
+        window.localStorage.removeItem("power");
         window.location.href = '/login'
     }
 
