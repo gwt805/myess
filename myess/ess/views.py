@@ -681,7 +681,7 @@ def wb_update(request):
             money_count = 0
             for idx in new_ann_meta_data:
                 money_count += idx["knums"] * idx["unit_price"]
-            data_update["total_money"] = round(money_count, 2)
+            data_update["total_money"] = round(money_count, 3) # 根据单价位数调整
             # 触发检查是否满足 1/3,2/3,3/3
             budget_check(data.get("pname"), data.get("send_data_time"))
         else:
@@ -812,7 +812,7 @@ def wbdata_count_public_code(is_send_time_method, wb_name, start_time, end_time)
         char_list = [[{}], [{}]]
         line_chart_list = [[[0], [0], [0]]]
 
-    return is_send_time_method, proname_list, char_list, format(round(money_total, 2), ','), line_chart_list
+    return is_send_time_method, proname_list, char_list, format(round(money_total, 3), ','), line_chart_list
 
 
 # 外包数据统计 -- 图表
@@ -962,7 +962,7 @@ def budget_check(pname, time):
                         used_money += tmp_item.total_money
                         if tmp_item.user.username not in user_list:
                             user_list.append(tmp_item.user.username)
-            used_money = round(used_money, 2)
+            used_money = round(used_money, 3)
             if ann_budget:
                 used_ratio = float((format(used_money/ann_budget[0] * 100, '.5f')))
                 budget_data.update(used_money=used_money,used_ratio=used_ratio, updated_time=today)
@@ -993,7 +993,7 @@ def budget_check(pname, time):
                         used_money += tmp_item.total_money
                         if tmp_item.user.username not in user_list:
                             user_list.append(tmp_item.user.username)
-            used_money = round(used_money, 2)
+            used_money = round(used_money, 3)
             if ann_budget:
                 used_ratio = float((format(used_money/ann_budget[0] * 100, '.5f')))
                 budget_data.update(used_money=used_money,used_ratio=used_ratio, updated_time=today)
@@ -1025,7 +1025,7 @@ def budget_check(pname, time):
                         if tmp_item.user.username not in user_list:
                             user_list.append(tmp_item.user.username)
             logger.info(f"User_list: {user_list}")
-            used_money = round(used_money, 2)
+            used_money = round(used_money, 3)
             if ann_budget:
                 used_ratio = float((format(used_money/ann_budget[0] * 100, '.5f')))
                 budget_data.update(used_money=used_money,used_ratio=used_ratio, updated_time=today)
@@ -1055,7 +1055,7 @@ def budget_check(pname, time):
                     used_money += tmp_item.total_money
                     if tmp_item.user.username not in user_list:
                             user_list.append(tmp_item.user.username)
-            used_money = round(used_money, 2)
+            used_money = round(used_money, 3)
             if ann_budget:
                 used_ratio = float((format(used_money/ann_budget[0] * 100, '.5f')))
                 budget_data.update(used_money=used_money,used_ratio=used_ratio, updated_time=today)
