@@ -22,7 +22,9 @@
         .form-group {
             margin-left: 60px !important;
         }
-        
+        .layui-table th{
+            font-weight: bold;
+        }
         /* 鼠标指向表格时,奇数行背景颜色 */
         table tbody tr:hover {
             z-index: 1;
@@ -222,8 +224,8 @@
                             { field: 'pname', title: '项目名字', sort:true },
                             { field: 'pnums', title: '样本数量' },
                             { field: 'knums', title: '标注数量' },
-                            { field: 'neff', title: '本周效率' },
-                            { field: 'leff', title: '上周效率' },
+                            { field: 'neff', title: '本周效率(帧|标注|时长/h)' },
+                            { field: 'leff', title: '上周效率(帧|标注|时长/h)' },
                         ]],
                 });
             // 个人效率
@@ -242,8 +244,8 @@
                             { field: 'pname', title: '项目名字', sort:true },
                             { field: 'pnums', title: '样本数量' },
                             { field: 'knums', title: '标注数量' },
-                            { field: 'neff', title: '本周效率' },
-                            { field: 'leff', title: '上周效率'}
+                            { field: 'neff', title: '本周效率(帧|标注|时长/h)' },
+                            { field: 'leff', title: '上周效率(帧|标注|时长/h)'}
                         ]],
                 })
             }
