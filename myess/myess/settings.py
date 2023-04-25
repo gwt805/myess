@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders", # CORS
     "django_apscheduler", # 定时任务
     "ess", # 统计app
     "cronjob", # 定时app
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware", # CORS Middleware
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -125,6 +127,11 @@ USE_TZ = False
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static/root_static")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+
+# CORS Config
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_HEADERS = ('*')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
