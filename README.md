@@ -45,6 +45,7 @@ python manage.py migrate
 python manage.py collectstatic # 如果DEBUG为False时(root_stati文件夹已存在时,先删除在执行)
 python manage.py runserver 0.0.0.0:8088
 python manage.py demo --convert_data # 自定义命令, 老数据转移, 现已转移, 请勿用
+python manage.py listenkfk --start_listen_kafka # 启动监听 kafka 消息, 创建送标记录
 ```
 
 ### 权限说明

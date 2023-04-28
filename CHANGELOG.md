@@ -1,3 +1,20 @@
+# 2023-04-28
+### Added
+- 添加 anno_task_id 字段, 和工具链中的 创建标注任务的ID 对应
+- 监听kafka消息, 创建送标记录
+### Changed
+- 修改导航栏中的 Help 提示样式
+
+<img src= "./myess/asserts/2023-04-28-ess-add_AnnoTaskId_and_listen_kafka.png">
+
+
+
+# 2023-04-25
+### Changed
+- 支持跨域访问
+
+
+
 # 2023-03-03
 ### Changed
 - 优化登录策略
