@@ -5,14 +5,20 @@ from loguru import logger
 from ess import models
 import time, json
 import datetime
+import ssl
+
+ssl_ctx = ssl.create_default_context()
+ssl_ctx.check_hostname = False
+ssl_ctx.verify_mode = ssl.CERT_NONE
 
 consumer = KafkaConsumer(
     CONFIG["kafka_topic"],
     sasl_mechanism = "PLAIN",
-    security_protocol='SASL_PLAINTEXT',
+    security_protocol='SASL_SSL',
     sasl_plain_username = CONFIG["kafka_user"],
     sasl_plain_password = CONFIG["kafka_pwd"],
-    bootstrap_servers = [f'{CONFIG["kafka_host"]}:{CONFIG["kafka_port"]}'],
+    ssl_context = ssl_ctx,
+    bootstrap_servers = CONFIG["kafka_server"], #'xxx:xxx,xxxx:xxx'
     group_id = CONFIG["kafka_group_id"]
 )
 

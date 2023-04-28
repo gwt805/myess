@@ -11,7 +11,6 @@
     "kafka_topic": "",
     "kafka_user": "",
     "kafka_pwd": "",
-    "kafka_host": "",
-    "kafka_port": "",
+    "kafka_server": "",
     "kafka_group_id": ""
 }
