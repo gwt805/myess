@@ -514,6 +514,7 @@ def wballdata(request):
             tmp_dict['last_check_data_time'] = i.last_check_data_time
             tmp_dict["get_data_time"] = i.get_data_time
             tmp_dict["ann_field_flag"] = i.ann_field_flag
+            tmp_dict["anno_task_id"] = i.anno_task_id
 
             if i.ann_meta_data == None:
                 tmp_dict['ann_meta_data'] = ""
@@ -615,6 +616,7 @@ def wb_update(request):
             'send_reason': data.get("send_reason"),
             'key_frame_extracted_methods': data.get("key_frame_extracted_methods"),
             'ann_field_flag': data.get("ann_field_flag"),
+            'anno_task_id': data.get("anno_task_id"),
             'wb_name': models.Waibaos.objects.get(name=data.get("wb_name"))
         }
         if data.get("begin_check_data_time"):
@@ -715,6 +717,7 @@ def wb_update(request):
         tmp_dict['last_check_data_time'] = i.last_check_data_time
         tmp_dict["get_data_time"] = i.get_data_time
         tmp_dict["ann_field_flag"] = i.ann_field_flag
+        tmp_dict["anno_task_id"] = i.anno_task_id
         if i.ann_meta_data == None:
             tmp_dict['ann_meta_data'] = ""
         else:

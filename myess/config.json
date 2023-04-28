@@ -4,11 +4,14 @@
     "mysql_pwd": "",
     "mysql_port": "",
     "mysql_db": "",
-    "ding_access_token": "",
-    "ding_secret": "",
     "wecom_webhook_key": "",
     "send_qqEmail": "",
     "send_qqEmail_pwd": "",
     "enable_local_echarts": true, 
-    "public_ip": ""
+    "kafka_topic": "",
+    "kafka_user": "",
+    "kafka_pwd": "",
+    "kafka_host": "",
+    "kafka_port": "",
+    "kafka_group_id": ""
 }

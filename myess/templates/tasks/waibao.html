@@ -139,7 +139,7 @@
         <div id="right">
             <div style="height: 80px;">
                 <div class="alert alert-danger hide" id="alert_div"
-                    style="width: 300px; position: fixed; top: 40%;left: 45%; right: 50%;z-index: 1; font-size: 22px;">
+                    style="width: 300px; position: fixed; top: 40%;left: 45%; right: 50%;z-index: 999; font-size: 22px; text-align: center;">
                 </div> <!-- 警告弹出框 -->
                 <!-- insert -->
                 <div id="ginsert" style="display: none;">
@@ -317,8 +317,7 @@
                             <h3 class="modal-title">修改数据</h3>
                         </div>
                         <div class="modal-body">
-                            <div class="alert alert-danger" id="err_msg" style="display: none; text-align: center;">
-                            </div>
+                            <div class="alert alert-danger" id="err_msg" style="display: none; text-align: center;"></div>
                             <div>
                                 <table class="table" id="gtable">
                                     <tr>
@@ -326,7 +325,6 @@
                                         <th>研发名字</th>
                                         <th>项目名字</th>
                                         <th>送标批次</th>
-                                        <th>送标时间</th>
                                     </tr>
                                     <tr>
                                         <td><input type="number" min="0" class="form-control" name="id" disabled
@@ -336,43 +334,51 @@
                                                 disabled></select></td>
                                         <td><input type="text" class="form-control" name="send_data_batch_update"
                                                 id="send_data_batch_update" disabled></td>
-                                        <td><input type="date" class="form-control" name="send_data_time"
-                                                id="send_data_time_update" disabled></td>
                                     </tr>
                                     <tr>
+                                        <th>送标时间</th>
                                         <th>送标样本数量</th>
                                         <th>数据来源</th>
                                         <th>场景分布</th>
-                                        <th>送标原因</th>
-                                        <th>关键帧抽取方式</th>
                                     </tr>
                                     <tr>
+                                        <td><input type="date" class="form-control" name="send_data_time"
+                                            id="send_data_time_update" disabled></td>
                                         <td><input type="number" class="form-control" min="0" name="pnums"
                                                 id="pnums_update" disabled></td>
                                         <td><select class="form-control" name="data_source" id="data_source_update"
                                                 disabled></select></td>
                                         <td><input type="text" class="form-control" name="scene_update"
                                                 id="scene_update" disabled></td>
+                                    </tr>
+                                    <tr>
+                                        <th>送标原因</th>
+                                        <th>关键帧抽取方式</th>
+                                        <th>外包名字</th>
+                                        <th>是否首次标注</th>
+                                        
+                                    </tr>
+                                    <tr>
                                         <td><input type="text" class="form-control" name="send_reason_update"
-                                                id="send_reason_update" disabled></td>
+                                            id="send_reason_update" disabled></td>
                                         <td><input type="text" class="form-control"
                                                 name="key_frame_extracted_methods_update"
                                                 id="key_frame_extracted_methods_update" disabled></td>
+                                        <td><select class="form-control" name="wb_name" id="wb_name_update"
+                                                disabled></select></td>
+                                        <td><select class="form-control" name="ann_field_flag_update"
+                                                id="ann_field_flag_update" disabled></select></td>
                                     </tr>
                                     <tr>
-                                        <th>外包名字</th>
-                                        <th>是否首次标注</th>
+                                        <th>AnnotationTaskId</th>
                                         <th>开始验收时间</th>
                                         <th>结束验收时间</th>
                                         <th>收到标注结果时间</th>
                                     </tr>
                                     <tr>
-                                        <td><select class="form-control" name="wb_name" id="wb_name_update"
-                                                disabled></select></td>
-                                        <td><select class="form-control" name="ann_field_flag_update"
-                                                id="ann_field_flag_update" disabled></select></td>
+                                        <td><input type="number" class="form-control" id="bagmanagertaskid" disabled></td>
                                         <td><input type="date" class="form-control" name="begin_check_data_time_update"
-                                                id="begin_check_data_time_update"></td>
+                                            id="begin_check_data_time_update"></td>
                                         <td><input type="date" class="form-control" name="last_check_data_time_update"
                                                 id="last_check_data_time_update"></td>
                                         <td><input type="date" class="form-control" name="get_data_time"
@@ -633,13 +639,12 @@
         lineStyle: 'height: 39.5px;', // 设置整体行高,即开启多行显示
         totalRow: false, // 尾部分页栏-合计, 默认false
         cols: [[               //设置列标签、标题、宽度、是否排序等
-            // {checkbox:true}, // 复选框
             { field: 'id', title: 'ID', fixed: left },
             { field: 'user', title: '研发', width: 80, fixed: left },
             { field: 'pname', title: '项目名字', width: 220, fixed: left, sort: true },
             { field: 'send_data_batch', title: '送标批次', width: 150, fixed: left },
             { field: 'send_data_time', title: "送标时间", width: 110, fixed: left },
-            { field: 'pnums', title: "送标样本数量", width: 130 },
+            { field: 'pnums', title: "送标样本数量", width: 130, fixed: left },
             { field: 'data_source', title: "数据来源", width: 110 },
             { field: 'scene', title: "场景分布", width: 110 },
             { field: 'send_reason', title: "送标原因", width: 110 },
@@ -650,6 +655,7 @@
             { field: 'ann_meta_data', title: '准确率&框数&结算方式&单价', width: 230 },
             { field: 'total_money', title: "总价", width: 110 },
             { field: 'ann_field_flag', title: "是否首次标注", width: 120 },
+            { field: 'anno_task_id', title: "AnnotationTaskId", width:140, fixed: 'right' },
             { field: 'wb_name', title: '外包名字', width: 90, fixed: 'right' },
             { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150 },//设置每行的工具栏以及其容器
         ]],
@@ -814,6 +820,7 @@
                             const ann_field_flag = res.data[0].ann_field_flag;
                             const wb_name = res.data[0].wb_name;
                             const ann_meta_data = res.data[0].ann_meta_data;
+                            const bagmanagertaskid = res.data[0].anno_task_id;
 
                             $("#id_update").val(id);
                             $("#user_update").val(user);
@@ -830,6 +837,7 @@
                             $("#get_data_time_update").val(get_data_time);
                             $("#ann_field_flag_update").html("<option value=" + ann_field_flag + ">" + ann_field_flag + "</option>");
                             $("#wb_name_update").html("<option value=" + wb_name + ">" + wb_name + "</option>");
+                            $("#bagmanagertaskid").val(bagmanagertaskid);
 
                             tableadd(ann_meta_data.length); // 动态添加行数
                             if (ann_meta_data != "") {
@@ -966,6 +974,7 @@
         const ann_field = $("#ann_field_flag_update option:selected").val();
         const wb_name = $("#wb_name_update option:selected").val();
         const ann_meta_data = get_table_data();
+        const anno_task_id = $("#bagmanagertaskid").val()
 
         if (ann_meta_data[0]) {
             $.ajax("/wb_update/", {
@@ -989,6 +998,7 @@
                     begin_check_data_time: begin_check_data_time,
                     last_check_data_time: last_check_data_time,
                     get_data_time: get_data_time,
+                    anno_task_id: anno_task_id,
                     ann_meta_data: ann_meta_data[1]
                 },
             }).done(function (res) {
