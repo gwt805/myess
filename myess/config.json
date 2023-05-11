@@ -5,6 +5,7 @@
     "mysql_port": "",
     "mysql_db": "",
     "wecom_webhook_key": "",
+    "wecom_at_phone": "",
     "send_qqEmail": "",
     "send_qqEmail_pwd": "",
     "enable_local_echarts": true, 
