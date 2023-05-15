@@ -86,6 +86,7 @@ class Supplier(models.Model):
     scene = models.TextField(null=False, verbose_name="场景分布", default="未知") # 场景分布
     send_reason = models.TextField(null=False, verbose_name="送标原因", default="未知") # 送标原因
     key_frame_extracted_methods = models.TextField(null=False, verbose_name="关键帧抽取方式", default="未知") # 关键帧抽取方式
+    anno_task_id = models.IntegerField(null=True, unique=True, blank=True, verbose_name="工具链标注任务ID")
     # ========================================================================================================================
     begin_check_data_time = models.DateField(null=True, verbose_name="开始验收时间", blank=True)
     last_check_data_time = models.DateField(null=True, verbose_name="结束验收时间", blank=True)

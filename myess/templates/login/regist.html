@@ -50,18 +50,22 @@
     function regist() {
       let reg = /[\u4e00-\u9fa5]+/g;
       let reg_name = reg.exec($("#zhuser").val());
-      let reg_email = /^[a-zA-Z0-9]+([-_.][A-Za-zd]+)*@([a-zA-Z0-9]+[-.])+[A-Za-zd]{2,5}$/;
+      let reg_email = /^[a-zA-Z0-9]+([-_.][A-Za-zd]+)*@gs-robot.com$/;
       let reg_email_res = reg_email.test($("#email").val());
 
       if (reg_name == null || reg_name[0].length != $("#zhuser").val().length) {
         $("#error").html("姓名需要写自己中文名字喔!");
-      } else if (reg_email_res == false) {
-        $("#error").html("请填写正确的邮箱,否则将不能正常给您发送相关信息!");
-      } else if ($("#pwd").val() != $("#pwd2").val()) {
+      }
+      else if (reg_email_res == false) {
+        $("#error").html("请填写正确的公司邮箱!");
+      }
+      else if ($("#pwd").val() != $("#pwd2").val()) {
         $("#error").html("两个密码填写的不一样喔!");
-      } else if ($("#user").val() == "" || $("#pwd").val() == "" || $("#zhuser").val() == "" || $("#emal").val() == "" || $("#pwd2").val() == "") {
+      }
+      else if ($("#user").val() == "" || $("#pwd").val() == "" || $("#zhuser").val() == "" || $("#emal").val() == "" || $("#pwd2").val() == "") {
         $("#error").html("不允许有空值喔!");
-      } else {
+      }
+      else {
         $.ajaxSetup({
           data: { csrfmiddlewaretoken: '{{ csrf_token }}' },
         });

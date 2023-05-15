@@ -9,3 +9,4 @@ pyecharts==2.0.1
 opencv-python==4.7.0.68
 numpy==1.20.1
 django-cors-headers
+kafka-python
