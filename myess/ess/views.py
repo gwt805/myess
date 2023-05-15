@@ -616,7 +616,6 @@ def wb_update(request):
             'send_reason': data.get("send_reason"),
             'key_frame_extracted_methods': data.get("key_frame_extracted_methods"),
             'ann_field_flag': data.get("ann_field_flag"),
-            'anno_task_id': data.get("anno_task_id"),
             'wb_name': models.Waibaos.objects.get(name=data.get("wb_name"))
         }
         if data.get("begin_check_data_time"):
