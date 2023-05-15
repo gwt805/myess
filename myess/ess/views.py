@@ -633,6 +633,11 @@ def wb_update(request):
             data_update['get_data_time'] = data.get("get_data_time")
         else:
             data_update['get_data_time'] = None
+        
+        if data.get("anno_task_id"):
+            data_update['anno_task_id'] = data.get("anno_task_id")
+        else:
+            data_update['anno_task_id'] = None
 
         new_ann_meta_data = []
         for item in range(0, (len(data)-16)//4):
