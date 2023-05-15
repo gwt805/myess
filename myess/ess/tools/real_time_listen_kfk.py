@@ -24,7 +24,10 @@ ssl_ctx.check_hostname = False
 ssl_ctx.verify_mode = ssl.CERT_NONE
 
 logger.info(f"kfk_topic: {CONFIG['kafka_topic']}")
+logger.info(f"kfk_user: {CONFIG['kafka_user']}")
+logger.info(f"kfk_pwd: {CONFIG['kafka_pwd']}")
 logger.info(f"kfk_server: {CONFIG['kafka_server']}")
+logger.info(f"kfk_group_id: {CONFIG['kafka_group_id']}")
 
 consumer = KafkaConsumer(
     CONFIG["kafka_topic"],
@@ -44,56 +47,22 @@ def listen_kafka():
             data = json.loads(msg.value)
             logger.info(data)
             
-            for item in ["creator", "project_name", "task_batch_desc", "send_date", "sample_cnt", "data_src", "scene_desc", "send_reason", "keyframe_extracted_method", "annotated_before", "anno_vendor", "anno_task_id"]:
-                if item == "creator":
-                    try:
-                        user = data["creator"]
-                    except:
-                        msg = "real_time_listen_kfk.py data['creator'] 获取出错!"
-                        sendMsg(msg)
-                        raise ValueError(msg)
-                    try:
-                        email = data["creator_email"]
-                    except:
-                        msg = "real_time_listen_kfk.py data['creator_email'] 获取出错!"
-                        sendMsg(msg)
-                        raise ValueError(msg)
-                    if len(models.User.objects.filter(email=email)) == 0:
-                        msg = f"real_time_listen_kfk.py 没有找到 {user} 的邮箱!"
-                        sendMsg(msg)
-                        raise ValueError(msg)
-                if item == "project_name":
-                    try:
-                        proname = data["project_name"]
-                    except:
-                        msg = "real_time_listen_kfk.py data['project_name'] 获取出错!"
-                        sendMsg(msg)
-                        raise ValueError(msg)
-                    try:
-                        project_name = PROJECT_NAME[proname]
-                    except:
-                        msg = f"real_time_listen_kfk.py 项目: {proname} 还没有做映射!"
-                        sendMsg(msg)
-                        raise ValueError(msg)
-                if item == "anno_vendor":
-                    try:
-                        wb_name = data["anno_vendor"]
-                    except:
-                        msg = "real_time_listen_kfk.py data['anno_vendor'] 获取出错!"
-                        sendMsg(msg)
-                        raise ValueError(msg)
-                    try:
-                        wbName = VENDER[wb_name]
-                    except:
-                        msg = f"real_time_listen_kfk.py 供应商: {wb_name} 还没有作映射!"
-                        sendMsg(msg)
-                        raise ValueError(msg)
-            try:
-                msg_info = data[item]
-            except:
-                msg = f"real_time_listen_kfk.py data[{item}] 获取出错!"
+            for item in ["creator", "creator_email", "project_name", "task_batch_desc", "send_date", "sample_cnt", "data_src", "scene_desc", "send_reason", "keyframe_extracted_method", "annotated_before", "anno_vendor", "anno_task_id"]:
+                if item not in data:
+                    msg = f"real_time_listen_kfk.py <font color={random_color()}>data[{item}]</font> 获取出错!"
+                    sendMsg(msg)
+                    raise ValueError(msg)
+
+            if len(models.User.objects.filter(email=data["creator_email"])) == 0:
+                msg = f"real_time_listen_kfk.py 没有找到 {data['creator']} 的邮箱: <font color={random_color()}>{data['creator_email']}</font>!"
                 sendMsg(msg)
                 raise ValueError(msg)
+
+            for k, mappings  in {"project_name": PROJECT_NAME, "anno_vendor": VENDER}.items():
+                if data[k] not in mappings:
+                    msg = f"real_time_listen_kfk.py {k}: <font color={random_color()}>{data[k]}</font> 还没有做映射!"
+                    sendMsg(msg)
+                    raise ValueError(msg)
 
             snorlax_anno_task_id_list = models.Supplier.objects.filter(anno_task_id=int(data["anno_task_id"]))
 
@@ -119,7 +88,7 @@ def listen_kafka():
                     logger.info(info)
                     msg = "添加 kafka 收到的消息出错了!"
                     raise ValueError(msg)
-                wb_dingtalk(models.User.objects.get(email=email).username, "添加", "", info) # 这里 arg1 要拿到中文
+                wb_dingtalk(models.User.objects.get(email=data['creator_email']).username, "添加", "", info) # 这里 arg1 要拿到中文
                 logger.info(info)
         time.sleep(1)
 
