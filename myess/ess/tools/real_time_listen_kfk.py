@@ -77,7 +77,7 @@ def listen_kafka():
                     'scene': data["scene_desc"],
                     'send_reason': data["send_reason"],
                     'key_frame_extracted_methods': data["keyframe_extracted_method"],
-                    'ann_field_flag': "首次标注" if data["annotated_before"] == "true" or data["annotated_before"] == True else "返修标注",
+                    'ann_field_flag': "首次标注" if data["annotated_before"] == "false" or data["annotated_before"] == False else "返修标注",
                     'wb_name': models.Waibaos.objects.get(name=VENDER[data["anno_vendor"]]),  # 手动映射
                     'anno_task_id': int(data["anno_task_id"]),
                     'created_time': datetime.datetime.now().strftime("%Y-%m-%d")
