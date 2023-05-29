@@ -28,22 +28,51 @@ logger.info(f"kfk_pwd: {CONFIG['kafka_pwd']}")
 logger.info(f"kfk_server: {CONFIG['kafka_server']}")
 logger.info(f"kfk_group_id: {CONFIG['kafka_group_id']}")
 
-def listen_kafka():
-    try:
-        consumer = KafkaConsumer(
-            CONFIG["kafka_topic"],
-            sasl_mechanism = "PLAIN",
-            security_protocol='SASL_SSL',
-            sasl_plain_username = CONFIG["kafka_user"],
-            sasl_plain_password = CONFIG["kafka_pwd"],
-            ssl_context = ssl_ctx,
-            bootstrap_servers = CONFIG["kafka_server"], #'xxx:xxx,xxxx:xxx'
-            auto_offset_reset='earliest', # 正式环境 需要
-            group_id = CONFIG["kafka_group_id"] # 正式环境需要
+def sendMsg(msg):
+    nowtime = datetime.datetime.utcnow() + datetime.timedelta(hours=8)  # 东八区时间
+    today = str(nowtime.year) + "-" + str(nowtime.month) + "-" + str(nowtime.day) + " " + str(nowtime.hour) + ":" + str(nowtime.minute) + ":" + str(nowtime.second)
+    contents = f"现在是 {today} 来自ESS\n\r{msg}"
+
+    def task():
+        res = requests.post(
+            f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}", 
+            json={
+                "msgtype": "text",
+                "text": {
+                    "content": contents,
+                    "mentioned_mobile_list":[CONFIG['wecom_at_phone']]
+                }
+            }
         )
-    except:
-        logger.info("ESS kafka retry connect...")
-        listen_kafka()
+        logger.info(f"企微机器人消息状态-kfk: {res.json()}")
+    
+    tasks = threading.Thread(target=task)
+    if CONFIG["wecom_webhook_key"] == "":
+        logger.info("企业微信机器人还没有配置喔!")
+        if CONFIG["wecom_at_phone"] == "":
+            logger.info("企业微信机器人 @ 还没有配置喔!")
+    else:
+        tasks.start()
+
+try:
+    consumer = KafkaConsumer(
+        CONFIG["kafka_topic"],
+        sasl_mechanism = "PLAIN",
+        security_protocol='SASL_SSL',
+        sasl_plain_username = CONFIG["kafka_user"],
+        sasl_plain_password = CONFIG["kafka_pwd"],
+        ssl_context = ssl_ctx,
+        bootstrap_servers = CONFIG["kafka_server"], #'xxx:xxx,xxxx:xxx'
+        auto_offset_reset='earliest', # 正式环境 需要
+        group_id = CONFIG["kafka_group_id"] # 正式环境需要
+    )
+except:
+    logger.info("ESS kafka retry connect...")
+    msg = "ESS kafka 连接异常, 请及时检查!"
+    sendMsg(msg)
+    raise ValueError(msg)
+
+def listen_kafka():
     while True:
         for msg in consumer:
             data = json.loads(msg.value)
@@ -99,30 +128,3 @@ def listen_kafka():
                 wb_dingtalk(models.User.objects.get(email=data['creator_email']).username, "添加", "", info) # 这里 arg1 要拿到中文
                 logger.info(info)
         time.sleep(1)
-
-
-def sendMsg(msg):
-    nowtime = datetime.datetime.utcnow() + datetime.timedelta(hours=8)  # 东八区时间
-    today = str(nowtime.year) + "-" + str(nowtime.month) + "-" + str(nowtime.day) + " " + str(nowtime.hour) + ":" + str(nowtime.minute) + ":" + str(nowtime.second)
-    contents = f"现在是 {today} 来自ESS\n\r{msg}"
-
-    def task():
-        res = requests.post(
-            f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}", 
-            json={
-                "msgtype": "text",
-                "text": {
-                    "content": contents,
-                    "mentioned_mobile_list":[CONFIG['wecom_at_phone']]
-                }
-            }
-        )
-        logger.info(f"企微机器人消息状态-kfk: {res.json()}")
-    
-    tasks = threading.Thread(target=task)
-    if CONFIG["wecom_webhook_key"] == "":
-        logger.info("企业微信机器人还没有配置喔!")
-        if CONFIG["wecom_at_phone"] == "":
-            logger.info("企业微信机器人 @ 还没有配置喔!")
-    else:
-        tasks.start()
