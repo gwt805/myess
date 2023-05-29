@@ -6,6 +6,7 @@ ldap 登陆
 '''
 
 from .project_vender_snorlax_to_ess import VENDER, PROJECT_NAME
+from django.db import connection, OperationalError
 from myess.settings import CONFIG
 from ess.mes import wb_dingtalk
 from kafka import KafkaConsumer
@@ -29,20 +30,29 @@ logger.info(f"kfk_pwd: {CONFIG['kafka_pwd']}")
 logger.info(f"kfk_server: {CONFIG['kafka_server']}")
 logger.info(f"kfk_group_id: {CONFIG['kafka_group_id']}")
 
-consumer = KafkaConsumer(
-    CONFIG["kafka_topic"],
-    sasl_mechanism = "PLAIN",
-    security_protocol='SASL_SSL',
-    sasl_plain_username = CONFIG["kafka_user"],
-    sasl_plain_password = CONFIG["kafka_pwd"],
-    ssl_context = ssl_ctx,
-    bootstrap_servers = CONFIG["kafka_server"], #'xxx:xxx,xxxx:xxx'
-    auto_offset_reset='earliest', # 正式环境 需要
-    group_id = CONFIG["kafka_group_id"] # 正式环境需要
-)
-
 def listen_kafka():
+    try:
+        consumer = KafkaConsumer(
+            CONFIG["kafka_topic"],
+            sasl_mechanism = "PLAIN",
+            security_protocol='SASL_SSL',
+            sasl_plain_username = CONFIG["kafka_user"],
+            sasl_plain_password = CONFIG["kafka_pwd"],
+            ssl_context = ssl_ctx,
+            bootstrap_servers = CONFIG["kafka_server"], #'xxx:xxx,xxxx:xxx'
+            auto_offset_reset='earliest', # 正式环境 需要
+            group_id = CONFIG["kafka_group_id"] # 正式环境需要
+        )
+    except:
+        logger.info("ESS kafka retry connect...")
+        listen_kafka()
     while True:
+        try:
+            snorlax_anno_task_id_list = models.Supplier.objects.filter(anno_task_id=int(data["anno_task_id"]))
+        except OperationalError as e:
+            print(e)
+            connection.close()
+            snorlax_anno_task_id_list = models.Supplier.objects.filter(anno_task_id=int(data["anno_task_id"]))
         for msg in consumer:
             data = json.loads(msg.value)
             logger.info(data)
@@ -64,8 +74,13 @@ def listen_kafka():
                     sendMsg(msg)
                     raise ValueError(msg)
 
-            snorlax_anno_task_id_list = models.Supplier.objects.filter(anno_task_id=int(data["anno_task_id"]))
-
+            try:
+                snorlax_anno_task_id_list = models.Supplier.objects.filter(anno_task_id=int(data["anno_task_id"]))
+            except OperationalError as e:
+                logger.info("ESS kafka mysql closed and retry connect...")
+                connection.close()
+                snorlax_anno_task_id_list = models.Supplier.objects.filter(anno_task_id=int(data["anno_task_id"]))
+            
             if len(snorlax_anno_task_id_list) == 0:
                 info = {
                     'user': models.User.objects.get(username=models.User.objects.get(email=data["creator_email"]).username), # 邮箱映射

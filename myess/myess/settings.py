@@ -90,7 +90,7 @@ DATABASES = {
         "PASSWORD": CONFIG["mysql_pwd"],
         "HOST": CONFIG["mysql_host"],
         "PORT": CONFIG["mysql_port"],
-        "CONN_MAX_AGE": 30000, # s 秒
+        "CONN_MAX_AGE": None, # s 秒 0/None 代表持久连接 默认0
     }
 }
 

@@ -1,31 +1,30 @@
 from django_apscheduler.jobstores import DjangoJobStore,register_events
 from apscheduler.schedulers.background import BackgroundScheduler
-from django.views.decorators.csrf import csrf_exempt
-from dingtalkchatbot.chatbot import DingtalkChatbot
 from django.http import JsonResponse, HttpResponse,FileResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.db import connection, OperationalError
 from myess.settings import CONFIG, BASE_DIR
 from pyecharts.render import make_snapshot
 from snapshot_phantomjs import snapshot
 from pyecharts import options as opts
 from django.shortcuts import render
-from pyecharts.charts import Pie
 from django.http import QueryDict
+from pyecharts.charts import Pie
 from datetime import datetime
+from django.views import View
 from loguru import logger
 from ess import views
+import numpy as np
 import threading
 import requests
 import pymysql
-import urllib
 import hashlib
 import base64
-import time
-import hmac
 import json
 import os
 import cv2
-import numpy as np
-from django.views import View
+
+
 
 # Create your views here.
 scheduler = BackgroundScheduler(timezone='Asia/Shanghai')  # 实例化调度器
@@ -114,25 +113,6 @@ class ReportImage(View):
         return FileResponse(open(img,'rb'), content_type='image/png')
 
 def ding_day_report_form():
-    # def ding_mes():
-    #     timestamp = str(round(time.time() * 1000))
-
-    #     secret = CONFIG["ding_secret"]  # 替换成你的签
-
-    #     secret_enc = secret.encode("utf-8")
-    #     string_to_sign = "{}\n{}".format(timestamp, secret)
-    #     string_to_sign_enc = string_to_sign.encode("utf-8")
-    #     hmac_code = hmac.new(
-    #         secret_enc, string_to_sign_enc, digestmod=hashlib.sha256
-    #     ).digest()
-    #     sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
-    #     # 引用钉钉群消息通知的Webhook地址：
-    #     webhook = f"https://oapi.dingtalk.com/robot/send?access_token={CONFIG['ding_access_token']}&timestamp={timestamp}&sign={sign}"
-    #     # 初始化机器人小丁,方式一：通常初始化
-    #     msgs = DingtalkChatbot(webhook)
-    #     picture1 = f"### 截止今年各项目报表详情\n\n![各个报表](http://{CONFIG['public_ip']}/report_img/hori_ver_contact_pie.png)"
-    #     states = msgs.send_markdown(title="截止今日今年各报表详情", text=picture1, is_at_all=False)
-    #     logger.info(f"钉钉机器人消息状态: {states}")
     def wecom_mes():
         img_dir = os.path.join(BASE_DIR,"cronjob/ding_day_report_form/")
         img = img_dir + "/" + "hori_ver_contact_pie.png"
@@ -187,13 +167,9 @@ def ding_day_report_form():
             }
             res_img = requests.post(url,headers=headers,json=data)
             logger.info(f"企微机器人-图片-消息状态: {res_img.json()}")
-    # task_ding = threading.Thread(target=ding_mes)
+
     task_wc = threading.Thread(target=wecom_mes)
 
-    # if CONFIG["ding_access_token"] == "" or CONFIG["ding_secret"] == "":
-    #     logger.warning("钉机器人您还没有配置喔!")
-    # else:
-    #     task_ding.start()
     if CONFIG['wecom_webhook_key'] == "":
         logger.warning("企业微信机器人还没有配置喔！")
     else:
@@ -201,7 +177,12 @@ def ding_day_report_form():
 
 
 def every_day_ding_send_report_form():
-    _, _, char_list, money_total, _ = views.wbdata_count_public_code("是", "---", "", "")
+    try:
+        _, _, char_list, money_total, _ = views.wbdata_count_public_code("是", "---", "", "")
+    except OperationalError as e:
+        logger.info("ESS cron job log: the mysql is closed and will be retry connect...")
+        connection.close()
+        _, _, char_list, money_total, _ = views.wbdata_count_public_code("是", "---", "", "")
     make_report_form_img(char_list, money_total)
     ding_day_report_form()
     
