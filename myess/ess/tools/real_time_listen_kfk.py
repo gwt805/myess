@@ -45,12 +45,6 @@ def listen_kafka():
         logger.info("ESS kafka retry connect...")
         listen_kafka()
     while True:
-        try:
-            snorlax_anno_task_id_list = models.Supplier.objects.filter(anno_task_id=int(data["anno_task_id"]))
-        except OperationalError as e:
-            print(e)
-            connection.close()
-            snorlax_anno_task_id_list = models.Supplier.objects.filter(anno_task_id=int(data["anno_task_id"]))
         for msg in consumer:
             data = json.loads(msg.value)
             logger.info(data)
