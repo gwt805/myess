@@ -1,8 +1,6 @@
 '''
 脚本功能: 实时监听 kafka消息并写入数据库
 项目名字和供应商映射关系放在 project_vender_snorlax_to_ess.py
-注册 限制公司邮箱
-ldap 登陆
 '''
 
 from .project_vender_snorlax_to_ess import VENDER, PROJECT_NAME
@@ -59,18 +57,18 @@ def listen_kafka():
             
             for item in ["creator", "creator_email", "project_name", "task_batch_desc", "send_date", "sample_cnt", "data_src", "scene_desc", "send_reason", "keyframe_extracted_method", "annotated_before", "anno_vendor", "anno_task_id"]:
                 if item not in data:
-                    msg = f"real_time_listen_kfk.py <font color={random_color()}>data[{item}]</font> 获取出错!"
+                    msg = f"real_time_listen_kfk.py data[{item}] 获取出错!"
                     sendMsg(msg)
                     raise ValueError(msg)
 
             if len(models.User.objects.filter(email=data["creator_email"])) == 0:
-                msg = f"real_time_listen_kfk.py 没有找到 {data['creator']} 的邮箱: <font color={random_color()}>{data['creator_email']}</font>!"
+                msg = f"real_time_listen_kfk.py 没有找到 {data['creator']} 的邮箱: {data['creator_email']}!"
                 sendMsg(msg)
                 raise ValueError(msg)
 
             for k, mappings  in {"project_name": PROJECT_NAME, "anno_vendor": VENDER}.items():
                 if data[k] not in mappings:
-                    msg = f"real_time_listen_kfk.py {k}: <font color={random_color()}>{data[k]}</font> 还没有做映射!"
+                    msg = f"real_time_listen_kfk.py {k}: {data[k]} 还没有做映射!"
                     sendMsg(msg)
                     raise ValueError(msg)
 
@@ -102,30 +100,24 @@ def listen_kafka():
                 except:
                     logger.info(info)
                     msg = "添加 kafka 收到的消息出错了!"
+                    sendMsg(msg)
                     raise ValueError(msg)
                 wb_dingtalk(models.User.objects.get(email=data['creator_email']).username, "添加", "", info) # 这里 arg1 要拿到中文
                 logger.info(info)
         time.sleep(1)
 
 
-def random_color():
-    color_code = "0123456789ABCDEF"
-    color_str = ""
-    for item in range(6):
-        color_str += random.choice(color_code)
-    return color_str
-
 def sendMsg(msg):
     nowtime = datetime.datetime.utcnow() + datetime.timedelta(hours=8)  # 东八区时间
     today = str(nowtime.year) + "-" + str(nowtime.month) + "-" + str(nowtime.day) + " " + str(nowtime.hour) + ":" + str(nowtime.minute) + ":" + str(nowtime.second)
-    contents = f"现在是 <font color={random_color()}>{today}</font> 来自ESS\n\r{msg}"
+    contents = f"现在是 {today} 来自ESS\n\r{msg}"
 
     def task():
         res = requests.post(
             f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={CONFIG['wecom_webhook_key']}", 
             json={
-                "msgtype": "markdown",
-                "markdown": {
+                "msgtype": "text",
+                "text": {
                     "content": contents,
                     "mentioned_mobile_list":[CONFIG['wecom_at_phone']]
                 }
