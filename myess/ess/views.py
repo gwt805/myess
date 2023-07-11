@@ -25,7 +25,8 @@ from email.mime.text import MIMEText
 from email.header import Header
 import threading
 from loguru import logger
-from myess.settings import CONFIG
+import datetime as dt
+from myess.settings import CONFIG, BASE_DIR
 
 # Create your views here.
 
@@ -35,6 +36,7 @@ two background tasks:
     2. 添加/删除/修改 数据, 会有钉消息发出
 """
 
+logger.add(f"{BASE_DIR}/logs/mainserver/{dt.datetime.now().strftime('%Y-%m-%d')}.log")
 
 def sendEmail(username: str, password: str, email: str):
     def thread_task():

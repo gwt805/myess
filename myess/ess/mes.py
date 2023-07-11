@@ -1,18 +1,16 @@
-from dingtalkchatbot.chatbot import DingtalkChatbot
-from datetime import datetime, timedelta
+from datetime import datetime
 from time import strftime, gmtime
-from myess.settings import CONFIG
+from myess.settings import CONFIG, BASE_DIR
 from loguru import logger
 from ess import models
-import urllib.parse
+import datetime as dt
 import threading
 import requests
-import hashlib
-import base64
 import math
 import json
-import time
-import hmac
+
+
+logger.add(f"{BASE_DIR}/logs/mainserver/{dt.datetime.now().strftime('%Y-%m-%d')}.log")
 
 ''' 效率计算 开始 '''
 def str2sec(x):

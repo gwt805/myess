@@ -7,6 +7,6 @@ django-apscheduler==0.6.2
 snapshot-phantomjs==0.0.3
 pyecharts==2.0.1
 opencv-python==4.7.0.68
-numpy==1.20.1
+numpy
 django-cors-headers
 kafka-python

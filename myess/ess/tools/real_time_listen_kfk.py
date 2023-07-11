@@ -5,7 +5,7 @@
 
 from .project_vender_snorlax_to_ess import VENDER, PROJECT_NAME
 from django.db import connection, OperationalError
-from myess.settings import CONFIG
+from myess.settings import CONFIG, BASE_DIR
 from ess.mes import wb_dingtalk
 from kafka import KafkaConsumer
 from loguru import logger
@@ -17,6 +17,7 @@ import requests
 import random
 import ssl
 
+logger.add(f"{BASE_DIR}/logs/kafka/{datetime.datetime.now().strftime('%Y-%m-%d')}.log")
 
 ssl_ctx = ssl.create_default_context()
 ssl_ctx.check_hostname = False
@@ -119,6 +120,10 @@ def listen_kafka():
                     'created_time': datetime.datetime.now().strftime("%Y-%m-%d")
                 }
                 try:
+                    models.Supplier.objects.create(**info)
+                except OperationalError as e:
+                    logger.info("ESS kafka mysql closed and retry connect...")
+                    connection.close()
                     models.Supplier.objects.create(**info)
                 except:
                     logger.info(info)
