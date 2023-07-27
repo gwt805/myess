@@ -488,7 +488,7 @@ def waibao(request):
         [i[0] for i in models.Waibaos.objects.values_list("name")]
     )  # 数据库里所有的项目名字
     data_source_list = json.dumps(["---", '人工采集', "回流数据"])
-    js_methods = json.dumps(['矩形框', "多边形", "线段", "筛选", "3D框", "3D分割"])
+    js_methods = json.dumps(['矩形框', "多边形", "线段", "筛选", "3D框", "3D分割", "视频"])
     ann_field_flag = json.dumps(['首次标注', '返修标注'])
     return render(request, "tasks/waibao.html", {"projects": projects, "bzf": bzf, "data_source": data_source_list, "js_methods": js_methods, "ann_field": ann_field_flag})
 
