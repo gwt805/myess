@@ -1,6 +1,8 @@
 .vscode
 __pycache__/
 render.html
+logs/
+root_static/
 hori_ver_contact_pie.png
 pie_anno_info.png
 pie_knums_info.png
