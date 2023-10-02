@@ -123,23 +123,3 @@ class Budget(models.Model):
 
     class Meta:
         verbose_name_plural = "年度标注预算表"
-
-
-class TaskSummary(models.Model):
-    proname = models.ForeignKey(to='Project',on_delete=models.CASCADE, to_field='pname', verbose_name="项目名字")
-    created_time = models.DateField(null=False, verbose_name="创建时间")
-    knums = models.JSONField(null=False, verbose_name="框数") # 累加上一次的[{},{}]
-    money = models.JSONField(null=False, verbose_name="总价") # 项目-筛选 总价 ... [{},{}]
-    wb_name = models.ForeignKey(to="Waibaos", on_delete=models.CASCADE, to_field='name', verbose_name="供应商名字")
-    
-    class Meta:
-        verbose_name_plural = "图表统计表"
-
-class Summary(models.Model):
-    proname = models.ForeignKey(to='Project',on_delete=models.CASCADE, to_field='pname', verbose_name="项目名字")
-    created_time = models.DateField(null=False, verbose_name="创建时间")
-    knums = models.JSONField(null=False, verbose_name="框数") # 累加上一次的[{},{}]
-    money = models.JSONField(null=False, verbose_name="总价") # 项目-筛选 总价 ... [{},{}]
-
-    class Meta:
-        verbose_name_plural = "图表统计表"

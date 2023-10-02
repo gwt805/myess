@@ -25,6 +25,7 @@ urlpatterns = [
     path("wbdata_count/", views.wbdata_count),
     path("budget/", views.budget),
     path("budgetalldata/",views.budgetalldata),
+    path("changed/", views.changed),
     re_path(
         "^static/(?P<path>.*)$",
         static.serve,

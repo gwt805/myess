@@ -25,7 +25,6 @@ from email.mime.text import MIMEText
 from email.header import Header
 import threading
 from loguru import logger
-import datetime as dt
 from myess.settings import CONFIG, BASE_DIR
 
 # Create your views here.
@@ -36,7 +35,7 @@ two background tasks:
     2. 添加/删除/修改 数据, 会有钉消息发出
 """
 
-logger.add(f"{BASE_DIR}/logs/mainserver/{dt.datetime.now().strftime('%Y-%m-%d')}.log")
+logger.add(f"{BASE_DIR}/logs/myess.log", rotation="7 days", retention="14 days") # 7天轮转, 只保留14天内的
 
 def sendEmail(username: str, password: str, email: str):
     def thread_task():
@@ -634,7 +633,6 @@ def wb_update(request):
             data_update['get_data_time'] = data.get("get_data_time")
         else:
             data_update['get_data_time'] = None
-        
         if data.get("anno_task_id"):
             data_update['anno_task_id'] = data.get("anno_task_id")
         else:
@@ -642,10 +640,8 @@ def wb_update(request):
 
         new_ann_meta_data = []
         for item in range(0, (len(data)-16)//4):
-            settlement_method = data.get(
-                f"ann_meta_data[{item}][settlement_method]")
-            recovery_precision = data.get(
-                f"ann_meta_data[{item}][recovery_precision]")
+            settlement_method = data.get(f"ann_meta_data[{item}][settlement_method]")
+            recovery_precision = data.get(f"ann_meta_data[{item}][recovery_precision]")
             knums = data.get(f"ann_meta_data[{item}][knums]")
             unit_price = data.get(f"ann_meta_data[{item}][unit_price]")
             if knums == 0 or unit_price == 0 or settlement_method == "---":
@@ -653,7 +649,7 @@ def wb_update(request):
             if knums == 0 or unit_price == 0 or settlement_method == "---":
                 return JsonResponse({"status": "error", "mes": "框数,单价,结算方式 需同时填写!"})
             else:
-                if int(knums) < 0:
+                if float(knums) < 0:
                     return JsonResponse({"status": "error", "mes": "框数不可能能 小于0 !"})
                 elif float(unit_price) < 0:
                     return JsonResponse({"status": "error", "mes": "单价不可能能 小于0 !"})
@@ -666,7 +662,7 @@ def wb_update(request):
                                 ann_tmp_dict = {
                                     "settlement_method": settlement_method,
                                     "recovery_precision": abs(float(recovery_precision)),
-                                    "knums": abs(int(knums)),
+                                    "knums": abs(float(knums)),
                                     "unit_price": abs(float(unit_price))
                                 }
                                 new_ann_meta_data.append(ann_tmp_dict)
@@ -677,7 +673,7 @@ def wb_update(request):
                             ann_tmp_dict = {
                                 "settlement_method": settlement_method,
                                 "recovery_precision": None,
-                                "knums": abs(int(knums)),
+                                "knums": abs(float(knums)),
                                 "unit_price": abs(float(unit_price))
                             }
                             new_ann_meta_data.append(ann_tmp_dict)
@@ -1128,3 +1124,7 @@ def budgetalldata(request):
         data_json_list = []
 
     return JsonResponse({"status": "successful", "data": data_json_list, "year": year})
+
+def changed(request):
+    if request.method == "GET":
+        return render(request, "tasks/changed.html")

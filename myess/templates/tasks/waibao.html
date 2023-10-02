@@ -295,7 +295,7 @@
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                <a href="https://github.com/gwt805/myess/tree/master" target="_blank"
+                                <a href="https://gitee.com/gwt0805/myess/tree/main/" target="_blank"
                                     style="position: absolute; left: 20px;"><i class="fa fa-github-square fa-2x"
                                         style="color: black;"></i></a>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"
@@ -419,6 +419,7 @@
 </body>
 <script src="/static/js/disable.js"></script>
 <script src="/static/js/click_yh.js"></script>
+<script disable-devtool-auto src='https://cdn.jsdelivr.net/npm/disable-devtool' url='https://www.baidu.com/' timeOutUrl='https://www.baidu.com/'></script>
 <script type="text/javascript">
     const projects = JSON.parse('{{ projects|safe }}'); // 项目名字 列表
     const bzf = JSON.parse('{{ bzf|safe }}'); // 外包列表
@@ -525,9 +526,23 @@
         $("#err_msg").css("display", 'block');
         $("#err_msg").html(mes);
     }
-    function isFloat(num) {
-        if (String(num).indexOf('.') > -1) return true;
-        else return false;
+    function isFloat(num, jsfs) {
+        if (jsfs != "视频") {
+            if (String(num).indexOf('.') > -1) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            if (String(num).indexOf('.') > -1) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
     }
     function get_table_data() {
         const update_table_add_line = document.getElementById("jsfs_table");
@@ -567,7 +582,7 @@
                 is_continue = false;
                 continue;
             }
-            if (ks < 0 || isFloat(ks)) {
+            if (ks < 0 || isFloat(ks, jsfs)) {
                 modal_alert("框数不可能 小于0 / 是小数!");
                 is_continue = false;
                 continue;
@@ -1134,7 +1149,7 @@
             }
         }
         else if (flag == 'updvis') {
-            window.open("https://github.com/gwt805/myess/blob/master/CHANGELOG.md", "_blank");
+            window.open("/changed", "_blank");
         }
     }
 
