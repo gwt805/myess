@@ -4,8 +4,6 @@
 </div>
 
 <hr>
-<img src="myess/static/demo/ess-demo_2022-12-23.gif">
-<hr>
 
 ### 项目启动时间
 ```
@@ -67,6 +65,3 @@ python manage.py listenkfk --start_listen_kafka # 启动监听 kafka 消息, 创
 - [x] 每家供应商的项目数据详情展示
 - [x] admin 页面支持修改用户密码等各种操作
 - [x] 添加定时任务, 每日定时发送报表
-
-### 版本更新
-[查看更新日志请使劲点我](./CHANGELOG.md)

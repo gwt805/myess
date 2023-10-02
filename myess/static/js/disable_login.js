@@ -27,3 +27,19 @@ document.onselectstart = function () {
 document.oncopy = function () {
     return false;
 }
+
+// 禁用缩放
+document.addEventListener('keydown', (event) => {
+    if ((event.ctrlKey === true || event.metaKey === true) && (event.which === 61 || event.which === 107 || event.which === 173 || event.which === 109 || event.which === 187 || event.which === 189)) {
+      event.preventDefault();
+    }
+  }, false);
+  
+  document.addEventListener('mousewheel', (e) => {
+    if ((e.wheelDelta && e.ctrlKey) || e.detail) {
+      e.preventDefault();
+    }
+  }, {
+    capture: false,
+    passive: false
+  });
