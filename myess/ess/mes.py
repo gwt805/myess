@@ -3,14 +3,10 @@ from time import strftime, gmtime
 from myess.settings import CONFIG, BASE_DIR
 from loguru import logger
 from ess import models
-import datetime as dt
 import threading
 import requests
 import math
 import json
-
-
-logger.add(f"{BASE_DIR}/logs/mainserver/{dt.datetime.now().strftime('%Y-%m-%d')}.log")
 
 ''' 效率计算 开始 '''
 def str2sec(x):
